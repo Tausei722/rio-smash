@@ -1,18 +1,22 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { scoreColor, scoreMessage } from '../utils/scoring';
+import { WordDetailModal } from './WordDetailModal';
 
 type Props = {
   score: number;
   spokenText: string;
   expectedWord: string;
+  japanese?: string | null;
+  detail?: string | null;
   currentPlayer: 1 | 2;
   onNext: () => void;
 };
 
-export function ScoreReveal({ score, spokenText, expectedWord, currentPlayer, onNext }: Props) {
+export function ScoreReveal({ score, spokenText, expectedWord, japanese, detail, currentPlayer, onNext }: Props) {
   const scale = useRef(new Animated.Value(0.5)).current;
   const opacity = useRef(new Animated.Value(0)).current;
+  const [showDetail, setShowDetail] = useState(false);
 
   useEffect(() => {
     Animated.parallel([
@@ -44,14 +48,29 @@ export function ScoreReveal({ score, spokenText, expectedWord, currentPlayer, on
           </View>
           <View style={styles.compRow}>
             <Text style={styles.compLabel}>正解</Text>
-            <Text style={[styles.compValue, styles.correct]}>{expectedWord}</Text>
+            <View style={{ alignItems: 'flex-end' }}>
+              <Text style={[styles.compValue, styles.correct]}>{expectedWord}</Text>
+              {japanese ? <Text style={styles.compJapanese}>{japanese}</Text> : null}
+            </View>
           </View>
         </View>
+
+        <TouchableOpacity style={styles.detailButton} onPress={() => setShowDetail(true)}>
+          <Text style={styles.detailButtonText}>📖 使い方・文法を見る</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity style={styles.nextButton} onPress={onNext}>
           <Text style={styles.nextText}>次へ →</Text>
         </TouchableOpacity>
       </Animated.View>
+
+      <WordDetailModal
+        visible={showDetail}
+        english={expectedWord}
+        japanese={japanese}
+        detail={detail}
+        onClose={() => setShowDetail(false)}
+      />
     </View>
   );
 }
@@ -128,6 +147,26 @@ const styles = StyleSheet.create({
   },
   correct: {
     color: '#22c55e',
+  },
+  compJapanese: {
+    fontSize: 12,
+    color: '#94a3b8',
+    marginTop: 2,
+  },
+  detailButton: {
+    width: '100%',
+    paddingVertical: 11,
+    borderRadius: 12,
+    alignItems: 'center',
+    backgroundColor: '#f0fdfe',
+    borderWidth: 1.5,
+    borderColor: '#a5f3fc',
+    marginBottom: 10,
+  },
+  detailButtonText: {
+    color: '#0e7490',
+    fontSize: 14,
+    fontWeight: '600',
   },
   nextButton: {
     backgroundColor: '#06b6d4',
