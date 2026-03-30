@@ -4,16 +4,25 @@ import { StyleSheet, Text, View } from 'react-native';
 type Props = {
   katakana: string;
   english: string;
+  japanese?: string | null;
   questionIndex: number;
   total: number;
+  showEnglish?: boolean;
 };
 
-export function WordCard({ katakana, english, questionIndex, total }: Props) {
+export function WordCard({ katakana, english, japanese, questionIndex, total, showEnglish = false }: Props) {
   return (
     <View style={styles.card}>
       <Text style={styles.label}>WORD CARDS</Text>
       <Text style={styles.katakana}>{katakana}</Text>
-      <Text style={styles.english}>{english}</Text>
+      {showEnglish ? (
+        <>
+          <Text style={styles.english}>{english}</Text>
+          {japanese ? <Text style={styles.japanese}>{japanese}</Text> : null}
+        </>
+      ) : (
+        <Text style={styles.englishHidden}>？？？</Text>
+      )}
       <Text style={styles.counter}>{questionIndex + 1} / {total}</Text>
     </View>
   );
@@ -29,6 +38,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     alignItems: 'center',
     marginHorizontal: 24,
+    marginBottom: 32,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
@@ -55,6 +65,20 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginBottom: 20,
     letterSpacing: 1,
+  },
+  englishHidden: {
+    color: '#a5f3fc',
+    fontSize: 22,
+    fontWeight: '500',
+    marginBottom: 20,
+    letterSpacing: 4,
+  },
+  japanese: {
+    color: '#a5f3fc',
+    fontSize: 16,
+    marginTop: -12,
+    marginBottom: 20,
+    textAlign: 'center',
   },
   counter: {
     color: '#a5f3fc',
