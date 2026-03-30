@@ -16,6 +16,7 @@ import Voice, {
 } from '@react-native-voice/voice';
 
 import { fetchAllWords, initDB, WordRow } from './src/db/database';
+import { getAudioDuration } from './src/native/AudioTrim';
 import { calcPronunciationScore } from './src/utils/scoring';
 import { GameOver } from './src/components/GameOver';
 import { MicButton } from './src/components/MicButton';
@@ -204,31 +205,40 @@ function GameApp() {
 
   // 長押し中はループ再生
   const samplePressActiveRef = useRef(false);
+  const loopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleSamplePressIn = useCallback(async () => {
     if (!currentWordRef.current?.audio_path) return;
     samplePressActiveRef.current = true;
     setIsPlayingSample(true);
 
-    const playLoop = async () => {
-      if (!samplePressActiveRef.current) return;
-      await audioPlayer.startPlayer(currentWordRef.current!.audio_path!);
-      audioPlayer.addPlayBackListener(e => {
-        if (e.duration > 0 && e.currentPosition >= e.duration) {
-          audioPlayer.removePlayBackListener();
-          if (samplePressActiveRef.current) {
-            playLoop();
-          } else {
-            setIsPlayingSample(false);
-          }
-        }
-      });
+    const path = currentWordRef.current.audio_path;
+
+    // 音声の長さを取得してタイマーでループ管理（リスナー不使用）
+    let durationMs = 3000;
+    try {
+      const secs = await getAudioDuration(path);
+      if (secs > 0) durationMs = Math.ceil(secs * 1000);
+    } catch {}
+
+    const startLoop = () => {
+      if (!samplePressActiveRef.current) {
+        setIsPlayingSample(false);
+        return;
+      }
+      audioPlayer.startPlayer(path);
+      loopTimerRef.current = setTimeout(startLoop, durationMs + 300);
     };
-    playLoop();
+
+    startLoop();
   }, []);
 
   const handleSamplePressOut = useCallback(async () => {
     samplePressActiveRef.current = false;
+    if (loopTimerRef.current !== null) {
+      clearTimeout(loopTimerRef.current);
+      loopTimerRef.current = null;
+    }
     await audioPlayer.stopPlayer();
     audioPlayer.removePlayBackListener();
     setIsPlayingSample(false);
