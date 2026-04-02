@@ -427,7 +427,7 @@ function GameApp() {
         />
         {currentWord.audio_path && (
           <TouchableOpacity
-            style={[styles.sampleButton, isPlayingSample && styles.sampleButtonPlaying]}
+            style={[styles.sampleButton, isPlayingSample && styles.sampleButtonPlaying, isRecording && styles.hiden]}
             onPressIn={handleSamplePressIn}
             onPressOut={handleSamplePressOut}
             disabled={isRecording}
@@ -821,4 +821,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 1,
   },
+  hiden: {
+    display: 'none',
+  }
 });

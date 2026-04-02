@@ -32,17 +32,17 @@ export function MicButton({ isRecording, onPress, disabled }: Props) {
 
   return (
     <View style={styles.wrapper}>
-      {isRecording && (
-        <Animated.View
-          style={[styles.ripple, { transform: [{ scale: pulse }] }]}
-        />
-      )}
       <TouchableOpacity
         style={[styles.button, isRecording && styles.recording, disabled && styles.disabled]}
         onPress={onPress}
         disabled={disabled}
         activeOpacity={0.8}
       >
+        {isRecording && (
+          <Animated.View
+            style={[styles.ripple, { transform: [{ scale: pulse }] }]}
+          />
+        )}
         <Text style={styles.icon}>🎤</Text>
       </TouchableOpacity>
       <Text style={styles.hint}>
@@ -65,16 +65,13 @@ const styles = StyleSheet.create({
     opacity: 0.3,
   },
   button: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     width: 72,
     height: 72,
     borderRadius: 36,
     backgroundColor: '#06b6d4',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
     elevation: 8,
   },
   recording: {
@@ -84,6 +81,7 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   icon: {
+    zIndex: 10,
     fontSize: 28,
   },
   hint: {

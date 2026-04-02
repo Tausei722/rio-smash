@@ -77,8 +77,9 @@ export function LoginScreen({ onLoggedIn }: Props) {
     setLoading(false);
     if (data.session) {
       onLoggedIn();
-    } else {
-      Alert.alert('確認メールを送信しました', 'メールのリンクをタップしてからログインしてください。', [
+    } else if (data.user) {
+      // メール認証が有効な場合はログイン画面へ
+      Alert.alert('登録完了', 'アカウントを作成しました。ログインしてください。', [
         { text: 'OK', onPress: () => setMode('login') },
       ]);
     }
