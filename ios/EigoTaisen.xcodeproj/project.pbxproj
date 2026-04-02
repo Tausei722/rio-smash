@@ -266,7 +266,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = YYBGW99237;
+				DEVELOPMENT_TEAM = JRZKVR9C95;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = EigoTaisen/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -280,7 +280,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.rio.eigotaisen;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rioshikiego.samplerApp;
 				PRODUCT_NAME = EigoTaisen;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -297,7 +297,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = YYBGW99237;
+				DEVELOPMENT_TEAM = JRZKVR9C95;
 				INFOPLIST_FILE = EigoTaisen/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -310,7 +310,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.rio.eigotaisen;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rioshikiego.samplerApp;
 				PRODUCT_NAME = EigoTaisen;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;

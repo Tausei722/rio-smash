@@ -16,6 +16,8 @@ import Voice, {
 } from '@react-native-voice/voice';
 
 import { fetchAllWords, initDB, WordRow } from './src/db/database';
+import { supabase } from './src/db/supabase';
+import { getAudioDuration } from './src/native/AudioTrim';
 import { calcPronunciationScore } from './src/utils/scoring';
 import { GameOver } from './src/components/GameOver';
 import { MicButton } from './src/components/MicButton';
@@ -23,9 +25,12 @@ import { ScoreBoard } from './src/components/ScoreBoard';
 import { ScoreReveal } from './src/components/ScoreReveal';
 import { WordCard } from './src/components/WordCard';
 import { AdminScreen } from './src/screens/AdminScreen';
+import { AIConversationScreen } from './src/screens/AIConversationScreen';
+import { FlashWordScreen } from './src/screens/FlashWordScreen';
+import { LoginScreen } from './src/screens/LoginScreen';
 import { WordFormScreen } from './src/screens/WordFormScreen';
 
-type Screen = 'home' | 'game' | 'gameover' | 'admin' | 'wordform';
+type Screen = 'home' | 'game' | 'gameover' | 'admin' | 'wordform' | 'ai' | 'flash';
 
 // AudioRecorderPlayer はすでにインスタンスとして export されている
 const audioPlayer = AudioRecorderPlayer;
@@ -57,8 +62,30 @@ function GameApp() {
   const [liveText, setLiveText] = useState('');
   const [reveal, setReveal] = useState<{ score: number; spoken: string } | null>(null);
   const [editingWord, setEditingWord] = useState<WordRow | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  // DB初期化
+  // セッション確認 & isAdmin 取得
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      setIsLoggedIn(false);
+      setIsAdmin(false);
+      setAuthReady(true);
+      return;
+    }
+    setIsLoggedIn(true);
+    const { data } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', session.user.id)
+      .single();
+    setIsAdmin(data?.is_admin === true);
+    setAuthReady(true);
+  };
+
+  // DB初期化 & 認証確認
   useEffect(() => {
     (async () => {
       await initDB();
@@ -66,6 +93,19 @@ function GameApp() {
       setAllWords(rows);
       setDbReady(true);
     })();
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        setIsLoggedIn(false);
+        setIsAdmin(false);
+        setScreen('home');
+      } else {
+        setIsLoggedIn(true);
+        checkAuth();
+      }
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   const currentWord = gameWords[questionIndex];
@@ -204,31 +244,40 @@ function GameApp() {
 
   // 長押し中はループ再生
   const samplePressActiveRef = useRef(false);
+  const loopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleSamplePressIn = useCallback(async () => {
     if (!currentWordRef.current?.audio_path) return;
     samplePressActiveRef.current = true;
     setIsPlayingSample(true);
 
-    const playLoop = async () => {
-      if (!samplePressActiveRef.current) return;
-      await audioPlayer.startPlayer(currentWordRef.current!.audio_path!);
-      audioPlayer.addPlayBackListener(e => {
-        if (e.duration > 0 && e.currentPosition >= e.duration) {
-          audioPlayer.removePlayBackListener();
-          if (samplePressActiveRef.current) {
-            playLoop();
-          } else {
-            setIsPlayingSample(false);
-          }
-        }
-      });
+    const path = currentWordRef.current.audio_path;
+
+    // 音声の長さを取得してタイマーでループ管理（リスナー不使用）
+    let durationMs = 3000;
+    try {
+      const secs = await getAudioDuration(path);
+      if (secs > 0) durationMs = Math.ceil(secs * 1000);
+    } catch {}
+
+    const startLoop = () => {
+      if (!samplePressActiveRef.current) {
+        setIsPlayingSample(false);
+        return;
+      }
+      audioPlayer.startPlayer(path);
+      loopTimerRef.current = setTimeout(startLoop, durationMs + 300);
     };
-    playLoop();
+
+    startLoop();
   }, []);
 
   const handleSamplePressOut = useCallback(async () => {
     samplePressActiveRef.current = false;
+    if (loopTimerRef.current !== null) {
+      clearTimeout(loopTimerRef.current);
+      loopTimerRef.current = null;
+    }
     await audioPlayer.stopPlayer();
     audioPlayer.removePlayBackListener();
     setIsPlayingSample(false);
@@ -255,10 +304,71 @@ function GameApp() {
     setScreen('game');
   };
 
+  const handleQuitGame = () => {
+    Alert.alert(
+      'ゲームをやめますか？',
+      'スコアはリセットされます。',
+      [
+        { text: 'キャンセル', style: 'cancel' },
+        {
+          text: 'やめる',
+          style: 'destructive',
+          onPress: async () => {
+            // 録音中なら停止
+            if (isRecordingRef.current) {
+              try { await Voice.stop(); } catch {}
+            }
+            isRecordingRef.current = false;
+            isProcessingRef.current = false;
+            isManualStopRef.current = false;
+            setIsRecording(false);
+            // サンプル再生中なら停止
+            samplePressActiveRef.current = false;
+            if (loopTimerRef.current !== null) {
+              clearTimeout(loopTimerRef.current);
+              loopTimerRef.current = null;
+            }
+            try { await audioPlayer.stopPlayer(); } catch {}
+            audioPlayer.removePlayBackListener();
+            setIsPlayingSample(false);
+            setReveal(null);
+            setScreen('home');
+          },
+        },
+      ],
+    );
+  };
+
   const reloadWords = async () => {
     const rows = await fetchAllWords();
     setAllWords(rows);
   };
+
+  // --- 認証ローディング ---
+  if (!authReady) {
+    return (
+      <SafeAreaView style={styles.screen}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: '#0e7490', fontSize: 16 }}>読み込み中...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // --- ログイン画面 ---
+  if (!isLoggedIn) {
+    return <LoginScreen onLoggedIn={checkAuth} />;
+  }
+
+  // --- AI英語練習 ---
+  if (screen === 'ai') {
+    return <AIConversationScreen onBack={() => setScreen('home')} />;
+  }
+
+  // --- フラッシュ英単語 ---
+  if (screen === 'flash') {
+    return <FlashWordScreen onBack={() => setScreen('home')} />;
+  }
 
   // --- Admin ナビゲーション ---
   if (screen === 'admin') {
@@ -296,7 +406,12 @@ function GameApp() {
   if (screen === 'game' && currentWord) {
     return (
       <SafeAreaView style={styles.screen}>
-        <Text style={styles.turnText}>プレイヤー {currentPlayer} のターン</Text>
+        <View style={styles.gameHeader}>
+          <Text style={styles.turnText}>プレイヤー {currentPlayer} のターン</Text>
+          <TouchableOpacity style={styles.quitButton} onPress={handleQuitGame}>
+            <Text style={styles.quitButtonText}>✕ やめる</Text>
+          </TouchableOpacity>
+        </View>
         <WordCard
           katakana={currentWord.katakana}
           english={currentWord.english}
@@ -312,7 +427,7 @@ function GameApp() {
         />
         {currentWord.audio_path && (
           <TouchableOpacity
-            style={[styles.sampleButton, isPlayingSample && styles.sampleButtonPlaying]}
+            style={[styles.sampleButton, isPlayingSample && styles.sampleButtonPlaying, isRecording && styles.hiden]}
             onPressIn={handleSamplePressIn}
             onPressOut={handleSamplePressOut}
             disabled={isRecording}
@@ -355,75 +470,116 @@ function GameApp() {
   // --- ホーム画面 ---
   return (
     <HomeScreen
-      onStart={startGame}
+      onStartBattle={startGame}
+      onStartAI={() => setScreen('ai')}
+      onStartFlash={() => setScreen('flash')}
       onAdmin={() => setScreen('admin')}
+      onLogout={() => supabase.auth.signOut()}
       wordCount={allWords.length}
       dbReady={dbReady}
+      isAdmin={isAdmin}
     />
   );
 }
 
 function HomeScreen({
-  onStart,
+  onStartBattle,
+  onStartAI,
+  onStartFlash,
   onAdmin,
+  onLogout,
   wordCount,
   dbReady,
+  isAdmin,
 }: {
-  onStart: () => void;
+  onStartBattle: () => void;
+  onStartAI: () => void;
+  onStartFlash: () => void;
   onAdmin: () => void;
+  onLogout: () => void;
   wordCount: number;
   dbReady: boolean;
+  isAdmin: boolean;
 }) {
-  const titlePressCount = useRef(0);
-  const titlePressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // タイトルを5回連続タップで管理画面へ
-  const handleTitlePress = () => {
-    titlePressCount.current += 1;
-    if (titlePressTimer.current) clearTimeout(titlePressTimer.current);
-    if (titlePressCount.current >= 5) {
-      titlePressCount.current = 0;
-      onAdmin();
-    } else {
-      titlePressTimer.current = setTimeout(() => {
-        titlePressCount.current = 0;
-      }, 2000);
-    }
-  };
-
   return (
     <SafeAreaView style={styles.homeScreen}>
-      <View style={styles.homeCenter}>
-        <TouchableOpacity onPress={handleTitlePress} activeOpacity={1}>
-          <Text style={styles.homeEmoji}>🗣️</Text>
+      <View style={styles.homeHeader}>
+        <View>
           <Text style={styles.homeTitle}>英単語対戦</Text>
-        </TouchableOpacity>
-        <Text style={styles.homeSubtitle}>
-          カタカナ英語を正確に発音して{'\n'}2人で発音精度を競おう！
-        </Text>
-
-        <View style={styles.ruleBox}>
-          <Text style={styles.ruleItem}>① カタカナ英語が表示される</Text>
-          <Text style={styles.ruleItem}>② 🎤 ボタンを押して発音</Text>
-          <Text style={styles.ruleItem}>③ 発音の正確さが点数に！</Text>
-          <Text style={styles.ruleItem}>④ 合計点数で勝負！</Text>
+          <Text style={styles.homeSubtitle}>モードを選んでスタート</Text>
         </View>
+        <View style={styles.homeHeaderRight}>
+          {isAdmin && (
+            <TouchableOpacity style={styles.adminHint} onPress={onAdmin}>
+              <Text style={styles.adminHintText}>⚙️</Text>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
+            <Text style={styles.logoutButtonText}>ログアウト</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
-        <Text style={styles.wordCountText}>
-          {dbReady ? `📚 ${wordCount}語` : '読み込み中...'}
-        </Text>
-
+      <View style={styles.modeList}>
+        {/* 2人対戦モード */}
         <TouchableOpacity
-          style={[styles.startButton, !dbReady && styles.startButtonDisabled]}
-          onPress={onStart}
+          style={[styles.modeCard, (!dbReady || wordCount === 0) && styles.modeCardDisabled]}
+          onPress={onStartBattle}
           disabled={!dbReady || wordCount === 0}
+          activeOpacity={0.85}
         >
-          <Text style={styles.startButtonText}>スタート</Text>
+          <View style={styles.modeCardInner}>
+            <Text style={styles.modeEmoji}>⚔️</Text>
+            <View style={styles.modeTextArea}>
+              <Text style={styles.modeTitle}>2人対戦</Text>
+              <Text style={styles.modeDesc}>
+                カタカナ英語を発音して{'\n'}2人で精度を競おう
+              </Text>
+              <Text style={styles.modeWordCount}>
+                {dbReady ? `📚 ${wordCount}語` : '読み込み中...'}
+              </Text>
+            </View>
+            <Text style={styles.modeArrow}>›</Text>
+          </View>
         </TouchableOpacity>
 
-        {/* 管理ボタン（目立たない小さいボタン） */}
-        <TouchableOpacity style={styles.adminHint} onPress={onAdmin}>
-          <Text style={styles.adminHintText}>⚙️ 管理者</Text>
+        {/* AI英語モード */}
+        <TouchableOpacity
+          style={styles.modeCard}
+          onPress={onStartAI}
+          activeOpacity={0.85}
+        >
+          <View style={styles.modeCardInner}>
+            <Text style={styles.modeEmoji}>🤖</Text>
+            <View style={styles.modeTextArea}>
+              <Text style={styles.modeTitle}>AI英語練習</Text>
+              <Text style={styles.modeDesc}>
+                AIと一緒に英語を練習しよう
+              </Text>
+              <View style={styles.modeBadge}>
+                <Text style={styles.modeBadgeText}>NEW</Text>
+              </View>
+            </View>
+            <Text style={styles.modeArrow}>›</Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* フラッシュ英単語モード */}
+        <TouchableOpacity
+          style={styles.modeCard}
+          onPress={onStartFlash}
+          activeOpacity={0.85}
+        >
+          <View style={styles.modeCardInner}>
+            <Text style={styles.modeEmoji}>⚡</Text>
+            <View style={styles.modeTextArea}>
+              <Text style={styles.modeTitle}>フラッシュ英単語</Text>
+              <Text style={styles.modeDesc}>
+                話した単語をリアルタイム表示{'\n'}現在の単語を強調表示
+              </Text>
+            </View>
+            <Text style={styles.modeArrow}>›</Text>
+          </View>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -435,6 +591,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ecfeff',
     paddingTop: Platform.OS === 'android' ? 8 : 0,
+  },
+  gameHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+  },
+  quitButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#fee2e2',
+    borderRadius: 8,
+  },
+  quitButtonText: {
+    color: '#ef4444',
+    fontSize: 13,
+    fontWeight: '600',
   },
   turnText: {
     textAlign: 'center',
@@ -502,18 +676,15 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   homeTitle: {
-    fontSize: 40,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#0e7490',
-    marginBottom: 8,
-    textAlign: 'center',
   },
   homeSubtitle: {
-    fontSize: 16,
-    color: '#475569',
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 28,
+    fontSize: 13,
+    color: '#94a3b8',
+    marginTop: 2,
+    marginBottom: 0,
   },
   ruleBox: {
     backgroundColor: '#ffffff',
@@ -564,4 +735,93 @@ const styles = StyleSheet.create({
     color: '#cbd5e1',
     fontSize: 13,
   },
+  logoutButton: {
+    marginTop: 12,
+    padding: 8,
+  },
+  logoutButtonText: {
+    color: '#94a3b8',
+    fontSize: 13,
+  },
+  homeHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 16,
+  },
+  homeHeaderRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  modeList: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    gap: 16,
+  },
+  modeCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  modeCardDisabled: {
+    opacity: 0.5,
+  },
+  modeCardInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  modeEmoji: {
+    fontSize: 44,
+  },
+  modeTextArea: {
+    flex: 1,
+    gap: 4,
+  },
+  modeTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#0e7490',
+  },
+  modeDesc: {
+    fontSize: 13,
+    color: '#64748b',
+    lineHeight: 18,
+  },
+  modeWordCount: {
+    fontSize: 12,
+    color: '#94a3b8',
+    marginTop: 4,
+  },
+  modeArrow: {
+    fontSize: 28,
+    color: '#cbd5e1',
+    fontWeight: '300',
+  },
+  modeBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#06b6d4',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    marginTop: 4,
+  },
+  modeBadgeText: {
+    color: '#ffffff',
+    fontSize: 10,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+  hiden: {
+    display: 'none',
+  }
 });
