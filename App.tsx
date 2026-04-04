@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Platform,
+  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -412,57 +413,60 @@ function GameApp() {
             <Text style={styles.quitButtonText}>✕ やめる</Text>
           </TouchableOpacity>
         </View>
-        <WordCard
-          katakana={currentWord.katakana}
-          english={currentWord.english}
-          japanese={currentWord.japanese}
-          questionIndex={questionIndex}
-          total={gameWords.length}
-          showEnglish={reveal !== null}
-        />
-        <ScoreBoard
-          player1Score={player1Score}
-          player2Score={player2Score}
-          currentPlayer={currentPlayer}
-        />
-        {currentWord.audio_path && (
-          <TouchableOpacity
-            style={[styles.sampleButton, isPlayingSample && styles.sampleButtonPlaying, isRecording && styles.hiden]}
-            onPressIn={handleSamplePressIn}
-            onPressOut={handleSamplePressOut}
-            disabled={isRecording}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.sampleButtonText}>
-              {isPlayingSample ? '🔊 再生中...' : '🔊 長押しで見本を聞く'}
-            </Text>
-          </TouchableOpacity>
-        )}
-
-        <View style={styles.micArea}>
-          {isRecording && (
-            <View style={styles.liveTextBox}>
-              <Text style={styles.liveTextLabel}>認識中...</Text>
-              <Text style={styles.liveText}>{liveText || '　'}</Text>
-            </View>
-          )}
-          <MicButton
-            isRecording={isRecording}
-            onPress={handleMicPress}
-            disabled={reveal !== null}
-          />
-        </View>
-        {reveal && (
-          <ScoreReveal
-            score={reveal.score}
-            spokenText={reveal.spoken}
-            expectedWord={currentWord.english}
+        <ScrollView contentContainerStyle={styles.gameScroll} keyboardShouldPersistTaps="handled">
+          <WordCard
+            katakana={currentWord.katakana}
+            english={currentWord.english}
             japanese={currentWord.japanese}
-            detail={currentWord.detail}
-            currentPlayer={currentPlayer}
-            onNext={handleNext}
+            questionIndex={questionIndex}
+            total={gameWords.length}
+            showEnglish={reveal !== null}
           />
-        )}
+          {!isRecording && (
+            <ScoreBoard
+              player1Score={player1Score}
+              player2Score={player2Score}
+              currentPlayer={currentPlayer}
+            />)
+          }
+          {currentWord.audio_path && (
+            <TouchableOpacity
+              style={[styles.sampleButton, isPlayingSample && styles.sampleButtonPlaying, isRecording && styles.hiden]}
+              onPressIn={handleSamplePressIn}
+              onPressOut={handleSamplePressOut}
+              disabled={isRecording}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.sampleButtonText}>
+                {isPlayingSample ? '🔊 再生中...' : '🔊 長押しで見本を聞く'}
+              </Text>
+            </TouchableOpacity>
+          )}
+          <View style={styles.micArea}>
+            {isRecording && (
+              <View style={styles.liveTextBox}>
+                <Text style={styles.liveTextLabel}>認識中...</Text>
+                <Text style={styles.liveText}>{liveText || '　'}</Text>
+              </View>
+            )}
+            <MicButton
+              isRecording={isRecording}
+              onPress={handleMicPress}
+              disabled={reveal !== null}
+            />
+          </View>
+          {reveal && (
+            <ScoreReveal
+              score={reveal.score}
+              spokenText={reveal.spoken}
+              expectedWord={currentWord.english}
+              japanese={currentWord.japanese}
+              detail={currentWord.detail}
+              currentPlayer={currentPlayer}
+              onNext={handleNext}
+            />
+          )}
+        </ScrollView>
       </SafeAreaView>
     );
   }
@@ -617,11 +621,13 @@ const styles = StyleSheet.create({
     color: '#0e7490',
     paddingVertical: 12,
   },
+  gameScroll: {
+    paddingBottom: 40,
+  },
   micArea: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 32,
+    paddingVertical: 24,
   },
   liveTextBox: {
     backgroundColor: 'rgba(255,255,255,0.9)',
