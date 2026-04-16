@@ -284,6 +284,41 @@ function GameApp() {
     setIsPlayingSample(false);
   }, []);
 
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'アカウントを削除',
+      'アカウントを完全に削除しますか？\nこの操作は取り消せません。',
+      [
+        { text: 'キャンセル', style: 'cancel' },
+        {
+          text: '削除する',
+          style: 'destructive',
+          onPress: () => {
+            Alert.alert(
+              '本当に削除しますか？',
+              'すべてのデータが失われます。',
+              [
+                { text: 'キャンセル', style: 'cancel' },
+                {
+                  text: '完全に削除する',
+                  style: 'destructive',
+                  onPress: async () => {
+                    const { error } = await supabase.rpc('delete_account');
+                    if (error) {
+                      Alert.alert('エラー', 'アカウントの削除に失敗しました。\n' + error.message);
+                    } else {
+                      await supabase.auth.signOut();
+                    }
+                  },
+                },
+              ],
+            );
+          },
+        },
+      ],
+    );
+  };
+
   const startGame = () => {
     // 録音中だった場合も確実にリセット
     if (isRecordingRef.current) {
@@ -479,6 +514,7 @@ function GameApp() {
       onStartFlash={() => setScreen('flash')}
       onAdmin={() => setScreen('admin')}
       onLogout={() => supabase.auth.signOut()}
+      onDeleteAccount={handleDeleteAccount}
       wordCount={allWords.length}
       dbReady={dbReady}
       isAdmin={isAdmin}
@@ -492,6 +528,7 @@ function HomeScreen({
   onStartFlash,
   onAdmin,
   onLogout,
+  onDeleteAccount,
   wordCount,
   dbReady,
   isAdmin,
@@ -501,6 +538,7 @@ function HomeScreen({
   onStartFlash: () => void;
   onAdmin: () => void;
   onLogout: () => void;
+  onDeleteAccount: () => void;
   wordCount: number;
   dbReady: boolean;
   isAdmin: boolean;
@@ -518,8 +556,11 @@ function HomeScreen({
               <Text style={styles.adminHintText}>⚙️</Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
+            <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
             <Text style={styles.logoutButtonText}>ログアウト</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.deleteAccountButton} onPress={onDeleteAccount}>
+            <Text style={styles.deleteAccountButtonText}>アカウント削除</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -548,7 +589,7 @@ function HomeScreen({
         </TouchableOpacity>
 
         {/* AI英語モード */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.modeCard}
           onPress={onStartAI}
           activeOpacity={0.85}
@@ -566,10 +607,10 @@ function HomeScreen({
             </View>
             <Text style={styles.modeArrow}>›</Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         {/* フラッシュ英単語モード */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.modeCard}
           onPress={onStartFlash}
           activeOpacity={0.85}
@@ -584,7 +625,7 @@ function HomeScreen({
             </View>
             <Text style={styles.modeArrow}>›</Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </SafeAreaView>
   );
@@ -829,5 +870,13 @@ const styles = StyleSheet.create({
   },
   hiden: {
     display: 'none',
-  }
+  },
+  deleteAccountButton: {
+    marginTop: 4,
+    padding: 8,
+  },
+  deleteAccountButtonText: {
+    color: '#ef4444',
+    fontSize: 12,
+  },
 });
