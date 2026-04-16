@@ -589,7 +589,7 @@ function HomeScreen({
         </TouchableOpacity>
 
         {/* AI英語モード */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.modeCard}
           onPress={onStartAI}
           activeOpacity={0.85}
@@ -607,10 +607,10 @@ function HomeScreen({
             </View>
             <Text style={styles.modeArrow}>›</Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         {/* フラッシュ英単語モード */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.modeCard}
           onPress={onStartFlash}
           activeOpacity={0.85}
@@ -625,7 +625,7 @@ function HomeScreen({
             </View>
             <Text style={styles.modeArrow}>›</Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </SafeAreaView>
   );
