@@ -10,6 +10,7 @@ export type WordRow = {
   japanese: string | null;
   detail: string | null;
   audio_path: string | null;
+  is_premium: boolean;
   created_at?: string;
 };
 
@@ -26,13 +27,13 @@ export async function initDB(): Promise<void> {
   }
 }
 
-// 全単語取得
-export async function fetchAllWords(): Promise<WordRow[]> {
-  const { data, error } = await supabase
-    .from('words')
-    .select('*')
-    .order('id', { ascending: false });
-
+// 全単語取得（isPremium=trueならプレミアム含む、falseならノーマルのみ）
+export async function fetchAllWords(isPremium: boolean = false): Promise<WordRow[]> {
+  let query = supabase.from('words').select('*').order('id', { ascending: false });
+  if (!isPremium) {
+    query = query.eq('is_premium', false);
+  }
+  const { data, error } = await query;
   if (error) throw error;
   return data ?? [];
 }
@@ -44,10 +45,11 @@ export async function insertWord(
   japanese?: string,
   detail?: string,
   audioPath?: string,
+  isPremium?: boolean,
 ): Promise<void> {
   const { error } = await supabase
     .from('words')
-    .insert({ katakana, english, japanese: japanese ?? null, detail: detail ?? null, audio_path: audioPath ?? null });
+    .insert({ katakana, english, japanese: japanese ?? null, detail: detail ?? null, audio_path: audioPath ?? null, is_premium: isPremium ?? false });
   if (error) throw error;
 }
 
@@ -59,10 +61,11 @@ export async function updateWord(
   japanese?: string | null,
   detail?: string | null,
   audioPath?: string | null,
+  isPremium?: boolean,
 ): Promise<void> {
   const { error } = await supabase
     .from('words')
-    .update({ katakana, english, japanese: japanese ?? null, detail: detail ?? null, audio_path: audioPath ?? null })
+    .update({ katakana, english, japanese: japanese ?? null, detail: detail ?? null, audio_path: audioPath ?? null, is_premium: isPremium ?? false })
     .eq('id', id);
   if (error) throw error;
 }

@@ -18,6 +18,13 @@ import Voice, {
 
 import { fetchAllWords, initDB, WordRow } from './src/db/database';
 import { supabase } from './src/db/supabase';
+import {
+  setupIAP,
+  setupPurchaseListeners,
+  purchasePremium,
+  restorePremium,
+  activatePremium,
+} from './src/services/purchase';
 import { getAudioDuration } from './src/native/AudioTrim';
 import { calcPronunciationScore } from './src/utils/scoring';
 import { GameOver } from './src/components/GameOver';
@@ -66,35 +73,79 @@ function GameApp() {
   const [authReady, setAuthReady] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
 
-  // セッション確認 & isAdmin 取得
+  // セッション確認 & isAdmin / isPremium 取得
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
       setIsLoggedIn(false);
       setIsAdmin(false);
+      setIsPremium(false);
       setAuthReady(true);
       return;
     }
     setIsLoggedIn(true);
     const { data } = await supabase
       .from('profiles')
-      .select('is_admin')
+      .select('is_admin, is_premium')
       .eq('id', session.user.id)
       .single();
     setIsAdmin(data?.is_admin === true);
+    setIsPremium(data?.is_premium === true);
     setAuthReady(true);
+  };
+
+  const handlePurchase = async () => {
+    try {
+      await purchasePremium();
+    } catch (e: any) {
+      Alert.alert('購入エラー', e?.message ?? '購入に失敗しました');
+    }
+  };
+
+  const handleRestore = async () => {
+    try {
+      const restored = await restorePremium();
+      if (restored) {
+        setIsPremium(true);
+        const rows = await fetchAllWords(true);
+        setAllWords(rows);
+        Alert.alert('復元完了', 'プレミアムプランを復元しました');
+      } else {
+        Alert.alert('復元できません', '購入履歴が見つかりませんでした');
+      }
+    } catch (e: any) {
+      Alert.alert('エラー', e?.message ?? '復元に失敗しました');
+    }
   };
 
   // DB初期化 & 認証確認
   useEffect(() => {
+    setupIAP().catch(() => {});
+
     (async () => {
       await initDB();
-      const rows = await fetchAllWords();
+      const rows = await fetchAllWords(isPremium);
       setAllWords(rows);
       setDbReady(true);
     })();
     checkAuth();
+
+    const cleanupPurchase = setupPurchaseListeners(
+      async (purchase) => {
+        await activatePremium(purchase);
+        setIsPremium(true);
+        const rows = await fetchAllWords(true);
+        setAllWords(rows);
+        Alert.alert('購入完了', 'プレミアムプランへようこそ！');
+      },
+      (error) => {
+        if ((error.code as string) !== 'E_USER_CANCELLED') {
+          Alert.alert('購入エラー', error.message);
+        }
+      },
+    );
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
@@ -106,7 +157,10 @@ function GameApp() {
         checkAuth();
       }
     });
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      cleanupPurchase();
+    };
   }, []);
 
   const currentWord = gameWords[questionIndex];
@@ -515,9 +569,12 @@ function GameApp() {
       onAdmin={() => setScreen('admin')}
       onLogout={() => supabase.auth.signOut()}
       onDeleteAccount={handleDeleteAccount}
+      onPurchase={handlePurchase}
+      onRestore={handleRestore}
       wordCount={allWords.length}
       dbReady={dbReady}
       isAdmin={isAdmin}
+      isPremium={isPremium}
     />
   );
 }
@@ -529,9 +586,12 @@ function HomeScreen({
   onAdmin,
   onLogout,
   onDeleteAccount,
+  onPurchase,
+  onRestore,
   wordCount,
   dbReady,
   isAdmin,
+  isPremium,
 }: {
   onStartBattle: () => void;
   onStartAI: () => void;
@@ -539,9 +599,12 @@ function HomeScreen({
   onAdmin: () => void;
   onLogout: () => void;
   onDeleteAccount: () => void;
+  onPurchase: () => void;
+  onRestore: () => void;
   wordCount: number;
   dbReady: boolean;
   isAdmin: boolean;
+  isPremium: boolean;
 }) {
   return (
     <SafeAreaView style={styles.homeScreen}>
@@ -627,6 +690,28 @@ function HomeScreen({
           </View>
         </TouchableOpacity> */}
       </View>
+
+      {/* プレミアムバナー */}
+      {isPremium ? (
+        <View style={styles.premiumBanner}>
+          <Text style={styles.premiumBannerText}>⭐ プレミアム会員</Text>
+        </View>
+      ) : (
+        <View style={styles.premiumCard}>
+          <View style={styles.premiumCardLeft}>
+            <Text style={styles.premiumCardTitle}>⭐ プレミアムプラン</Text>
+            <Text style={styles.premiumCardDesc}>プレミアム単語もプレイできる</Text>
+          </View>
+          <View style={styles.premiumCardButtons}>
+            <TouchableOpacity style={styles.purchaseButton} onPress={onPurchase}>
+              <Text style={styles.purchaseButtonText}>購入</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.restoreButton} onPress={onRestore}>
+              <Text style={styles.restoreButtonText}>復元</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -878,5 +963,69 @@ const styles = StyleSheet.create({
   deleteAccountButtonText: {
     color: '#ef4444',
     fontSize: 12,
+  },
+  premiumBanner: {
+    marginHorizontal: 20,
+    marginBottom: 16,
+    backgroundColor: '#fef9c3',
+    borderRadius: 12,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  premiumBannerText: {
+    color: '#854d0e',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  premiumCard: {
+    marginHorizontal: 20,
+    marginBottom: 16,
+    backgroundColor: '#fff7ed',
+    borderRadius: 16,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#fed7aa',
+  },
+  premiumCardLeft: {
+    flex: 1,
+    gap: 4,
+  },
+  premiumCardTitle: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#c2410c',
+  },
+  premiumCardDesc: {
+    fontSize: 12,
+    color: '#9a3412',
+  },
+  premiumCardButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  purchaseButton: {
+    backgroundColor: '#f97316',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+  },
+  purchaseButtonText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+    fontSize: 13,
+  },
+  restoreButton: {
+    backgroundColor: '#fed7aa',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+  },
+  restoreButtonText: {
+    color: '#c2410c',
+    fontWeight: '600',
+    fontSize: 13,
   },
 });

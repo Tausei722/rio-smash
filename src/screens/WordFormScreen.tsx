@@ -4,6 +4,7 @@ import {
   Modal,
   Platform,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -30,6 +31,7 @@ export function WordFormScreen({ editingWord, onBack, onSaved }: Props) {
   const [english, setEnglish] = useState(editingWord?.english ?? '');
   const [japanese, setJapanese] = useState(editingWord?.japanese ?? '');
   const [detail, setDetail] = useState(editingWord?.detail ?? '');
+  const [isPremium, setIsPremium] = useState(editingWord?.is_premium ?? false);
   const [audioPath, setAudioPath] = useState<string | null>(
     editingWord?.audio_path ?? null,
   );
@@ -114,9 +116,9 @@ export function WordFormScreen({ editingWord, onBack, onSaved }: Props) {
       }
 
       if (isEdit && editingWord) {
-        await updateWord(editingWord.id, katakana.trim(), english.trim(), japanese.trim() || null, detail.trim() || null, finalAudioPath);
+        await updateWord(editingWord.id, katakana.trim(), english.trim(), japanese.trim() || null, detail.trim() || null, finalAudioPath, isPremium);
       } else {
-        await insertWord(katakana.trim(), english.trim(), japanese.trim() || undefined, detail.trim() || undefined, finalAudioPath ?? undefined);
+        await insertWord(katakana.trim(), english.trim(), japanese.trim() || undefined, detail.trim() || undefined, finalAudioPath ?? undefined, isPremium);
       }
       onSaved();
     } catch (e: any) {
@@ -188,6 +190,20 @@ export function WordFormScreen({ editingWord, onBack, onSaved }: Props) {
           multiline
           textAlignVertical="top"
         />
+
+        {/* プレミアム設定 */}
+        <View style={styles.premiumRow}>
+          <View>
+            <Text style={styles.label}>プレミアム単語</Text>
+            <Text style={styles.premiumHint}>ONにするとプレミアムユーザーのみ表示</Text>
+          </View>
+          <Switch
+            value={isPremium}
+            onValueChange={setIsPremium}
+            trackColor={{ false: '#e2e8f0', true: '#06b6d4' }}
+            thumbColor={isPremium ? '#0e7490' : '#94a3b8'}
+          />
+        </View>
 
         {/* 音声録音セクション */}
         <Text style={styles.label}>参考音声（正しい発音を録音）</Text>
@@ -366,6 +382,23 @@ const styles = StyleSheet.create({
     color: '#94a3b8',
     fontSize: 12,
     marginTop: 4,
+  },
+  premiumRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#ffffff',
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginTop: 16,
+  },
+  premiumHint: {
+    fontSize: 11,
+    color: '#94a3b8',
+    marginTop: 2,
   },
   trimButton: {
     backgroundColor: '#f1f5f9',
