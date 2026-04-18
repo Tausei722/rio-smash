@@ -15,7 +15,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import RNFS from 'react-native-fs';
-import { insertWord, updateWord, uploadAudio, WordRow } from '../db/database';
+import { insertWord, updateWord, uploadAudio, downloadAudioToLocal, WordRow } from '../db/database';
 import { AudioTrimmer } from '../components/AudioTrimmer';
 
 const audioRecorderPlayer = AudioRecorderPlayer;
@@ -91,12 +91,7 @@ export function WordFormScreen({ editingWord, onBack, onSaved }: Props) {
     } else {
       try {
         setIsPlaying(true);
-        let playPath = audioPath;
-        if (audioPath.startsWith('http')) {
-          const dest = `${RNFS.DocumentDirectoryPath}/play_tmp_${Date.now()}.m4a`;
-          await RNFS.downloadFile({ fromUrl: audioPath, toFile: dest }).promise;
-          playPath = dest;
-        }
+        const playPath = await downloadAudioToLocal(audioPath);
         await audioRecorderPlayer.startPlayer(playPath);
         audioRecorderPlayer.addPlayBackListener(e => {
           if (e.currentPosition === e.duration) {

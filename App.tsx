@@ -16,7 +16,7 @@ import Voice, {
   SpeechResultsEvent,
 } from '@react-native-voice/voice';
 
-import { fetchAllWords, initDB, WordRow } from './src/db/database';
+import { fetchAllWords, initDB, downloadAudioToLocal, WordRow } from './src/db/database';
 import { supabase } from './src/db/supabase';
 import {
   setupIAP,
@@ -306,25 +306,36 @@ function GameApp() {
     samplePressActiveRef.current = true;
     setIsPlayingSample(true);
 
-    const path = currentWordRef.current.audio_path;
-
-    // 音声の長さを取得してタイマーでループ管理（リスナー不使用）
-    let durationMs = 3000;
     try {
-      const secs = await getAudioDuration(path);
-      if (secs > 0) durationMs = Math.ceil(secs * 1000);
-    } catch {}
+      const rawPath = currentWordRef.current.audio_path;
 
-    const startLoop = () => {
+      const localPath = await downloadAudioToLocal(rawPath);
+
       if (!samplePressActiveRef.current) {
         setIsPlayingSample(false);
         return;
       }
-      audioPlayer.startPlayer(path);
-      loopTimerRef.current = setTimeout(startLoop, durationMs + 300);
-    };
 
-    startLoop();
+      let durationMs = 3000;
+      try {
+        const secs = await getAudioDuration(localPath);
+        if (secs > 0) durationMs = Math.ceil(secs * 1000);
+      } catch {}
+
+      const startLoop = () => {
+        if (!samplePressActiveRef.current) {
+          setIsPlayingSample(false);
+          return;
+        }
+        audioPlayer.startPlayer(localPath);
+        loopTimerRef.current = setTimeout(startLoop, durationMs + 300);
+      };
+
+      startLoop();
+    } catch {
+      samplePressActiveRef.current = false;
+      setIsPlayingSample(false);
+    }
   }, []);
 
   const handleSamplePressOut = useCallback(async () => {

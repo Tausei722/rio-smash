@@ -76,6 +76,40 @@ export async function deleteWord(id: number): Promise<void> {
   if (error) throw error;
 }
 
+// Supabase StorageのURLから署名付きURL（1時間有効）を取得
+export async function getSignedAudioUrl(audioPath: string): Promise<string> {
+  if (!audioPath.startsWith('http')) return audioPath;
+  const fileName = audioPath.split('/').pop()!;
+  const { data, error } = await supabase.storage
+    .from('audio')
+    .createSignedUrl(fileName, 3600);
+  if (error) throw error;
+  return data.signedUrl;
+}
+
+// 音声URLをローカルファイルにダウンロード（署名付きURL→直接URLの順で試みる）
+export async function downloadAudioToLocal(audioPath: string): Promise<string> {
+  if (!audioPath.startsWith('http')) return audioPath;
+
+  const dest = `${RNFS.DocumentDirectoryPath}/audio_tmp_${Date.now()}.m4a`;
+
+  // まず署名付きURLで試みる（プライベートバケット対応）
+  try {
+    const signedUrl = await getSignedAudioUrl(audioPath);
+    const result = await RNFS.downloadFile({ fromUrl: signedUrl, toFile: dest }).promise;
+    if (result.statusCode === 200 && result.bytesWritten > 0) {
+      return dest;
+    }
+  } catch {}
+
+  // フォールバック：直接URLでダウンロード（パブリックバケット対応）
+  const result = await RNFS.downloadFile({ fromUrl: audioPath, toFile: dest }).promise;
+  if (result.statusCode !== 200 || result.bytesWritten === 0) {
+    throw new Error('音声ファイルのダウンロードに失敗しました');
+  }
+  return dest;
+}
+
 // 音声ファイルをSupabase Storageにアップロードしてpublic URLを返す
 export async function uploadAudio(
   localPath: string,
