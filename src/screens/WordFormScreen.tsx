@@ -89,14 +89,25 @@ export function WordFormScreen({ editingWord, onBack, onSaved }: Props) {
       audioRecorderPlayer.removePlayBackListener();
       setIsPlaying(false);
     } else {
-      setIsPlaying(true);
-      await audioRecorderPlayer.startPlayer(audioPath);
-      audioRecorderPlayer.addPlayBackListener(e => {
-        if (e.currentPosition === e.duration) {
-          setIsPlaying(false);
-          audioRecorderPlayer.removePlayBackListener();
+      try {
+        setIsPlaying(true);
+        let playPath = audioPath;
+        if (audioPath.startsWith('http')) {
+          const dest = `${RNFS.DocumentDirectoryPath}/play_tmp_${Date.now()}.m4a`;
+          await RNFS.downloadFile({ fromUrl: audioPath, toFile: dest }).promise;
+          playPath = dest;
         }
-      });
+        await audioRecorderPlayer.startPlayer(playPath);
+        audioRecorderPlayer.addPlayBackListener(e => {
+          if (e.currentPosition === e.duration) {
+            setIsPlaying(false);
+            audioRecorderPlayer.removePlayBackListener();
+          }
+        });
+      } catch (e: any) {
+        setIsPlaying(false);
+        Alert.alert('再生エラー', e?.message ?? '音声を再生できませんでした');
+      }
     }
   };
 
