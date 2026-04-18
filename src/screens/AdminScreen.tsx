@@ -20,7 +20,7 @@ export function AdminScreen({ onBack, onAddWord, onEditWord }: Props) {
   const [words, setWords] = useState<WordRow[]>([]);
 
   const load = useCallback(async () => {
-    const rows = await fetchAllWords();
+    const rows = await fetchAllWords(true);
     setWords(rows);
   }, []);
 
