@@ -13,6 +13,7 @@ type Props = {
   onNext: () => void;
 };
 
+// このカードは #E8B526 単色テーマ
 export function ScoreReveal({ score, spokenText, expectedWord, japanese, detail, currentPlayer, onNext }: Props) {
   const scale = useRef(new Animated.Value(0.5)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -31,7 +32,9 @@ export function ScoreReveal({ score, spokenText, expectedWord, japanese, detail,
   return (
     <View style={styles.overlay}>
       <Animated.View style={[styles.card, { transform: [{ scale }], opacity }]}>
-        <Text style={styles.playerText}>プレイヤー {currentPlayer}</Text>
+        <View style={styles.playerBadge}>
+          <Text style={styles.playerText}>プレイヤー {currentPlayer}</Text>
+        </View>
 
         <Text style={[styles.score, { color }]}>{score}</Text>
         <Text style={styles.scoreUnit}>点</Text>
@@ -48,7 +51,7 @@ export function ScoreReveal({ score, spokenText, expectedWord, japanese, detail,
           </View>
           <View style={styles.compRow}>
             <Text style={styles.compLabel}>正解</Text>
-            <View style={{ alignItems: 'flex-end' }}>
+            <View style={{ alignItems: 'flex-end', flexShrink: 1 }}>
               <Text style={[styles.compValue, styles.correct]}>{expectedWord}</Text>
               {japanese ? <Text style={styles.compJapanese}>{japanese}</Text> : null}
             </View>
@@ -78,110 +81,119 @@ export function ScoreReveal({ score, spokenText, expectedWord, japanese, detail,
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.55)',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,
   },
   card: {
     backgroundColor: '#ffffff',
-    borderRadius: 24,
-    padding: 32,
-    marginHorizontal: 24,
+    borderRadius: 28,
+    borderWidth: 3,
+    borderColor: '#76432D',
+    padding: 28,
+    marginHorizontal: 20,
     alignItems: 'center',
-    width: '85%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 12,
+    width: '88%',
+  },
+  playerBadge: {
+    backgroundColor: '#E8B526',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 5,
+    marginBottom: 12,
   },
   playerText: {
-    fontSize: 14,
-    color: '#64748b',
-    marginBottom: 8,
+    fontSize: 13,
+    color: '#ffffff',
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
   score: {
-    fontSize: 80,
-    fontWeight: 'bold',
-    lineHeight: 90,
+    fontSize: 84,
+    fontWeight: '900',
+    lineHeight: 92,
   },
   scoreUnit: {
     fontSize: 18,
-    color: '#64748b',
+    color: '#9A8A7A',
     marginBottom: 4,
+    fontWeight: '600',
   },
   message: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '900',
     marginBottom: 20,
   },
   divider: {
     width: '100%',
-    height: 1,
-    backgroundColor: '#e2e8f0',
+    height: 2,
+    backgroundColor: 'rgba(232,181,38,0.25)',
     marginBottom: 16,
+    borderRadius: 1,
   },
   comparison: {
     width: '100%',
     gap: 8,
-    marginBottom: 24,
+    marginBottom: 20,
   },
   compRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    backgroundColor: '#f8fafc',
-    borderRadius: 10,
-    paddingHorizontal: 16,
+    backgroundColor: 'rgba(232,181,38,0.1)',
+    borderRadius: 12,
+    paddingHorizontal: 14,
     paddingVertical: 10,
     gap: 8,
   },
   compLabel: {
-    fontSize: 12,
-    color: '#94a3b8',
+    fontSize: 11,
+    color: '#9A8A7A',
+    fontWeight: '700',
     flexShrink: 0,
     paddingTop: 2,
   },
   compValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#334155',
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#2A1A0A',
     flexShrink: 1,
     textAlign: 'right',
   },
   correct: {
-    color: '#22c55e',
+    color: '#E8B526',
   },
   compJapanese: {
-    fontSize: 12,
-    color: '#94a3b8',
+    fontSize: 11,
+    color: '#9A8A7A',
     marginTop: 2,
+    textAlign: 'right',
   },
   detailButton: {
     width: '100%',
     paddingVertical: 11,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: 'center',
-    backgroundColor: '#f0fdfe',
-    borderWidth: 1.5,
-    borderColor: '#a5f3fc',
+    backgroundColor: 'rgba(232,181,38,0.12)',
+    borderWidth: 2,
+    borderColor: '#76432D',
     marginBottom: 10,
   },
   detailButtonText: {
-    color: '#0e7490',
+    color: '#E8B526',
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   nextButton: {
-    backgroundColor: '#06b6d4',
+    backgroundColor: '#E8B526',
     paddingVertical: 14,
-    paddingHorizontal: 48,
+    paddingHorizontal: 52,
     borderRadius: 32,
   },
   nextText: {
     color: '#ffffff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '900',
   },
 });

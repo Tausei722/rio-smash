@@ -13,75 +13,105 @@ type Props = {
 export function WordCard({ katakana, english, japanese, questionIndex, total, showEnglish = false }: Props) {
   return (
     <View style={styles.card}>
-      <Text style={styles.label}>WORD CARDS</Text>
+      <View style={styles.topRow}>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>WORD CARD</Text>
+        </View>
+        <Text style={styles.counter}>{questionIndex + 1} / {total}</Text>
+      </View>
+
       <Text style={styles.katakana}>{katakana}</Text>
+
       {showEnglish ? (
-        <>
+        <View style={styles.answerBox}>
           <Text style={styles.english}>{english}</Text>
           {japanese ? <Text style={styles.japanese}>{japanese}</Text> : null}
-        </>
+        </View>
       ) : (
-        <Text style={styles.englishHidden}>？？？</Text>
+        <View style={styles.hiddenBox}>
+          <Text style={styles.hiddenText}>？？？</Text>
+          <Text style={styles.hiddenHint}>発音してみよう！</Text>
+        </View>
       )}
-      <Text style={styles.counter}>{questionIndex + 1} / {total}</Text>
     </View>
   );
 }
 
+// このカードは #D75F1B 単色テーマ
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#06b6d4',
-    borderRadius: 24,
-    borderWidth: 4,
-    borderColor: '#0e7490',
-    paddingVertical: 40,
-    paddingHorizontal: 32,
-    alignItems: 'center',
-    marginHorizontal: 24,
-    marginBottom: 32,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 10,
+    backgroundColor: '#D75F1B',
+    borderRadius: 28,
+    paddingVertical: 36,
+    paddingHorizontal: 28,
+    marginHorizontal: 20,
+    marginBottom: 24,
   },
-  label: {
-    color: '#a5f3fc',
-    fontSize: 12,
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  badge: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  badgeText: {
+    color: 'rgba(255,255,255,0.9)',
+    fontSize: 10,
+    fontWeight: '800',
     letterSpacing: 2,
-    fontWeight: '600',
-    marginBottom: 16,
+  },
+  counter: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 13,
+    fontWeight: '700',
   },
   katakana: {
     color: '#ffffff',
-    fontSize: 42,
-    fontWeight: 'bold',
-    marginBottom: 12,
+    fontSize: 44,
+    fontWeight: '900',
     textAlign: 'center',
+    marginBottom: 20,
+  },
+  answerBox: {
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    alignItems: 'center',
   },
   english: {
-    color: '#cffafe',
-    fontSize: 22,
-    fontWeight: '500',
-    marginBottom: 20,
+    color: '#ffffff',
+    fontSize: 26,
+    fontWeight: '800',
     letterSpacing: 1,
   },
-  englishHidden: {
-    color: '#a5f3fc',
-    fontSize: 22,
-    fontWeight: '500',
-    marginBottom: 20,
-    letterSpacing: 4,
-  },
   japanese: {
-    color: '#a5f3fc',
-    fontSize: 16,
-    marginTop: -12,
-    marginBottom: 20,
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 15,
+    marginTop: 6,
     textAlign: 'center',
   },
-  counter: {
-    color: '#a5f3fc',
-    fontSize: 13,
+  hiddenBox: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  hiddenText: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 26,
+    fontWeight: '800',
+    letterSpacing: 6,
+  },
+  hiddenHint: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 12,
+    marginTop: 6,
   },
 });
