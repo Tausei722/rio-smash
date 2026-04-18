@@ -130,20 +130,25 @@ const styles = StyleSheet.create({
   compRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     backgroundColor: '#f8fafc',
     borderRadius: 10,
     paddingHorizontal: 16,
     paddingVertical: 10,
+    gap: 8,
   },
   compLabel: {
     fontSize: 12,
     color: '#94a3b8',
+    flexShrink: 0,
+    paddingTop: 2,
   },
   compValue: {
     fontSize: 16,
     fontWeight: '600',
     color: '#334155',
+    flexShrink: 1,
+    textAlign: 'right',
   },
   correct: {
     color: '#22c55e',
