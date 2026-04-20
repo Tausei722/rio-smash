@@ -20,7 +20,9 @@ export function WordCard({ katakana, english, japanese, questionIndex, total, sh
         <Text style={styles.counter}>{questionIndex + 1} / {total}</Text>
       </View>
 
-      <Text style={styles.katakana}>{katakana}</Text>
+      <View style={styles.katakanaWrapper}>
+        <Text style={styles.katakana}>{katakana}</Text>
+      </View>
 
       {showEnglish ? (
         <View style={styles.answerBox}>
@@ -40,8 +42,8 @@ export function WordCard({ katakana, english, japanese, questionIndex, total, sh
 // このカードは #D75F1B 単色テーマ
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#D75F1B',
-    borderRadius: 28,
+    backgroundColor: '#d7601b',
+    borderRadius: 10,
     paddingVertical: 36,
     paddingHorizontal: 28,
     marginHorizontal: 20,
@@ -70,12 +72,18 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
   },
+  katakanaWrapper: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
   katakana: {
-    color: '#ffffff',
     fontSize: 44,
     fontWeight: '900',
     textAlign: 'center',
-    marginBottom: 20,
+    color: '#ffffff',
+    textShadowColor: 'rgba(0,0,0,0.2)',
+    textShadowOffset: { width: 1.5, height: 1.5 },
+    textShadowRadius: 2,
   },
   answerBox: {
     backgroundColor: 'rgba(255,255,255,0.25)',

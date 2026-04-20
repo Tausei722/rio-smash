@@ -9,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
 } from 'react-native';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -636,8 +637,11 @@ function HomeScreen({
   return (
     <SafeAreaView style={styles.homeScreen}>
       <View style={styles.homeHeader}>
-        <View>
-          <Text style={styles.homeTitle}>英単語対戦</Text>
+        <View style={styles.homeTitleArea}>
+          <View style={styles.homeTitle}>
+            <Image style={styles.homeLogo} source={require('./assets/icon_1024.png')} />
+            <Text style={styles.homeTitleText}>英単語対戦</Text>
+          </View>
           <Text style={styles.homeSubtitle}>モードを選んでスタート</Text>
         </View>
         <TouchableOpacity style={styles.hamburgerButton} onPress={openMenu}>
@@ -849,10 +853,32 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 8,
   },
+  homeTitleArea: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 4,
+  },
   homeTitle: {
     fontSize: 30,
     fontWeight: '900',
     color: '#D75F1B',
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 4,
+  },
+  homeTitleText: {
+    fontSize: 30,
+    fontWeight: '900',
+    color: '#D75F1B',
+  },
+  homeLogo: {
+    width: 48,
+    height: 48,
+    marginBottom: 8,
+    marginRight: 8,
+    borderRadius: 999,
+    borderWidth: 2,
+    borderColor: '#D75F1B',
   },
   homeSubtitle: {
     fontSize: 13,
@@ -1002,7 +1028,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginBottom: 16,
     backgroundColor: '#E8B526',
-    borderRadius: 14,
+    borderRadius: 9,
     paddingVertical: 12,
     alignItems: 'center',
   },
@@ -1016,12 +1042,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginBottom: 16,
     backgroundColor: 'rgba(232,181,38,0.08)',
-    borderRadius: 18,
+    borderRadius: 9,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderWidth: 2.5,
+    borderWidth: 1,
     borderColor: '#76432D',
   },
   premiumCardLeft: {
@@ -1058,7 +1084,7 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     paddingHorizontal: 12,
     borderRadius: 12,
-    borderWidth: 2,
+    borderWidth: 1.5,
     borderColor: '#76432D',
   },
   restoreButtonText: {
@@ -1072,7 +1098,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.35)',
     zIndex: 5,
   },
   hamburgerButton: {
