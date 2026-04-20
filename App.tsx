@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  Animated,
   Alert,
   Platform,
   ScrollView,
@@ -8,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
 } from 'react-native';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -617,27 +619,59 @@ function HomeScreen({
   isAdmin: boolean;
   isPremium: boolean;
 }) {
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const slideAnim = React.useRef(new Animated.Value(240)).current;
+
+  const openMenu = () => {
+    setMenuOpen(true);
+    Animated.timing(slideAnim, { toValue: 0, duration: 250, useNativeDriver: true }).start();
+  };
+
+  const closeMenu = (cb?: () => void) => {
+    Animated.timing(slideAnim, { toValue: 240, duration: 200, useNativeDriver: true }).start(() => {
+      setMenuOpen(false);
+      cb?.();
+    });
+  };
+
   return (
     <SafeAreaView style={styles.homeScreen}>
       <View style={styles.homeHeader}>
-        <View>
-          <Text style={styles.homeTitle}>英単語対戦</Text>
+        <View style={styles.homeTitleArea}>
+          <View style={styles.homeTitle}>
+            <Image style={styles.homeLogo} source={require('./assets/icon_1024.png')} />
+            <Text style={styles.homeTitleText}>英単語対戦</Text>
+          </View>
           <Text style={styles.homeSubtitle}>モードを選んでスタート</Text>
         </View>
-        <View style={styles.homeHeaderRight}>
-          {isAdmin && (
-            <TouchableOpacity style={styles.adminHint} onPress={onAdmin}>
-              <Text style={styles.adminHintText}>⚙️</Text>
-            </TouchableOpacity>
-          )}
-            <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
-            <Text style={styles.logoutButtonText}>ログアウト</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.deleteAccountButton} onPress={onDeleteAccount}>
-            <Text style={styles.deleteAccountButtonText}>アカウント削除</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.hamburgerButton} onPress={openMenu}>
+          <Text style={styles.hamburgerIcon}>☰</Text>
+        </TouchableOpacity>
       </View>
+
+      {menuOpen && (
+        <>
+          <TouchableOpacity style={styles.menuOverlay} onPress={() => closeMenu()} activeOpacity={1} />
+          <Animated.View style={[styles.sideMenu, { transform: [{ translateX: slideAnim }] }]}>
+            <View style={styles.sideMenuHeader}>
+              <TouchableOpacity onPress={() => closeMenu()} style={styles.sideMenuClose}>
+                <Text style={styles.sideMenuCloseText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            {isAdmin && (
+              <TouchableOpacity style={styles.menuItem} onPress={() => closeMenu(onAdmin)}>
+                <Text style={styles.menuItemText}>⚙️ 管理</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={styles.menuItem} onPress={() => closeMenu(onLogout)}>
+              <Text style={styles.menuItemText}>ログアウト</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.menuItem, styles.menuItemDanger]} onPress={() => closeMenu(onDeleteAccount)}>
+              <Text style={styles.menuItemTextDanger}>アカウント削除</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </>
+      )}
 
       <View style={styles.modeList}>
         {/* 2人対戦モード */}
@@ -730,7 +764,7 @@ function HomeScreen({
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#ecfeff',
+    backgroundColor: '#FFFBF0',
     paddingTop: Platform.OS === 'android' ? 8 : 0,
   },
   gameHeader: {
@@ -743,19 +777,19 @@ const styles = StyleSheet.create({
   quitButton: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: '#fee2e2',
-    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
   },
   quitButtonText: {
-    color: '#ef4444',
+    color: '#D75F1B',
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   turnText: {
     textAlign: 'center',
     fontSize: 16,
-    fontWeight: '600',
-    color: '#0e7490',
+    fontWeight: '800',
+    color: '#D75F1B',
     paddingVertical: 12,
   },
   gameScroll: {
@@ -767,45 +801,46 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
   },
   liveTextBox: {
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    backgroundColor: 'rgba(215,95,27,0.08)',
+    borderRadius: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
     marginBottom: 16,
     alignItems: 'center',
-    minWidth: 200,
+    minWidth: 220,
   },
   liveTextLabel: {
-    fontSize: 11,
-    color: '#06b6d4',
-    fontWeight: '600',
+    fontSize: 10,
+    color: '#D75F1B',
+    fontWeight: '800',
     marginBottom: 4,
+    letterSpacing: 1,
   },
   liveText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#0f172a',
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#D75F1B',
     textAlign: 'center',
   },
   sampleButton: {
     alignSelf: 'center',
-    backgroundColor: '#e0f2fe',
+    backgroundColor: 'rgba(215,95,27,0.08)',
     paddingVertical: 10,
     paddingHorizontal: 24,
     borderRadius: 20,
     marginBottom: 12,
   },
   sampleButtonPlaying: {
-    backgroundColor: '#fef3c7',
+    backgroundColor: '#D75F1B',
   },
   sampleButtonText: {
-    color: '#0284c7',
-    fontSize: 15,
-    fontWeight: '600',
+    color: '#D75F1B',
+    fontSize: 14,
+    fontWeight: '700',
   },
   homeScreen: {
     flex: 1,
-    backgroundColor: '#ecfeff',
+    backgroundColor: '#FFFBF0',
   },
   homeCenter: {
     flex: 1,
@@ -818,16 +853,39 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 8,
   },
+  homeTitleArea: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 4,
+  },
   homeTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#0e7490',
+    fontSize: 30,
+    fontWeight: '900',
+    color: '#D75F1B',
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 4,
+  },
+  homeTitleText: {
+    fontSize: 30,
+    fontWeight: '900',
+    color: '#D75F1B',
+  },
+  homeLogo: {
+    width: 48,
+    height: 48,
+    marginBottom: 8,
+    marginRight: 8,
+    borderRadius: 999,
+    borderWidth: 2,
+    borderColor: '#D75F1B',
   },
   homeSubtitle: {
     fontSize: 13,
-    color: '#94a3b8',
+    color: '#9A8A7A',
     marginTop: 2,
     marginBottom: 0,
+    fontWeight: '600',
   },
   ruleBox: {
     backgroundColor: '#ffffff',
@@ -836,31 +894,21 @@ const styles = StyleSheet.create({
     width: '100%',
     gap: 10,
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
   },
   ruleItem: {
     fontSize: 15,
-    color: '#334155',
+    color: '#3A2A1A',
   },
   wordCountText: {
-    color: '#64748b',
+    color: '#6A5A4A',
     fontSize: 13,
     marginBottom: 16,
   },
   startButton: {
-    backgroundColor: '#06b6d4',
+    backgroundColor: '#D75F1B',
     paddingVertical: 16,
     paddingHorizontal: 72,
     borderRadius: 32,
-    shadowColor: '#06b6d4',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 6,
   },
   startButtonDisabled: {
     opacity: 0.5,
@@ -868,14 +916,14 @@ const styles = StyleSheet.create({
   startButtonText: {
     color: '#ffffff',
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: '900',
   },
   adminHint: {
     marginTop: 24,
     padding: 8,
   },
   adminHintText: {
-    color: '#cbd5e1',
+    color: '#C0B0A0',
     fontSize: 13,
   },
   logoutButton: {
@@ -883,8 +931,9 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   logoutButtonText: {
-    color: '#94a3b8',
+    color: '#9A8A7A',
     fontSize: 13,
+    fontWeight: '600',
   },
   homeHeader: {
     flexDirection: 'row',
@@ -907,13 +956,10 @@ const styles = StyleSheet.create({
   },
   modeCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 20,
+    borderRadius: 22,
+    borderWidth: 1.5,
+    borderColor: '#D75F1B',
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
   },
   modeCardDisabled: {
     opacity: 0.5,
@@ -932,27 +978,29 @@ const styles = StyleSheet.create({
   },
   modeTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#0e7490',
+    fontWeight: '900',
+    color: '#D75F1B',
   },
   modeDesc: {
     fontSize: 13,
-    color: '#64748b',
+    color: '#6A5A4A',
     lineHeight: 18,
+    fontWeight: '500',
   },
   modeWordCount: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: '#D75F1B',
     marginTop: 4,
+    fontWeight: '700',
   },
   modeArrow: {
     fontSize: 28,
-    color: '#cbd5e1',
-    fontWeight: '300',
+    color: '#D75F1B',
+    fontWeight: '900',
   },
   modeBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: '#06b6d4',
+    backgroundColor: '#D75F1B',
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -972,33 +1020,35 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   deleteAccountButtonText: {
-    color: '#ef4444',
+    color: '#9A8A7A',
     fontSize: 12,
+    fontWeight: '600',
   },
   premiumBanner: {
     marginHorizontal: 20,
     marginBottom: 16,
-    backgroundColor: '#fef9c3',
-    borderRadius: 12,
-    paddingVertical: 10,
+    backgroundColor: '#E8B526',
+    borderRadius: 9,
+    paddingVertical: 12,
     alignItems: 'center',
   },
   premiumBannerText: {
-    color: '#854d0e',
-    fontWeight: 'bold',
-    fontSize: 14,
+    color: '#ffffff',
+    fontWeight: '900',
+    fontSize: 15,
+    letterSpacing: 0.5,
   },
   premiumCard: {
     marginHorizontal: 20,
     marginBottom: 16,
-    backgroundColor: '#fff7ed',
-    borderRadius: 16,
+    backgroundColor: 'rgba(232,181,38,0.08)',
+    borderRadius: 9,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: '#fed7aa',
+    borderColor: '#76432D',
   },
   premiumCardLeft: {
     flex: 1,
@@ -1006,37 +1056,105 @@ const styles = StyleSheet.create({
   },
   premiumCardTitle: {
     fontSize: 15,
-    fontWeight: 'bold',
-    color: '#c2410c',
+    fontWeight: '900',
+    color: '#E8B526',
   },
   premiumCardDesc: {
     fontSize: 12,
-    color: '#9a3412',
+    color: '#6A5A4A',
+    fontWeight: '500',
   },
   premiumCardButtons: {
     flexDirection: 'row',
     gap: 8,
   },
   purchaseButton: {
-    backgroundColor: '#f97316',
-    paddingVertical: 8,
+    backgroundColor: '#E8B526',
+    paddingVertical: 9,
     paddingHorizontal: 16,
-    borderRadius: 10,
+    borderRadius: 12,
   },
   purchaseButtonText: {
     color: '#ffffff',
-    fontWeight: 'bold',
+    fontWeight: '900',
     fontSize: 13,
   },
   restoreButton: {
-    backgroundColor: '#fed7aa',
-    paddingVertical: 8,
+    backgroundColor: 'rgba(232,181,38,0.12)',
+    paddingVertical: 9,
     paddingHorizontal: 12,
-    borderRadius: 10,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#76432D',
   },
   restoreButtonText: {
-    color: '#c2410c',
-    fontWeight: '600',
+    color: '#E8B526',
+    fontWeight: '800',
     fontSize: 13,
+  },
+  menuOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 5,
+  },
+  hamburgerButton: {
+    padding: 8,
+    marginTop: 16,
+  },
+  hamburgerIcon: {
+    fontSize: 24,
+    color: '#D75F1B',
+    fontWeight: '900',
+  },
+  sideMenu: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    width: 240,
+    backgroundColor: '#ffffff',
+    zIndex: 10,
+    paddingTop: 16,
+  },
+  sideMenuHeader: {
+    alignItems: 'flex-end',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,0.08)',
+    marginBottom: 8,
+  },
+  sideMenuClose: {
+    padding: 8,
+  },
+  sideMenuCloseText: {
+    fontSize: 18,
+    color: '#9A8A7A',
+    fontWeight: '700',
+  },
+  menuItem: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+  },
+  menuItemText: {
+    alignItems: 'center',
+    fontSize: 14,
+    color: '#3A2A1A',
+    fontWeight: '600',
+  },
+  menuItemDanger: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0,0,0,0.08)',
+  },
+  menuItemTextDanger: {
+    fontSize: 14,
+    color: '#D75F1B',
+    fontWeight: '600',
   },
 });
