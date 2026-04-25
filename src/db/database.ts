@@ -3,6 +3,9 @@ import { WORDS } from '../data/words';
 import RNFS from 'react-native-fs';
 import { decode } from 'base64-arraybuffer';
 
+export const CATEGORIES = ['yesterday', 'human nature', 'お土産', '挨拶', '試着', '写真', '道教え', '道迷い'] as const;
+export type Category = typeof CATEGORIES[number];
+
 export type WordRow = {
   id: number;
   katakana: string;
@@ -11,6 +14,7 @@ export type WordRow = {
   detail: string | null;
   audio_path: string | null;
   is_premium: boolean;
+  category: string | null;
   created_at?: string;
 };
 
@@ -27,11 +31,14 @@ export async function initDB(): Promise<void> {
   }
 }
 
-// 全単語取得（isPremium=trueならプレミアム含む、falseならノーマルのみ）
-export async function fetchAllWords(isPremium: boolean = false): Promise<WordRow[]> {
+// 全単語取得（isPremium=trueならプレミアム含む、category指定時はそのカテゴリのみ）
+export async function fetchAllWords(isPremium: boolean = false, category?: string): Promise<WordRow[]> {
   let query = supabase.from('words').select('*').order('id', { ascending: false });
   if (!isPremium) {
     query = query.eq('is_premium', false);
+  }
+  if (category) {
+    query = query.eq('category', category);
   }
   const { data, error } = await query;
   if (error) throw error;
@@ -46,10 +53,11 @@ export async function insertWord(
   detail?: string,
   audioPath?: string,
   isPremium?: boolean,
+  category?: string,
 ): Promise<void> {
   const { error } = await supabase
     .from('words')
-    .insert({ katakana, english, japanese: japanese ?? null, detail: detail ?? null, audio_path: audioPath ?? null, is_premium: isPremium ?? false });
+    .insert({ katakana, english, japanese: japanese ?? null, detail: detail ?? null, audio_path: audioPath ?? null, is_premium: isPremium ?? false, category: category ?? null });
   if (error) throw error;
 }
 
@@ -62,10 +70,11 @@ export async function updateWord(
   detail?: string | null,
   audioPath?: string | null,
   isPremium?: boolean,
+  category?: string | null,
 ): Promise<void> {
   const { error } = await supabase
     .from('words')
-    .update({ katakana, english, japanese: japanese ?? null, detail: detail ?? null, audio_path: audioPath ?? null, is_premium: isPremium ?? false })
+    .update({ katakana, english, japanese: japanese ?? null, detail: detail ?? null, audio_path: audioPath ?? null, is_premium: isPremium ?? false, category: category ?? null })
     .eq('id', id);
   if (error) throw error;
 }

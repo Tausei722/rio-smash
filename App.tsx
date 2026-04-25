@@ -18,7 +18,7 @@ import Voice, {
   SpeechResultsEvent,
 } from '@react-native-voice/voice';
 
-import { fetchAllWords, initDB, downloadAudioToLocal, WordRow } from './src/db/database';
+import { fetchAllWords, initDB, downloadAudioToLocal, WordRow, CATEGORIES } from './src/db/database';
 import { supabase } from './src/db/supabase';
 import {
   setupIAP,
@@ -386,8 +386,7 @@ function GameApp() {
     );
   };
 
-  const startGame = () => {
-    // 録音中だった場合も確実にリセット
+  const startGame = (category?: string) => {
     if (isRecordingRef.current) {
       Voice.stop().catch(() => {});
     }
@@ -395,7 +394,12 @@ function GameApp() {
     isProcessingRef.current = false;
     isManualStopRef.current = false;
     latestSpokenRef.current = '';
-    const words = shuffleArray(allWords).slice(0, Math.min(10, allWords.length));
+    const filtered = category ? allWords.filter(w => w.category === category) : allWords;
+    if (filtered.length === 0) {
+      Alert.alert('単語がありません', 'このカテゴリにはまだ単語が登録されていません。');
+      return;
+    }
+    const words = shuffleArray(filtered).slice(0, Math.min(10, filtered.length));
     setGameWords(words);
     setQuestionIndex(0);
     setCurrentPlayer(1);
@@ -606,7 +610,7 @@ function HomeScreen({
   isAdmin,
   isPremium,
 }: {
-  onStartBattle: () => void;
+  onStartBattle: (category?: string) => void;
   onStartAI: () => void;
   onStartFlash: () => void;
   onAdmin: () => void;
@@ -620,6 +624,7 @@ function HomeScreen({
   isPremium: boolean;
 }) {
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [selectedCategory, setSelectedCategory] = React.useState<string | undefined>(undefined);
   const slideAnim = React.useRef(new Animated.Value(240)).current;
 
   const openMenu = () => {
@@ -677,7 +682,7 @@ function HomeScreen({
         {/* 2人対戦モード */}
         <TouchableOpacity
           style={[styles.modeCard, (!dbReady || wordCount === 0) && styles.modeCardDisabled]}
-          onPress={onStartBattle}
+          onPress={() => onStartBattle(selectedCategory)}
           disabled={!dbReady || wordCount === 0}
           activeOpacity={0.85}
         >
@@ -736,8 +741,30 @@ function HomeScreen({
         </TouchableOpacity> */}
       </View>
 
+      {/* カテゴリ絞り込み */}
+      <View style={styles.categorySection}>
+        <Text style={styles.categorySectionLabel}>カテゴリで絞り込む</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScrollContent}>
+          <TouchableOpacity
+            style={[styles.homeCategoryChip, selectedCategory === undefined && styles.homeCategoryChipSelected]}
+            onPress={() => setSelectedCategory(undefined)}
+          >
+            <Text style={[styles.homeCategoryChipText, selectedCategory === undefined && styles.homeCategoryChipTextSelected]}>すべて</Text>
+          </TouchableOpacity>
+          {CATEGORIES.map(cat => (
+            <TouchableOpacity
+              key={cat}
+              style={[styles.homeCategoryChip, selectedCategory === cat && styles.homeCategoryChipSelected]}
+              onPress={() => setSelectedCategory(selectedCategory === cat ? undefined : cat)}
+            >
+              <Text style={[styles.homeCategoryChipText, selectedCategory === cat && styles.homeCategoryChipTextSelected]}>{cat}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
       {/* プレミアムバナー */}
-      {isPremium ? (
+      {/* {isPremium ? (
         <View style={styles.premiumBanner}>
           <Text style={styles.premiumBannerText}>⭐ プレミアム会員</Text>
         </View>
@@ -756,7 +783,7 @@ function HomeScreen({
             </TouchableOpacity>
           </View>
         </View>
-      )}
+      )} */}
     </SafeAreaView>
   );
 }
@@ -1156,5 +1183,40 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#D75F1B',
     fontWeight: '600',
+  },
+  categorySection: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+  categorySectionLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#9A8A7A',
+    marginBottom: 8,
+  },
+  categoryScrollContent: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingRight: 8,
+  },
+  homeCategoryChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 20,
+    backgroundColor: '#FFF3EA',
+    borderWidth: 1.5,
+    borderColor: '#F0D0B8',
+  },
+  homeCategoryChipSelected: {
+    backgroundColor: '#D75F1B',
+    borderColor: '#D75F1B',
+  },
+  homeCategoryChipText: {
+    fontSize: 13,
+    color: '#D75F1B',
+    fontWeight: '700',
+  },
+  homeCategoryChipTextSelected: {
+    color: '#ffffff',
   },
 });

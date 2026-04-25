@@ -1,6 +1,6 @@
 import {
   initConnection,
-  getProducts,
+  fetchProducts,
   requestPurchase,
   finishTransaction,
   getAvailablePurchases,
@@ -11,22 +11,25 @@ import {
 } from 'react-native-iap';
 import { supabase } from '../db/supabase';
 
-export const PREMIUM_PRODUCT_ID = 'com.rioshikiego.eigotaisen.premium';
+export const PREMIUM_PRODUCT_ID = 'com.rioshikiego.eigotaisen.premium.monthly';
 
 // IAP接続を初期化
 export async function setupIAP(): Promise<void> {
   await initConnection();
 }
 
-// 商品情報を取得
+// サブスク商品情報を取得
 export async function fetchPremiumProduct() {
-  const products = await getProducts({ skus: [PREMIUM_PRODUCT_ID] });
-  return products[0] ?? null;
+  const subs = await fetchProducts({ skus: [PREMIUM_PRODUCT_ID], type: 'subs' });
+  return subs?.[0] ?? null;
 }
 
-// 購入を実行してSupabaseのis_premiumをtrueに更新
+// サブスク購入を実行
 export async function purchasePremium(): Promise<void> {
-  await requestPurchase({ sku: PREMIUM_PRODUCT_ID });
+  await requestPurchase({
+    request: { apple: { sku: PREMIUM_PRODUCT_ID } },
+    type: 'subs',
+  });
 }
 
 // 購入完了後にSupabaseを更新
@@ -42,7 +45,7 @@ export async function activatePremium(purchase: ProductPurchase): Promise<void> 
   await finishTransaction({ purchase });
 }
 
-// 過去の購入を復元
+// 過去のサブスクを復元
 export async function restorePremium(): Promise<boolean> {
   const purchases = await getAvailablePurchases();
   const hasPremium = purchases.some(p => p.productId === PREMIUM_PRODUCT_ID);
@@ -60,7 +63,7 @@ export async function restorePremium(): Promise<boolean> {
   return hasPremium;
 }
 
-// 購入リスナーのセットアップ（コールバック形式）
+// 購入リスナーのセットアップ
 export function setupPurchaseListeners(
   onSuccess: (purchase: ProductPurchase) => void,
   onError: (error: PurchaseError) => void,

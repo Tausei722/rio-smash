@@ -15,7 +15,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import RNFS from 'react-native-fs';
-import { insertWord, updateWord, uploadAudio, downloadAudioToLocal, WordRow } from '../db/database';
+import { insertWord, updateWord, uploadAudio, downloadAudioToLocal, WordRow, CATEGORIES } from '../db/database';
 import { AudioTrimmer } from '../components/AudioTrimmer';
 
 const audioRecorderPlayer = AudioRecorderPlayer;
@@ -32,6 +32,7 @@ export function WordFormScreen({ editingWord, onBack, onSaved }: Props) {
   const [japanese, setJapanese] = useState(editingWord?.japanese ?? '');
   const [detail, setDetail] = useState(editingWord?.detail ?? '');
   const [isPremium, setIsPremium] = useState(editingWord?.is_premium ?? false);
+  const [category, setCategory] = useState<string | null>(editingWord?.category ?? null);
   const [audioPath, setAudioPath] = useState<string | null>(
     editingWord?.audio_path ?? null,
   );
@@ -122,9 +123,9 @@ export function WordFormScreen({ editingWord, onBack, onSaved }: Props) {
       }
 
       if (isEdit && editingWord) {
-        await updateWord(editingWord.id, katakana.trim(), english.trim(), japanese.trim() || null, detail.trim() || null, finalAudioPath, isPremium);
+        await updateWord(editingWord.id, katakana.trim(), english.trim(), japanese.trim() || null, detail.trim() || null, finalAudioPath, isPremium, category);
       } else {
-        await insertWord(katakana.trim(), english.trim(), japanese.trim() || undefined, detail.trim() || undefined, finalAudioPath ?? undefined, isPremium);
+        await insertWord(katakana.trim(), english.trim(), japanese.trim() || undefined, detail.trim() || undefined, finalAudioPath ?? undefined, isPremium, category ?? undefined);
       }
       onSaved();
     } catch (e: any) {
@@ -211,6 +212,22 @@ export function WordFormScreen({ editingWord, onBack, onSaved }: Props) {
           />
         </View>
 
+        {/* カテゴリ選択 */}
+        <Text style={styles.label}>カテゴリ（任意）</Text>
+        <View style={styles.categoryGrid}>
+          {CATEGORIES.map(cat => (
+            <TouchableOpacity
+              key={cat}
+              style={[styles.categoryChip, category === cat && styles.categoryChipSelected]}
+              onPress={() => setCategory(category === cat ? null : cat)}
+            >
+              <Text style={[styles.categoryChipText, category === cat && styles.categoryChipTextSelected]}>
+                {cat}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
         {/* 音声録音セクション */}
         <Text style={styles.label}>参考音声（正しい発音を録音）</Text>
         <View style={styles.audioSection}>
@@ -246,8 +263,7 @@ export function WordFormScreen({ editingWord, onBack, onSaved }: Props) {
                   // Supabase上の音声をローカルにダウンロードしてからトリム
                   setIsDownloading(true);
                   try {
-                    const dest = `${RNFS.DocumentDirectoryPath}/trim_tmp_${Date.now()}.m4a`;
-                    await RNFS.downloadFile({ fromUrl: audioPath, toFile: dest }).promise;
+                    const dest = await downloadAudioToLocal(audioPath);
                     setLocalAudioPath(dest);
                     setShowTrimmer(true);
                   } catch (e: any) {
@@ -444,5 +460,31 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  categoryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 16,
+  },
+  categoryChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#f1f5f9',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  categoryChipSelected: {
+    backgroundColor: '#D75F1B',
+    borderColor: '#D75F1B',
+  },
+  categoryChipText: {
+    fontSize: 13,
+    color: '#475569',
+    fontWeight: '600',
+  },
+  categoryChipTextSelected: {
+    color: '#ffffff',
   },
 });
