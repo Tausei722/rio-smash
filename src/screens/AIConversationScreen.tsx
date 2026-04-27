@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Tts from 'react-native-tts';
-import Voice, { SpeechPartialResultsEvent, SpeechResultsEvent } from '@react-native-voice/voice';
+import Voice, { SpeechResultsEvent } from '@react-native-voice/voice';
 import { ANTHROPIC_API_KEY } from '../config/api';
 
 type Message = {
@@ -73,7 +73,7 @@ export function AIConversationScreen({ onBack }: Props) {
     isMountedRef.current = true;
     Tts.setDefaultLanguage('en-US');
 
-    const finishListener = Tts.addEventListener('tts-finish', () => {
+    Tts.addEventListener('tts-finish', () => {
       if (isMountedRef.current) setPlayingId(null);
     });
 
@@ -84,7 +84,7 @@ export function AIConversationScreen({ onBack }: Props) {
     );
 
     // Voice ハンドラ
-    Voice.onSpeechPartialResults = (e: SpeechPartialResultsEvent) => {
+    Voice.onSpeechPartialResults = (e: SpeechResultsEvent) => {
       if (!isMountedRef.current) return;
       const text = e.value?.[0] ?? '';
       setLiveWords(text.trim() ? text.trim().split(/\s+/) : []);
@@ -116,7 +116,7 @@ export function AIConversationScreen({ onBack }: Props) {
       clearTimeout(timer);
       // TTS 停止
       try { Tts.stop(); } catch {}
-      finishListener.remove?.();
+      Tts.removeAllListeners('tts-finish');
       // Voice 停止してから破棄
       clearSilenceTimer();
       const cleanup = async () => {

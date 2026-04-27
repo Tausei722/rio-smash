@@ -707,7 +707,7 @@ function HomeScreen({
         </>
       )}
 
-      <View style={styles.modeList}>
+      <ScrollView style={styles.modeList} contentContainerStyle={styles.modeListContent} showsVerticalScrollIndicator={false}>
         <View style={styles.modeSection}>
           {/* 2人対戦モード */}
           <TouchableOpacity
@@ -762,7 +762,7 @@ function HomeScreen({
         </View>
 
         {/* AI英語モード */}
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={styles.modeCard}
           onPress={onStartAI}
           activeOpacity={0.85}
@@ -780,10 +780,10 @@ function HomeScreen({
             </View>
             <Text style={styles.modeArrow}>›</Text>
           </View>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
 
         {/* フラッシュ英単語モード */}
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={styles.modeCard}
           onPress={onStartFlash}
           activeOpacity={0.85}
@@ -798,7 +798,7 @@ function HomeScreen({
             </View>
             <Text style={styles.modeArrow}>›</Text>
           </View>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
 
         {/* カテゴリ選択モーダル */}
         <Modal visible={showCategoryPicker} transparent animationType="slide">
@@ -829,9 +829,10 @@ function HomeScreen({
             </ScrollView>
           </View>
         </Modal>
-      </View>
 
-      {/* プレミアムバナー */}
+      </ScrollView>
+
+      {/* プレミアムバナー（下固定） */}
       {isPremium ? (
         <View style={styles.premiumBanner}>
           <Text style={styles.premiumBannerText}>⭐ プレミアム会員</Text>
@@ -1045,8 +1046,11 @@ const styles = StyleSheet.create({
   },
   modeList: {
     flex: 1,
+  },
+  modeListContent: {
     paddingHorizontal: 20,
     paddingTop: 8,
+    paddingBottom: 32,
     gap: 16,
   },
   modeSection: {
@@ -1127,9 +1131,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   premiumBanner: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     marginHorizontal: 20,
     marginBottom: 16,
-    backgroundColor: '#E8B526',
     borderRadius: 9,
     paddingVertical: 12,
     alignItems: 'center',
@@ -1141,9 +1148,13 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   premiumCard: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     marginHorizontal: 20,
     marginBottom: 16,
-    backgroundColor: 'rgba(232,181,38,0.08)',
+    backgroundColor: '#FFF0D9',
     borderRadius: 9,
     padding: 16,
     flexDirection: 'row',

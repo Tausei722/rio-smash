@@ -8,10 +8,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Voice, {
-  SpeechPartialResultsEvent,
-  SpeechResultsEvent,
-} from '@react-native-voice/voice';
+import Voice, { SpeechResultsEvent } from '@react-native-voice/voice';
 
 type Props = {
   onBack: () => void;
@@ -49,7 +46,7 @@ export function FlashWordScreen({ onBack }: Props) {
   useEffect(() => {
     isMountedRef.current = true;
 
-    Voice.onSpeechPartialResults = (e: SpeechPartialResultsEvent) => {
+    Voice.onSpeechPartialResults = (e: SpeechResultsEvent) => {
       if (!isMountedRef.current) return;
       const text = e.value?.[0] ?? '';
       setLiveWords(text.trim() ? text.trim().split(/\s+/) : []);
