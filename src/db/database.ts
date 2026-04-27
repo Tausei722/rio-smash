@@ -3,7 +3,7 @@ import { WORDS } from '../data/words';
 import RNFS from 'react-native-fs';
 import { decode } from 'base64-arraybuffer';
 
-export const CATEGORIES = ['yesterday', 'human nature', 'お土産', '挨拶', '試着', '写真', '道教え', '道迷い'] as const;
+export const CATEGORIES = ['yesterday', 'human nature', 'お土産', '挨拶', '試着', '写真', '道教え', '道迷い', '6歳以上', '6歳以下'] as const;
 export type Category = typeof CATEGORIES[number];
 
 export type WordRow = {

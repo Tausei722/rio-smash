@@ -49,6 +49,19 @@ function shuffleArray<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
 }
 
+const CATEGORY_EMOJI: Record<string, string> = {
+  'yesterday':    '📅',
+  'human nature': '🧠',
+  'お土産':        '🎁',
+  '挨拶':          '👋',
+  '試着':          '👗',
+  '写真':          '📷',
+  '道教え':        '🗺️',
+  '道迷い':        '🧭',
+  '6歳以上':       '🔢',
+  '6歳以下':       '👶',
+};
+
 export default function App() {
   return (
     <SafeAreaProvider>
@@ -164,6 +177,12 @@ function GameApp() {
       cleanupPurchase();
     };
   }, []);
+
+  useEffect(() => {
+    if (screen === 'home') {
+      fetchAllWords(isPremium).then(rows => setAllWords(rows)).catch(() => {});
+    }
+  }, [screen]);
 
   const currentWord = gameWords[questionIndex];
   const isLastQuestion = questionIndex >= gameWords.length - 1;
@@ -386,7 +405,7 @@ function GameApp() {
     );
   };
 
-  const startGame = (category?: string) => {
+  const startGame = (categories?: string[]) => {
     if (isRecordingRef.current) {
       Voice.stop().catch(() => {});
     }
@@ -394,7 +413,9 @@ function GameApp() {
     isProcessingRef.current = false;
     isManualStopRef.current = false;
     latestSpokenRef.current = '';
-    const filtered = category ? allWords.filter(w => w.category === category) : allWords;
+    const filtered = categories && categories.length > 0
+      ? allWords.filter(w => w.category !== null && categories.includes(w.category))
+      : allWords;
     if (filtered.length === 0) {
       Alert.alert('単語がありません', 'このカテゴリにはまだ単語が登録されていません。');
       return;
@@ -610,7 +631,7 @@ function HomeScreen({
   isAdmin,
   isPremium,
 }: {
-  onStartBattle: (category?: string) => void;
+  onStartBattle: (categories?: string[]) => void;
   onStartAI: () => void;
   onStartFlash: () => void;
   onAdmin: () => void;
@@ -624,8 +645,14 @@ function HomeScreen({
   isPremium: boolean;
 }) {
   const [menuOpen, setMenuOpen] = React.useState(false);
-  const [selectedCategory, setSelectedCategory] = React.useState<string | undefined>(undefined);
+  const [selectedCategories, setSelectedCategories] = React.useState<string[]>([]);
   const slideAnim = React.useRef(new Animated.Value(240)).current;
+
+  const toggleCategory = (cat: string) => {
+    setSelectedCategories(prev =>
+      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
+    );
+  };
 
   const openMenu = () => {
     setMenuOpen(true);
@@ -682,7 +709,7 @@ function HomeScreen({
         {/* 2人対戦モード */}
         <TouchableOpacity
           style={[styles.modeCard, (!dbReady || wordCount === 0) && styles.modeCardDisabled]}
-          onPress={() => onStartBattle(selectedCategory)}
+          onPress={() => onStartBattle(undefined)}
           disabled={!dbReady || wordCount === 0}
           activeOpacity={0.85}
         >
@@ -739,28 +766,39 @@ function HomeScreen({
             <Text style={styles.modeArrow}>›</Text>
           </View>
         </TouchableOpacity> */}
-      </View>
 
-      {/* カテゴリ絞り込み */}
-      <View style={styles.categorySection}>
-        <Text style={styles.categorySectionLabel}>カテゴリで絞り込む</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScrollContent}>
+        {/* カテゴリ選択して対戦 */}
+        <View style={styles.categorySelectCard}>
+          <Text style={styles.categorySelectTitle}>カテゴリを選んで対戦</Text>
+          <Text style={styles.categorySelectHint}>複数選択できます</Text>
+          <View style={styles.categoryChipGrid}>
+            {CATEGORIES.map(cat => {
+              const selected = selectedCategories.includes(cat);
+              return (
+                <TouchableOpacity
+                  key={cat}
+                  style={[styles.categoryChip, selected && styles.categoryChipOn]}
+                  onPress={() => toggleCategory(cat)}
+                  activeOpacity={0.75}
+                >
+                  <Text style={[styles.categoryChipText, selected && styles.categoryChipTextOn]}>
+                    {selected ? '☑ ' : '☐ '}{CATEGORY_EMOJI[cat]} {cat}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
           <TouchableOpacity
-            style={[styles.homeCategoryChip, selectedCategory === undefined && styles.homeCategoryChipSelected]}
-            onPress={() => setSelectedCategory(undefined)}
+            style={[styles.categoryStartBtn, (selectedCategories.length === 0 || !dbReady) && styles.categoryStartBtnDisabled]}
+            disabled={selectedCategories.length === 0 || !dbReady}
+            onPress={() => onStartBattle(selectedCategories)}
+            activeOpacity={0.85}
           >
-            <Text style={[styles.homeCategoryChipText, selectedCategory === undefined && styles.homeCategoryChipTextSelected]}>すべて</Text>
+            <Text style={styles.categoryStartBtnText}>
+              {selectedCategories.length === 0 ? 'カテゴリを選んでください' : `選択中 ${selectedCategories.length}件 ▶ 対戦スタート`}
+            </Text>
           </TouchableOpacity>
-          {CATEGORIES.map(cat => (
-            <TouchableOpacity
-              key={cat}
-              style={[styles.homeCategoryChip, selectedCategory === cat && styles.homeCategoryChipSelected]}
-              onPress={() => setSelectedCategory(selectedCategory === cat ? undefined : cat)}
-            >
-              <Text style={[styles.homeCategoryChipText, selectedCategory === cat && styles.homeCategoryChipTextSelected]}>{cat}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        </View>
       </View>
 
       {/* プレミアムバナー */}
@@ -1218,5 +1256,66 @@ const styles = StyleSheet.create({
   },
   homeCategoryChipTextSelected: {
     color: '#ffffff',
+  },
+  categorySelectCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: '#F0D0B8',
+    padding: 16,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    gap: 8,
+  },
+  categorySelectTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#3A2A1A',
+  },
+  categorySelectHint: {
+    fontSize: 12,
+    color: '#9A8A7A',
+    marginBottom: 4,
+  },
+  categoryChipGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 8,
+  },
+  categoryChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 20,
+    backgroundColor: '#FFF3EA',
+    borderWidth: 1.5,
+    borderColor: '#F0D0B8',
+  },
+  categoryChipOn: {
+    backgroundColor: '#D75F1B',
+    borderColor: '#D75F1B',
+  },
+  categoryChipText: {
+    fontSize: 13,
+    color: '#D75F1B',
+    fontWeight: '700',
+  },
+  categoryChipTextOn: {
+    color: '#ffffff',
+  },
+  categoryStartBtn: {
+    backgroundColor: '#D75F1B',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  categoryStartBtnDisabled: {
+    backgroundColor: '#e2e8f0',
+  },
+  categoryStartBtnText: {
+    color: '#ffffff',
+    fontWeight: '800',
+    fontSize: 15,
   },
 });
