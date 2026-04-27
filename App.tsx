@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Alert,
+  Modal,
   Platform,
   ScrollView,
   StatusBar,
@@ -646,6 +647,7 @@ function HomeScreen({
 }) {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [selectedCategories, setSelectedCategories] = React.useState<string[]>([]);
+  const [showCategoryPicker, setShowCategoryPicker] = React.useState(false);
   const slideAnim = React.useRef(new Animated.Value(240)).current;
 
   const toggleCategory = (cat: string) => {
@@ -706,27 +708,58 @@ function HomeScreen({
       )}
 
       <View style={styles.modeList}>
-        {/* 2人対戦モード */}
-        <TouchableOpacity
-          style={[styles.modeCard, (!dbReady || wordCount === 0) && styles.modeCardDisabled]}
-          onPress={() => onStartBattle(undefined)}
-          disabled={!dbReady || wordCount === 0}
-          activeOpacity={0.85}
-        >
-          <View style={styles.modeCardInner}>
-            <Text style={styles.modeEmoji}>⚔️</Text>
-            <View style={styles.modeTextArea}>
-              <Text style={styles.modeTitle}>2人対戦</Text>
-              <Text style={styles.modeDesc}>
-                カタカナ英語を発音して{'\n'}2人で精度を競おう
-              </Text>
-              <Text style={styles.modeWordCount}>
-                {dbReady ? `📚 ${wordCount}語` : '読み込み中...'}
-              </Text>
+        <View style={styles.modeSection}>
+          {/* 2人対戦モード */}
+          <TouchableOpacity
+            style={[styles.modeCard, (!dbReady || wordCount === 0) && styles.modeCardDisabled]}
+            onPress={() => onStartBattle(undefined)}
+            disabled={!dbReady || wordCount === 0}
+            activeOpacity={0.85}
+          >
+            <View style={styles.modeCardInner}>
+              <Text style={styles.modeEmoji}>⚔️</Text>
+              <View style={styles.modeTextArea}>
+                <Text style={styles.modeTitle}>2人対戦</Text>
+                <Text style={styles.modeDesc}>
+                  カタカナ英語を発音して{'\n'}2人で精度を競おう
+                </Text>
+                <Text style={styles.modeWordCount}>
+                  {dbReady ? `📚 ${wordCount}語` : '読み込み中...'}
+                </Text>
+              </View>
+              <Text style={styles.modeArrow}>›</Text>
             </View>
-            <Text style={styles.modeArrow}>›</Text>
+          </TouchableOpacity>
+          {/* カテゴリ選択して対戦 */}
+          <View style={styles.categorySelectCard}>
+            <Text style={styles.categorySelectTitle}>カテゴリを選んで対戦</Text>
+
+            {/* プルダウントリガー */}
+            <TouchableOpacity
+              style={styles.categoryDropdownBtn}
+              onPress={() => setShowCategoryPicker(true)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.categoryDropdownBtnText}>
+                {selectedCategories.length === 0
+                  ? 'カテゴリを選択　▼'
+                  : `${selectedCategories.map(c => CATEGORY_EMOJI[c] + ' ' + c).join('、')}　▼`}
+              </Text>
+            </TouchableOpacity>
+
+            {/* 選択後スタートボタン */}
+            <TouchableOpacity
+              style={[styles.categoryStartBtn, (selectedCategories.length === 0 || !dbReady) && styles.categoryStartBtnDisabled]}
+              disabled={selectedCategories.length === 0 || !dbReady}
+              onPress={() => onStartBattle(selectedCategories)}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.categoryStartBtnText}>
+                {selectedCategories.length === 0 ? 'カテゴリを選んでください' : `${selectedCategories.length}件 ▶ 対戦スタート`}
+              </Text>
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
+        </View>
 
         {/* AI英語モード */}
         {/* <TouchableOpacity
@@ -767,42 +800,39 @@ function HomeScreen({
           </View>
         </TouchableOpacity> */}
 
-        {/* カテゴリ選択して対戦 */}
-        <View style={styles.categorySelectCard}>
-          <Text style={styles.categorySelectTitle}>カテゴリを選んで対戦</Text>
-          <Text style={styles.categorySelectHint}>複数選択できます</Text>
-          <View style={styles.categoryChipGrid}>
-            {CATEGORIES.map(cat => {
-              const selected = selectedCategories.includes(cat);
-              return (
-                <TouchableOpacity
-                  key={cat}
-                  style={[styles.categoryChip, selected && styles.categoryChipOn]}
-                  onPress={() => toggleCategory(cat)}
-                  activeOpacity={0.75}
-                >
-                  <Text style={[styles.categoryChipText, selected && styles.categoryChipTextOn]}>
-                    {selected ? '☑ ' : '☐ '}{CATEGORY_EMOJI[cat]} {cat}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+        {/* カテゴリ選択モーダル */}
+        <Modal visible={showCategoryPicker} transparent animationType="slide">
+          <TouchableOpacity style={styles.pickerOverlay} activeOpacity={1} onPress={() => setShowCategoryPicker(false)} />
+          <View style={styles.pickerSheet}>
+            <View style={styles.pickerHeader}>
+              <Text style={styles.pickerTitle}>カテゴリを選択（複数可）</Text>
+              <TouchableOpacity onPress={() => setShowCategoryPicker(false)} style={styles.pickerDone}>
+                <Text style={styles.pickerDoneText}>完了</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView>
+              {CATEGORIES.map(cat => {
+                const selected = selectedCategories.includes(cat);
+                return (
+                  <TouchableOpacity
+                    key={cat}
+                    style={styles.pickerRow}
+                    onPress={() => toggleCategory(cat)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.pickerRowEmoji}>{CATEGORY_EMOJI[cat] ?? '📂'}</Text>
+                    <Text style={[styles.pickerRowText, selected && styles.pickerRowTextOn]}>{cat}</Text>
+                    <Text style={styles.pickerRowCheck}>{selected ? '☑' : '☐'}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
           </View>
-          <TouchableOpacity
-            style={[styles.categoryStartBtn, (selectedCategories.length === 0 || !dbReady) && styles.categoryStartBtnDisabled]}
-            disabled={selectedCategories.length === 0 || !dbReady}
-            onPress={() => onStartBattle(selectedCategories)}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.categoryStartBtnText}>
-              {selectedCategories.length === 0 ? 'カテゴリを選んでください' : `選択中 ${selectedCategories.length}件 ▶ 対戦スタート`}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        </Modal>
       </View>
 
       {/* プレミアムバナー */}
-      {/* {isPremium ? (
+      {isPremium ? (
         <View style={styles.premiumBanner}>
           <Text style={styles.premiumBannerText}>⭐ プレミアム会員</Text>
         </View>
@@ -821,7 +851,7 @@ function HomeScreen({
             </TouchableOpacity>
           </View>
         </View>
-      )} */}
+      )}
     </SafeAreaView>
   );
 }
@@ -1018,6 +1048,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 8,
     gap: 16,
+  },
+  modeSection: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 12,
+    backgroundColor: '#FFF0D9',
+    borderRadius: 12,
   },
   modeCard: {
     backgroundColor: '#ffffff',
@@ -1317,5 +1354,80 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontWeight: '800',
     fontSize: 15,
+  },
+  categoryDropdownBtn: {
+    backgroundColor: '#FFF3EA',
+    borderWidth: 1.5,
+    borderColor: '#F0D0B8',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginBottom: 8,
+  },
+  categoryDropdownBtnText: {
+    fontSize: 14,
+    color: '#D75F1B',
+    fontWeight: '700',
+  },
+  pickerOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  pickerSheet: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '60%',
+    paddingBottom: 32,
+  },
+  pickerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0D0B8',
+  },
+  pickerTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#3A2A1A',
+  },
+  pickerDone: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    backgroundColor: '#D75F1B',
+    borderRadius: 8,
+  },
+  pickerDoneText: {
+    color: '#ffffff',
+    fontWeight: '800',
+    fontSize: 14,
+  },
+  pickerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#FFF3EA',
+    gap: 12,
+  },
+  pickerRowEmoji: {
+    fontSize: 20,
+  },
+  pickerRowText: {
+    flex: 1,
+    fontSize: 15,
+    color: '#3A2A1A',
+    fontWeight: '600',
+  },
+  pickerRowTextOn: {
+    color: '#D75F1B',
+  },
+  pickerRowCheck: {
+    fontSize: 20,
+    color: '#D75F1B',
   },
 });
