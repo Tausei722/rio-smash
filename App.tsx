@@ -200,14 +200,50 @@ function GameApp() {
   const isManualStopRef = useRef(false);
   // 認識テキスト蓄積（手動停止まで上書き更新）
   const latestSpokenRef = useRef('');
+  // 無音タイマー
+  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const SILENCE_TIMEOUT_MS = 2000;
+
+  const commitScore = () => {
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+    isRecordingRef.current = false;
+    isProcessingRef.current = false;
+    isManualStopRef.current = false;
+    setIsRecording(false);
+    setLiveText('');
+    const word = currentWordRef.current;
+    const finalText = latestSpokenRef.current;
+    latestSpokenRef.current = '';
+    if (!word) return;
+    if (!finalText) {
+      Alert.alert('エラー', '音声を認識できませんでした。もう一度試してください。');
+      return;
+    }
+    const score = calcPronunciationScore(finalText, word.english);
+    setReveal({ score, spoken: finalText });
+  };
+
+  const resetSilenceTimer = () => {
+    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+    silenceTimerRef.current = setTimeout(() => {
+      if (!isRecordingRef.current) return;
+      Voice.stop().catch(() => commitScore());
+    }, SILENCE_TIMEOUT_MS);
+  };
 
   // Voiceイベントはマウント時に1回だけ登録
   useEffect(() => {
-    // リアルタイム部分認識 → 表示更新 + 蓄積
+    // リアルタイム部分認識 → 表示更新 + 蓄積 + 無音タイマーリセット
     Voice.onSpeechPartialResults = (e: SpeechResultsEvent) => {
       const text = e.value?.[0] ?? '';
       setLiveText(text);
-      if (text) latestSpokenRef.current = text;
+      if (text) {
+        latestSpokenRef.current = text;
+        resetSilenceTimer();
+      }
     };
 
     // 確定テキスト → 蓄積のみ（判断は onSpeechEnd に任せる）
@@ -219,29 +255,14 @@ function GameApp() {
       }
     };
 
-    // セッション終了 → 手動停止なら確定、そうでなければ再スタート
+    // セッション終了 → 発話あり or 手動停止ならスコア確定、なければ再スタート
     Voice.onSpeechEnd = () => {
-      if (!isRecordingRef.current) return; // すでに停止済みなら何もしない
+      if (!isRecordingRef.current) return;
 
-      if (isManualStopRef.current) {
-        // 手動停止 → スコア確定
-        isRecordingRef.current = false;
-        isProcessingRef.current = false;
-        setIsRecording(false);
-        setLiveText('');
-        const word = currentWordRef.current;
-        const finalText = latestSpokenRef.current;
-        latestSpokenRef.current = '';
-        isManualStopRef.current = false;
-        if (!word) return;
-        if (!finalText) {
-          Alert.alert('エラー', '音声を認識できませんでした。もう一度試してください。');
-          return;
-        }
-        const score = calcPronunciationScore(finalText, word.english);
-        setReveal({ score, spoken: finalText });
+      if (isManualStopRef.current || latestSpokenRef.current) {
+        commitScore();
       } else {
-        // iOSがサイレンスで自動停止 → 再スタートして聞き続ける
+        // まだ何も話していない → 再スタートして聞き続ける
         Voice.start('en-US').catch(() => {
           isRecordingRef.current = false;
           isProcessingRef.current = false;
@@ -250,25 +271,24 @@ function GameApp() {
       }
     };
 
-    // エラー → 録音中なら再スタート、停止中ならアラート
+    // エラー → 発話あれば確定、なければアラート
     Voice.onSpeechError = (_e: SpeechErrorEvent) => {
-      if (isRecordingRef.current && !isManualStopRef.current) {
-        // 自動再スタート中のエラー → 黙って再試行
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+        silenceTimerRef.current = null;
+      }
+      if (isRecordingRef.current && !isManualStopRef.current && !latestSpokenRef.current) {
         Voice.start('en-US').catch(() => {
           isRecordingRef.current = false;
           isProcessingRef.current = false;
           setIsRecording(false);
         });
       } else {
-        isRecordingRef.current = false;
-        isProcessingRef.current = false;
-        isManualStopRef.current = false;
-        latestSpokenRef.current = '';
-        setIsRecording(false);
-        Alert.alert('エラー', '音声を認識できませんでした。もう一度試してください。');
+        commitScore();
       }
     };
     return () => {
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       Voice.destroy().then(Voice.removeAllListeners);
     };
   }, []); // マウント/アンマウント時のみ
@@ -280,6 +300,10 @@ function GameApp() {
     try {
       if (isRecordingRef.current) {
         // 手動停止
+        if (silenceTimerRef.current) {
+          clearTimeout(silenceTimerRef.current);
+          silenceTimerRef.current = null;
+        }
         isManualStopRef.current = true;
         await Voice.stop();
       } else {
@@ -443,13 +467,18 @@ function GameApp() {
           text: 'やめる',
           style: 'destructive',
           onPress: async () => {
-            // 録音中なら停止
+            // 無音タイマー・録音中なら停止
+            if (silenceTimerRef.current) {
+              clearTimeout(silenceTimerRef.current);
+              silenceTimerRef.current = null;
+            }
             if (isRecordingRef.current) {
               try { await Voice.stop(); } catch {}
             }
             isRecordingRef.current = false;
             isProcessingRef.current = false;
             isManualStopRef.current = false;
+            latestSpokenRef.current = '';
             setIsRecording(false);
             // サンプル再生中なら停止
             samplePressActiveRef.current = false;
@@ -762,7 +791,7 @@ function HomeScreen({
         </View>
 
         {/* AI英語モード */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.modeCard}
           onPress={onStartAI}
           activeOpacity={0.85}
@@ -780,10 +809,10 @@ function HomeScreen({
             </View>
             <Text style={styles.modeArrow}>›</Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         {/* フラッシュ英単語モード */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.modeCard}
           onPress={onStartFlash}
           activeOpacity={0.85}
@@ -798,7 +827,7 @@ function HomeScreen({
             </View>
             <Text style={styles.modeArrow}>›</Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         {/* カテゴリ選択モーダル */}
         <Modal visible={showCategoryPicker} transparent animationType="slide">
