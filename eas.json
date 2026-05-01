@@ -1,0 +1,20 @@
+{
+  "cli": {
+    "version": ">= 16.0.0"
+  },
+  "build": {
+    "production": {
+      "ios": {
+        "simulator": false
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "yusami.kei825@gmail.com",
+        "ascAppId": "6744152773"
+      }
+    }
+  }
+}
