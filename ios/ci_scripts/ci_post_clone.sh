@@ -1,14 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 export HOMEBREW_NO_AUTO_UPDATE=1
 export HOMEBREW_NO_INSTALL_CLEANUP=1
 
-# Add Homebrew to PATH
-if [[ $(uname -m) == 'arm64' ]]; then
-  export PATH="/opt/homebrew/bin:$PATH"
-else
-  export PATH="/usr/local/bin:$PATH"
+# Setup Homebrew PATH
+if [ -f "/opt/homebrew/bin/brew" ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -f "/usr/local/bin/brew" ]; then
+  eval "$(/usr/local/bin/brew shellenv)"
 fi
 
 # Install Node.js
