@@ -3,7 +3,55 @@ import { WORDS } from '../data/words';
 import RNFS from 'react-native-fs';
 import { decode } from 'base64-arraybuffer';
 
-export const CATEGORIES = ['yesterday', 'human nature', 'お土産', '挨拶', '試着', '写真', '道教え', '道迷い', '6歳以上', '6歳以下'] as const;
+export const CATEGORIES = ['yesterday', 'human nature', 'お土産', '挨拶', '試着', '写真', '道教え', '道迷い', '6歳以上', '6歳以下', 'monkey magic', 'ラップ', '放送禁止'] as const;
+
+// カテゴリ一覧を Supabase から取得（なければ初期値）
+export async function fetchCategoryList(): Promise<string[]> {
+  const { data } = await supabase
+    .from('app_settings')
+    .select('value')
+    .eq('key', 'categories')
+    .single();
+  if (!data) return [...CATEGORIES];
+  return (data.value as string[]) ?? [...CATEGORIES];
+}
+
+// カテゴリ一覧を Supabase に保存
+export async function saveCategoryList(categories: string[]): Promise<void> {
+  const { error } = await supabase
+    .from('app_settings')
+    .upsert({ key: 'categories', value: categories });
+  if (error) throw error;
+}
+
+// カテゴリ名変更（全単語を一括更新）
+export async function renameCategory(oldName: string, newName: string): Promise<void> {
+  if (oldName === newName) return;
+  const { error } = await supabase
+    .from('words')
+    .update({ category: newName })
+    .eq('category', oldName);
+  if (error) throw error;
+}
+
+// 有料カテゴリ設定を Supabase から取得
+export async function fetchPremiumCategories(): Promise<Set<string>> {
+  const { data, error } = await supabase
+    .from('app_settings')
+    .select('value')
+    .eq('key', 'premium_categories')
+    .single();
+  if (error || !data) return new Set();
+  return new Set(data.value as string[]);
+}
+
+// 有料カテゴリ設定を Supabase に保存（管理者のみ）
+export async function savePremiumCategories(categories: string[]): Promise<void> {
+  const { error } = await supabase
+    .from('app_settings')
+    .upsert({ key: 'premium_categories', value: categories });
+  if (error) throw error;
+}
 export type Category = typeof CATEGORIES[number];
 
 export type WordRow = {

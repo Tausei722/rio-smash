@@ -19,7 +19,7 @@ import Voice, {
   SpeechResultsEvent,
 } from '@react-native-voice/voice';
 
-import { fetchAllWords, initDB, downloadAudioToLocal, WordRow, CATEGORIES } from './src/db/database';
+import { fetchAllWords, initDB, downloadAudioToLocal, WordRow, CATEGORIES, fetchPremiumCategories, savePremiumCategories, fetchCategoryList, saveCategoryList, renameCategory } from './src/db/database';
 import { supabase } from './src/db/supabase';
 import {
   setupIAP,
@@ -61,6 +61,9 @@ const CATEGORY_EMOJI: Record<string, string> = {
   '道迷い':        '🧭',
   '6歳以上':       '🔢',
   '6歳以下':       '👶',
+  'monkey magic': '🐒',
+  'ラップ':        '🎤',
+  '放送禁止':      '🔞',
 };
 
 export default function App() {
@@ -90,6 +93,8 @@ function GameApp() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
+  const [premiumCategories, setPremiumCategories] = useState<Set<string>>(new Set());
+  const [categories, setCategories] = useState<string[]>([...CATEGORIES]);
 
   // セッション確認 & isAdmin / isPremium 取得
   const checkAuth = async () => {
@@ -116,7 +121,9 @@ function GameApp() {
     try {
       await purchasePremium();
     } catch (e: any) {
-      Alert.alert('購入エラー', e?.message ?? '購入に失敗しました');
+      const code = e?.code as string | undefined;
+      if (code === 'E_USER_CANCELLED') return;
+      Alert.alert('購入できませんでした', 'しばらくしてからもう一度お試しください。');
     }
   };
 
@@ -145,6 +152,10 @@ function GameApp() {
       const rows = await fetchAllWords(isPremium);
       setAllWords(rows);
       setDbReady(true);
+      const cats = await fetchPremiumCategories().catch(() => new Set<string>());
+      setPremiumCategories(cats);
+      const catList = await fetchCategoryList().catch(() => [...CATEGORIES]);
+      setCategories(catList);
     })();
     checkAuth();
 
@@ -535,6 +546,17 @@ function GameApp() {
         onBack={() => { reloadWords(); setScreen('home'); }}
         onAddWord={() => { setEditingWord(null); setScreen('wordform'); }}
         onEditWord={word => { setEditingWord(word); setScreen('wordform'); }}
+        premiumCategories={premiumCategories}
+        onSavePremiumCategories={async (cats) => {
+          await savePremiumCategories([...cats]);
+          setPremiumCategories(new Set(cats));
+        }}
+        categories={categories}
+        onSaveCategories={async (newCats) => {
+          await saveCategoryList(newCats);
+          setCategories(newCats);
+        }}
+        onRenameCategory={renameCategory}
       />
     );
   }
@@ -643,6 +665,8 @@ function GameApp() {
       dbReady={dbReady}
       isAdmin={isAdmin}
       isPremium={isPremium}
+      premiumCategories={premiumCategories}
+      categories={categories}
     />
   );
 }
@@ -660,6 +684,8 @@ function HomeScreen({
   dbReady,
   isAdmin,
   isPremium,
+  premiumCategories,
+  categories,
 }: {
   onStartBattle: (categories?: string[]) => void;
   onStartAI: () => void;
@@ -673,6 +699,8 @@ function HomeScreen({
   dbReady: boolean;
   isAdmin: boolean;
   isPremium: boolean;
+  premiumCategories: Set<string>;
+  categories: string[];
 }) {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [selectedCategories, setSelectedCategories] = React.useState<string[]>([]);
@@ -680,6 +708,17 @@ function HomeScreen({
   const slideAnim = React.useRef(new Animated.Value(240)).current;
 
   const toggleCategory = (cat: string) => {
+    if (premiumCategories.has(cat) && !isPremium) {
+      Alert.alert(
+        '🔒 プレミアム限定',
+        `「${cat}」はプレミアム会員限定のカテゴリです。\n購入してすべてのカテゴリを楽しもう！`,
+        [
+          { text: 'キャンセル', style: 'cancel' },
+          { text: '購入する', onPress: onPurchase },
+        ],
+      );
+      return;
+    }
     setSelectedCategories(prev =>
       prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
     );
@@ -840,18 +879,27 @@ function HomeScreen({
               </TouchableOpacity>
             </View>
             <ScrollView>
-              {CATEGORIES.map(cat => {
+              {categories.map(cat => {
                 const selected = selectedCategories.includes(cat);
+                const locked = premiumCategories.has(cat) && !isPremium;
                 return (
                   <TouchableOpacity
                     key={cat}
-                    style={styles.pickerRow}
+                    style={[styles.pickerRow, locked && styles.pickerRowLocked]}
                     onPress={() => toggleCategory(cat)}
                     activeOpacity={0.7}
                   >
                     <Text style={styles.pickerRowEmoji}>{CATEGORY_EMOJI[cat] ?? '📂'}</Text>
-                    <Text style={[styles.pickerRowText, selected && styles.pickerRowTextOn]}>{cat}</Text>
-                    <Text style={styles.pickerRowCheck}>{selected ? '☑' : '☐'}</Text>
+                    <Text style={[styles.pickerRowText, selected && styles.pickerRowTextOn, locked && styles.pickerRowTextLocked]}>
+                      {cat}
+                    </Text>
+                    {locked ? (
+                      <View style={styles.premiumCatBadge}>
+                        <Text style={styles.premiumCatBadgeText}>🔒 有料</Text>
+                      </View>
+                    ) : (
+                      <Text style={styles.pickerRowCheck}>{selected ? '☑' : '☐'}</Text>
+                    )}
                   </TouchableOpacity>
                 );
               })}
@@ -1469,5 +1517,24 @@ const styles = StyleSheet.create({
   pickerRowCheck: {
     fontSize: 20,
     color: '#D75F1B',
+  },
+  pickerRowLocked: {
+    backgroundColor: '#FAF7F5',
+  },
+  pickerRowTextLocked: {
+    color: '#C0B0A0',
+  },
+  premiumCatBadge: {
+    backgroundColor: '#FFF0D9',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderWidth: 1,
+    borderColor: '#E8B526',
+  },
+  premiumCatBadgeText: {
+    fontSize: 11,
+    color: '#E8B526',
+    fontWeight: '700',
   },
 });
