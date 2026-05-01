@@ -13,75 +13,113 @@ type Props = {
 export function WordCard({ katakana, english, japanese, questionIndex, total, showEnglish = false }: Props) {
   return (
     <View style={styles.card}>
-      <Text style={styles.label}>WORD CARDS</Text>
-      <Text style={styles.katakana}>{katakana}</Text>
+      <View style={styles.topRow}>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>WORD CARD</Text>
+        </View>
+        <Text style={styles.counter}>{questionIndex + 1} / {total}</Text>
+      </View>
+
+      <View style={styles.katakanaWrapper}>
+        <Text style={styles.katakana}>{katakana}</Text>
+      </View>
+
       {showEnglish ? (
-        <>
+        <View style={styles.answerBox}>
           <Text style={styles.english}>{english}</Text>
           {japanese ? <Text style={styles.japanese}>{japanese}</Text> : null}
-        </>
+        </View>
       ) : (
-        <Text style={styles.englishHidden}>？？？</Text>
+        <View style={styles.hiddenBox}>
+          <Text style={styles.hiddenText}>？？？</Text>
+          <Text style={styles.hiddenHint}>発音してみよう！</Text>
+        </View>
       )}
-      <Text style={styles.counter}>{questionIndex + 1} / {total}</Text>
     </View>
   );
 }
 
+// このカードは #D75F1B 単色テーマ
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#06b6d4',
-    borderRadius: 24,
-    borderWidth: 4,
-    borderColor: '#0e7490',
-    paddingVertical: 40,
-    paddingHorizontal: 32,
+    backgroundColor: '#d7601b',
+    borderRadius: 10,
+    paddingVertical: 36,
+    paddingHorizontal: 28,
+    marginHorizontal: 20,
+    marginBottom: 24,
+  },
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginHorizontal: 24,
-    marginBottom: 32,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 10,
+    marginBottom: 20,
   },
-  label: {
-    color: '#a5f3fc',
-    fontSize: 12,
+  badge: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  badgeText: {
+    color: 'rgba(255,255,255,0.9)',
+    fontSize: 10,
+    fontWeight: '800',
     letterSpacing: 2,
-    fontWeight: '600',
-    marginBottom: 16,
-  },
-  katakana: {
-    color: '#ffffff',
-    fontSize: 42,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  english: {
-    color: '#cffafe',
-    fontSize: 22,
-    fontWeight: '500',
-    marginBottom: 20,
-    letterSpacing: 1,
-  },
-  englishHidden: {
-    color: '#a5f3fc',
-    fontSize: 22,
-    fontWeight: '500',
-    marginBottom: 20,
-    letterSpacing: 4,
-  },
-  japanese: {
-    color: '#a5f3fc',
-    fontSize: 16,
-    marginTop: -12,
-    marginBottom: 20,
-    textAlign: 'center',
   },
   counter: {
-    color: '#a5f3fc',
+    color: 'rgba(255,255,255,0.7)',
     fontSize: 13,
+    fontWeight: '700',
+  },
+  katakanaWrapper: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  katakana: {
+    fontSize: 44,
+    fontWeight: '900',
+    textAlign: 'center',
+    color: '#ffffff',
+    textShadowColor: 'rgba(0,0,0,0.2)',
+    textShadowOffset: { width: 1.5, height: 1.5 },
+    textShadowRadius: 2,
+  },
+  answerBox: {
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  english: {
+    color: '#ffffff',
+    fontSize: 26,
+    fontWeight: '800',
+    letterSpacing: 1,
+  },
+  japanese: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 15,
+    marginTop: 6,
+    textAlign: 'center',
+  },
+  hiddenBox: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  hiddenText: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 26,
+    fontWeight: '800',
+    letterSpacing: 6,
+  },
+  hiddenHint: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 12,
+    marginTop: 6,
   },
 });

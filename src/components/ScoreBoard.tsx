@@ -7,39 +7,27 @@ type Props = {
   currentPlayer: 1 | 2;
 };
 
+// P1 → #D75F1B 単色 / VS → #E8B526 単色 / P2 → #25935F 単色
 export function ScoreBoard({ player1Score, player2Score, currentPlayer }: Props) {
   return (
     <View style={styles.row}>
-      <PlayerCard
-        label="プレイヤー 1"
-        score={player1Score}
-        active={currentPlayer === 1}
-      />
+      <PlayerCard label="プレイヤー 1" score={player1Score} active={currentPlayer === 1} color="#D75F1B" />
       <View style={styles.vs}>
         <Text style={styles.vsText}>VS</Text>
       </View>
-      <PlayerCard
-        label="プレイヤー 2"
-        score={player2Score}
-        active={currentPlayer === 2}
-      />
+      <PlayerCard label="プレイヤー 2" score={player2Score} active={currentPlayer === 2} color="#25935F" />
     </View>
   );
 }
 
-function PlayerCard({
-  label,
-  score,
-  active,
-}: {
-  label: string;
-  score: number;
-  active: boolean;
-}) {
+function PlayerCard({ label, score, active, color }: { label: string; score: number; active: boolean; color: string }) {
   return (
-    <View style={[styles.card, active && styles.activeCard]}>
-      <Text style={styles.playerLabel}>{label}</Text>
-      <Text style={[styles.score, active && styles.activeScore]}>{score}</Text>
+    <View style={[styles.card, active && (color === '#D75F1B'
+      ? { backgroundColor: color, borderWidth: 0, opacity: 1 }
+      : { backgroundColor: color, borderColor: '#76432D', opacity: 1 }
+    )]}>
+      <Text style={[styles.playerLabel, active && styles.playerLabelActive]}>{label}</Text>
+      <Text style={[styles.score, active && styles.scoreActive]}>{score}</Text>
       {active && <Text style={styles.turnBadge}>ターン中</Text>}
     </View>
   );
@@ -54,49 +42,45 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#F0EAE0',
     borderRadius: 16,
     borderWidth: 3,
-    borderColor: '#e2e8f0',
+    borderColor: '#76432D',
     padding: 16,
     alignItems: 'center',
-    opacity: 0.6,
-  },
-  activeCard: {
-    borderColor: '#06b6d4',
-    opacity: 1,
-    transform: [{ scale: 1.05 }],
-    shadowColor: '#06b6d4',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
+    opacity: 0.45,
   },
   playerLabel: {
     fontSize: 11,
-    color: '#64748b',
+    fontWeight: '700',
+    color: '#9A8A7A',
     marginBottom: 4,
+    letterSpacing: 0.5,
+  },
+  playerLabelActive: {
+    color: 'rgba(255,255,255,0.85)',
   },
   score: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#94a3b8',
+    fontSize: 38,
+    fontWeight: '900',
+    color: '#C0B0A0',
   },
-  activeScore: {
-    color: '#06b6d4',
+  scoreActive: {
+    color: '#ffffff',
   },
   turnBadge: {
     fontSize: 10,
-    color: '#06b6d4',
-    fontWeight: '600',
-    marginTop: 4,
+    color: 'rgba(255,255,255,0.9)',
+    fontWeight: '700',
+    marginTop: 6,
   },
   vs: {
     paddingHorizontal: 12,
   },
   vsText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#94a3b8',
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#D75F1B',
+    letterSpacing: 2,
   },
 });

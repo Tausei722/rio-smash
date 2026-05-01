@@ -7,13 +7,11 @@ type Props = {
   onRestart: () => void;
 };
 
+// このページは #25935F 単色テーマ
 export function GameOver({ player1Score, player2Score, onRestart }: Props) {
   const winner =
-    player1Score > player2Score
-      ? 'プレイヤー 1'
-      : player2Score > player1Score
-      ? 'プレイヤー 2'
-      : null;
+    player1Score > player2Score ? 'プレイヤー 1' :
+    player2Score > player1Score ? 'プレイヤー 2' : null;
 
   return (
     <View style={styles.screen}>
@@ -30,6 +28,7 @@ export function GameOver({ player1Score, player2Score, onRestart }: Props) {
           <>
             <Text style={styles.trophy}>🤝</Text>
             <Text style={styles.winner}>引き分け</Text>
+            <Text style={styles.winnerSub}>いい勝負！</Text>
           </>
         )}
 
@@ -37,19 +36,20 @@ export function GameOver({ player1Score, player2Score, onRestart }: Props) {
           <View style={styles.scoreRow}>
             <Text style={styles.scoreLabel}>プレイヤー 1</Text>
             <Text style={[styles.scoreNum, player1Score > player2Score && styles.winScore]}>
-              {player1Score}点
+              {player1Score}<Text style={styles.scoreUnit}>点</Text>
             </Text>
           </View>
+          <View style={styles.divider} />
           <View style={styles.scoreRow}>
             <Text style={styles.scoreLabel}>プレイヤー 2</Text>
             <Text style={[styles.scoreNum, player2Score > player1Score && styles.winScore]}>
-              {player2Score}点
+              {player2Score}<Text style={styles.scoreUnit}>点</Text>
             </Text>
           </View>
         </View>
 
         <TouchableOpacity style={styles.button} onPress={onRestart}>
-          <Text style={styles.buttonText}>もう一度プレイ</Text>
+          <Text style={styles.buttonText}>もう一度プレイ 🎮</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -59,83 +59,88 @@ export function GameOver({ player1Score, player2Score, onRestart }: Props) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#ecfeff',
+    backgroundColor: '#F0FAF5',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
   },
   card: {
     backgroundColor: '#ffffff',
-    borderRadius: 24,
+    borderRadius: 28,
+    borderWidth: 3,
+    borderColor: '#76432D',
     padding: 32,
     width: '100%',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 8,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#0e7490',
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#25935F',
     marginBottom: 16,
+    letterSpacing: 1,
   },
   trophy: {
-    fontSize: 56,
-    marginBottom: 12,
+    fontSize: 64,
+    marginBottom: 8,
   },
   winner: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#06b6d4',
+    fontWeight: '900',
+    color: '#25935F',
   },
   winnerSub: {
     fontSize: 18,
-    color: '#64748b',
+    color: '#9A8A7A',
     marginBottom: 24,
+    fontWeight: '600',
   },
   scoreBox: {
     width: '100%',
-    backgroundColor: '#ecfeff',
-    borderRadius: 16,
-    padding: 16,
-    gap: 12,
+    backgroundColor: 'rgba(37,147,95,0.08)',
+    borderRadius: 18,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     marginBottom: 28,
   },
   scoreRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingVertical: 12,
+  },
+  divider: {
+    height: 1.5,
+    backgroundColor: 'rgba(37,147,95,0.2)',
   },
   scoreLabel: {
-    fontSize: 16,
-    color: '#475569',
+    fontSize: 15,
+    color: '#6A5A4A',
+    fontWeight: '600',
   },
   scoreNum: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#94a3b8',
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#C0B0A0',
+  },
+  scoreUnit: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   winScore: {
-    color: '#06b6d4',
+    color: '#25935F',
   },
   button: {
     width: '100%',
-    backgroundColor: '#06b6d4',
-    paddingVertical: 16,
-    borderRadius: 16,
+    backgroundColor: '#25935F',
+    paddingVertical: 18,
+    borderRadius: 18,
     alignItems: 'center',
-    shadowColor: '#06b6d4',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 6,
   },
   buttonText: {
     color: '#ffffff',
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '900',
+    letterSpacing: 0.5,
   },
 });
