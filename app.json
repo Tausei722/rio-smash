@@ -1,11 +1,13 @@
 {
+  "name": "EigoTaisen",
+  "displayName": "親子で「英語発音」対戦",
   "expo": {
     "name": "親子で「英語発音」対戦",
     "slug": "eigotaisen",
     "version": "1.2.6",
     "ios": {
       "bundleIdentifier": "com.rioshikiego.samplerApp",
-      "buildNumber": "12"
+      "buildNumber": "13"
     },
     "extra": {
       "eas": {
