@@ -30,6 +30,11 @@ export function LoginScreen({ onLoggedIn }: Props) {
       Alert.alert('入力エラー', 'メールアドレスとパスワードを入力してください。');
       return;
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      Alert.alert('入力エラー', '正しいメールアドレスを入力してください。');
+      return;
+    }
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
       email: email.trim(),
@@ -46,6 +51,11 @@ export function LoginScreen({ onLoggedIn }: Props) {
   const handleSignUp = async () => {
     if (!username.trim() || !email.trim() || !password.trim() || !passwordConfirm.trim()) {
       Alert.alert('入力エラー', 'すべての項目を入力してください。');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      Alert.alert('入力エラー', '正しいメールアドレスを入力してください。');
       return;
     }
     if (password !== passwordConfirm) {
