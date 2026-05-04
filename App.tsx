@@ -145,6 +145,8 @@ function GameApp() {
 
   // DB初期化 & 認証確認
   useEffect(() => {
+    setupIAP().catch(() => {});
+
     (async () => {
       await initDB();
       const rows = await fetchAllWords(isPremium);
@@ -157,25 +159,20 @@ function GameApp() {
     })();
     checkAuth();
 
-    // IAP初期化をアプリ起動後に遅延（iOS 26互換性のため）
-    let cleanupPurchase = () => {};
-    const iapTimer = setTimeout(() => {
-      setupIAP().catch(() => {});
-      cleanupPurchase = setupPurchaseListeners(
-        async (purchase) => {
-          await activatePremium(purchase);
-          setIsPremium(true);
-          const rows = await fetchAllWords(true);
-          setAllWords(rows);
-          Alert.alert('購入完了', 'プレミアムプランへようこそ！');
-        },
-        (error) => {
-          if ((error.code as string) !== 'E_USER_CANCELLED') {
-            Alert.alert('購入エラー', error.message);
-          }
-        },
-      );
-    }, 1000);
+    const cleanupPurchase = setupPurchaseListeners(
+      async (purchase) => {
+        await activatePremium(purchase);
+        setIsPremium(true);
+        const rows = await fetchAllWords(true);
+        setAllWords(rows);
+        Alert.alert('購入完了', 'プレミアムプランへようこそ！');
+      },
+      (error) => {
+        if ((error.code as string) !== 'E_USER_CANCELLED') {
+          Alert.alert('購入エラー', error.message);
+        }
+      },
+    );
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
@@ -188,7 +185,6 @@ function GameApp() {
       }
     });
     return () => {
-      clearTimeout(iapTimer);
       subscription.unsubscribe();
       cleanupPurchase();
     };
