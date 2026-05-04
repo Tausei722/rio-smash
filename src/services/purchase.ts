@@ -26,6 +26,10 @@ export async function fetchPremiumProduct() {
 
 // 購入を実行
 export async function purchasePremium(): Promise<void> {
+  const products = await fetchProducts({ skus: [PREMIUM_PRODUCT_ID], type: 'in-app' });
+  if (!products || products.length === 0) {
+    throw Object.assign(new Error('商品が見つかりません。しばらくしてからもう一度お試しください。'), { code: 'SKU_NOT_FOUND' });
+  }
   await requestPurchase({
     request: { apple: { sku: PREMIUM_PRODUCT_ID } },
     type: 'in-app',

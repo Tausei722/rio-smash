@@ -4,10 +4,10 @@
   "expo": {
     "name": "親子で「英語発音」対戦",
     "slug": "eigotaisen",
-    "version": "1.2.6",
+    "version": "1.2.4",
     "ios": {
       "bundleIdentifier": "com.rioshikiego.samplerApp",
-      "buildNumber": "13"
+      "buildNumber": "14"
     },
     "extra": {
       "eas": {
