@@ -245,8 +245,9 @@ function GameApp() {
     }, SILENCE_TIMEOUT_MS);
   };
 
-  // Voiceイベントはマウント時に1回だけ登録
+  // Voiceイベントはゲーム画面のときだけ登録
   useEffect(() => {
+    if (screen !== 'game') return;
     // リアルタイム部分認識 → 表示更新 + 蓄積 + 無音タイマーリセット
     Voice.onSpeechPartialResults = (e: SpeechResultsEvent) => {
       const text = e.value?.[0] ?? '';
@@ -302,7 +303,7 @@ function GameApp() {
       if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       Voice.destroy().then(Voice.removeAllListeners);
     };
-  }, []); // マウント/アンマウント時のみ
+  }, [screen]); // game画面に入ったときだけ登録
 
   const handleMicPress = useCallback(async () => {
     if (isProcessingRef.current) return; // 連打ガード
