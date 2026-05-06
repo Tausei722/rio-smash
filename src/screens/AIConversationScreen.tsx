@@ -12,7 +12,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Tts from 'react-native-tts';
+// import Tts from 'react-native-tts';
+const Tts = { speak: (_text: string) => {}, stop: () => {} };
 import Voice, { SpeechResultsEvent } from '@react-native-voice/voice';
 import { ANTHROPIC_API_KEY } from '../config/api';
 
