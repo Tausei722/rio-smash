@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -459,13 +459,15 @@ function WordList({
   onEdit: (word: WordRow) => void;
   onDelete: (word: WordRow) => void;
 }) {
-  const q = searchQuery.trim();
-  const filtered = (q
-    ? words.filter(w =>
-        w.katakana.includes(q) || w.english.toLowerCase().includes(q.toLowerCase()),
-      )
-    : [...words]
-  ).sort((a, b) => a.katakana.localeCompare(b.katakana, 'ja'));
+  const filtered = useMemo(() => {
+    const q = searchQuery.trim();
+    return (q
+      ? words.filter(w =>
+          w.katakana.includes(q) || w.english.toLowerCase().includes(q.toLowerCase()),
+        )
+      : [...words]
+    ).sort((a, b) => a.katakana.localeCompare(b.katakana, 'ja'));
+  }, [words, searchQuery]);
 
   return (
     <>

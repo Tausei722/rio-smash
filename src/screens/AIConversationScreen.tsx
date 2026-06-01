@@ -13,7 +13,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // import Tts from 'react-native-tts';
-const Tts = { speak: (_text: string) => {}, stop: () => {} };
+const Tts = {
+  speak: (_text: string) => {},
+  stop: () => {},
+  setDefaultLanguage: (_lang: string) => {},
+  addEventListener: (_event: string, _cb: () => void) => {},
+  removeAllListeners: (_event: string) => {},
+};
 import Voice, { SpeechResultsEvent } from '@react-native-voice/voice';
 import { ANTHROPIC_API_KEY } from '../config/api';
 

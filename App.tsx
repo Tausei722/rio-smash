@@ -149,12 +149,14 @@ function GameApp() {
 
     (async () => {
       await initDB();
-      const rows = await fetchAllWords(isPremium);
+      const [rows, cats, catList] = await Promise.all([
+        fetchAllWords(isPremium),
+        fetchPremiumCategories().catch(() => new Set<string>()),
+        fetchCategoryList().catch(() => [...CATEGORIES]),
+      ]);
       setAllWords(rows);
       setDbReady(true);
-      const cats = await fetchPremiumCategories().catch(() => new Set<string>());
       setPremiumCategories(cats);
-      const catList = await fetchCategoryList().catch(() => [...CATEGORIES]);
       setCategories(catList);
     })();
     checkAuth();
@@ -194,7 +196,7 @@ function GameApp() {
     if (screen === 'home') {
       fetchAllWords(isPremium).then(rows => setAllWords(rows)).catch(() => {});
     }
-  }, [screen]);
+  }, [screen, isPremium]);
 
   const currentWord = gameWords[questionIndex];
   const isLastQuestion = questionIndex >= gameWords.length - 1;

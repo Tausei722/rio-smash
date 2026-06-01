@@ -144,17 +144,27 @@ export async function getSignedAudioUrl(audioPath: string): Promise<string> {
   return data.signedUrl;
 }
 
+// 音声URLのローカルキャッシュ（同じURLを何度もダウンロードしない）
+const audioDownloadCache = new Map<string, string>();
+
 // 音声URLをローカルファイルにダウンロード（署名付きURL→直接URLの順で試みる）
 export async function downloadAudioToLocal(audioPath: string): Promise<string> {
   if (!audioPath.startsWith('http')) return audioPath;
 
-  const dest = `${RNFS.DocumentDirectoryPath}/audio_tmp_${Date.now()}.m4a`;
+  const cached = audioDownloadCache.get(audioPath);
+  if (cached && await RNFS.exists(cached)) {
+    return cached;
+  }
+  audioDownloadCache.delete(audioPath);
+
+  const dest = `${RNFS.DocumentDirectoryPath}/audio_cache_${Date.now()}.m4a`;
 
   // まず署名付きURLで試みる（プライベートバケット対応）
   try {
     const signedUrl = await getSignedAudioUrl(audioPath);
     const result = await RNFS.downloadFile({ fromUrl: signedUrl, toFile: dest }).promise;
     if (result.statusCode === 200 && result.bytesWritten > 0) {
+      audioDownloadCache.set(audioPath, dest);
       return dest;
     }
   } catch {}
@@ -164,6 +174,7 @@ export async function downloadAudioToLocal(audioPath: string): Promise<string> {
   if (result.statusCode !== 200 || result.bytesWritten === 0) {
     throw new Error('音声ファイルのダウンロードに失敗しました');
   }
+  audioDownloadCache.set(audioPath, dest);
   return dest;
 }
 

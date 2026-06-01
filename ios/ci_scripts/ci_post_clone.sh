@@ -3,6 +3,7 @@ set -e
 
 export HOMEBREW_NO_AUTO_UPDATE=1
 export HOMEBREW_NO_INSTALL_CLEANUP=1
+export LANG=en_US.UTF-8
 
 # Homebrew のパスを明示的に設定（Apple Silicon: /opt/homebrew）
 if [[ -x /opt/homebrew/bin/brew ]]; then
@@ -16,9 +17,13 @@ fi
 
 echo "brew: $(which brew)"
 
-# Node.js をインストール
-brew install node@22
-brew link node@22 --force --overwrite
+# Node.js — v22 がなければインストール
+if node --version 2>/dev/null | grep -q "^v22"; then
+  echo "node already at v22: $(node --version)"
+else
+  brew install node@22
+  brew link node@22 --force --overwrite
+fi
 
 echo "node: $(node --version)"
 echo "npm: $(npm --version)"
@@ -27,6 +32,10 @@ echo "npm: $(npm --version)"
 cd "$CI_PRIMARY_REPOSITORY_PATH"
 npm install
 
+# Bundler 経由で CocoaPods をインストール（Gemfile のバージョンを使用）
+gem install bundler --no-document
+bundle install
+
 # CocoaPods
 cd "$CI_PRIMARY_REPOSITORY_PATH/ios"
-pod install
+bundle exec pod install
