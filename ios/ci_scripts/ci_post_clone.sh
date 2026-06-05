@@ -33,6 +33,8 @@ cd "$CI_PRIMARY_REPOSITORY_PATH"
 npm install
 
 # Bundler 経由で CocoaPods をインストール（Gemfile のバージョンを使用）
+export GEM_HOME="$HOME/.gem"
+export PATH="$GEM_HOME/bin:$PATH"
 gem install bundler --no-document
 bundle install
 
