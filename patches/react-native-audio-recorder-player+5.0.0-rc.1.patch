@@ -1,0 +1,1829 @@
+diff --git a/node_modules/react-native-audio-recorder-player/AudioRecorderPlayer.podspec b/node_modules/react-native-audio-recorder-player/AudioRecorderPlayer.podspec
+index 65ceb01..d67cc92 100644
+--- a/node_modules/react-native-audio-recorder-player/AudioRecorderPlayer.podspec
++++ b/node_modules/react-native-audio-recorder-player/AudioRecorderPlayer.podspec
+@@ -18,25 +18,16 @@ Pod::Spec.new do |s|
+   
+   s.dependency "React-Core"
+ 
+-  # Don't install the dependencies when we run `pod install` in the old architecture.
+-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then
+-    s.compiler_flags = folly_compiler_flags + " -DRCT_NEW_ARCH_ENABLED=1"
+-    s.pod_target_xcconfig    = {
+-        "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
+-        "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+-        "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
+-    }
+-    s.dependency "React-Codegen"
+-    s.dependency "RCT-Folly"
+-    s.dependency "RCTRequired"
+-    s.dependency "RCTTypeSafety"
+-    s.dependency "ReactCommon/turbomodule/core"
+-  else
+-    s.pod_target_xcconfig = {
+-      'DEFINES_MODULE' => 'YES',
+-      'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386'
+-    }
+-  end
++  s.compiler_flags = folly_compiler_flags + " -DRCT_NEW_ARCH_ENABLED=1"
++  s.pod_target_xcconfig    = {
++      "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
++      "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
++      "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
++  }
++  s.dependency "React-Codegen"
++  s.dependency "RCTRequired"
++  s.dependency "RCTTypeSafety"
++  s.dependency "ReactCommon/turbomodule/core"
+ 
+   s.info_plist = {
+     'NSMicrophoneUsageDescription' => 'This app needs access to microphone to record audio.'
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/.transforms/39e77b3df197e0653ee497056eeaa3cc/results.bin b/node_modules/react-native-audio-recorder-player/android/build/.transforms/39e77b3df197e0653ee497056eeaa3cc/results.bin
+new file mode 100644
+index 0000000..0d259dd
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/.transforms/39e77b3df197e0653ee497056eeaa3cc/results.bin
+@@ -0,0 +1 @@
++o/classes
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/.transforms/39e77b3df197e0653ee497056eeaa3cc/transformed/classes/classes_dex/classes.dex b/node_modules/react-native-audio-recorder-player/android/build/.transforms/39e77b3df197e0653ee497056eeaa3cc/transformed/classes/classes_dex/classes.dex
+new file mode 100644
+index 0000000..c02a2d5
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/.transforms/39e77b3df197e0653ee497056eeaa3cc/transformed/classes/classes_dex/classes.dex differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/results.bin b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/results.bin
+new file mode 100644
+index 0000000..7ed749e
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/results.bin
+@@ -0,0 +1 @@
++o/bundleLibRuntimeToDirDebug
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerModule$Companion.dex b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerModule$Companion.dex
+new file mode 100644
+index 0000000..32b4bb4
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerModule$Companion.dex differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerModule$startPlayTimer$1.dex b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerModule$startPlayTimer$1.dex
+new file mode 100644
+index 0000000..8e3a31c
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerModule$startPlayTimer$1.dex differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecordTimer$1.dex b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecordTimer$1.dex
+new file mode 100644
+index 0000000..1d98cc5
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecordTimer$1.dex differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecorder$1.dex b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecorder$1.dex
+new file mode 100644
+index 0000000..ada2298
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecorder$1.dex differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerModule.dex b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerModule.dex
+new file mode 100644
+index 0000000..ec2bf8e
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerModule.dex differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerPackage.dex b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerPackage.dex
+new file mode 100644
+index 0000000..473e74d
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/AudioRecorderPlayerPackage.dex differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/BuildConfig.dex b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/BuildConfig.dex
+new file mode 100644
+index 0000000..0c77604
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/BuildConfig.dex differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/NativeAudioRecorderPlayerSpec.dex b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/NativeAudioRecorderPlayerSpec.dex
+new file mode 100644
+index 0000000..bf7479d
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/audiorecorderplayer/NativeAudioRecorderPlayerSpec.dex differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin
+new file mode 100644
+index 0000000..601f245
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/.transforms/6cffd7fae741fc4150ad9f24e019bf37/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/buildConfig/debug/com/audiorecorderplayer/BuildConfig.java b/node_modules/react-native-audio-recorder-player/android/build/generated/source/buildConfig/debug/com/audiorecorderplayer/BuildConfig.java
+new file mode 100644
+index 0000000..ea3e509
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/buildConfig/debug/com/audiorecorderplayer/BuildConfig.java
+@@ -0,0 +1,12 @@
++/**
++ * Automatically generated file. DO NOT MODIFY
++ */
++package com.audiorecorderplayer;
++
++public final class BuildConfig {
++  public static final boolean DEBUG = Boolean.parseBoolean("true");
++  public static final String LIBRARY_PACKAGE_NAME = "com.audiorecorderplayer";
++  public static final String BUILD_TYPE = "debug";
++  // Field from default config.
++  public static final boolean IS_NEW_ARCHITECTURE_ENABLED = true;
++}
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/java/com/audiorecorderplayer/NativeAudioRecorderPlayerSpec.java b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/java/com/audiorecorderplayer/NativeAudioRecorderPlayerSpec.java
+new file mode 100644
+index 0000000..591aa32
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/java/com/audiorecorderplayer/NativeAudioRecorderPlayerSpec.java
+@@ -0,0 +1,109 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateModuleJavaSpec.js
++ *
++ * @nolint
++ */
++
++package com.audiorecorderplayer;
++
++import com.facebook.proguard.annotations.DoNotStrip;
++import com.facebook.react.bridge.Callback;
++import com.facebook.react.bridge.Promise;
++import com.facebook.react.bridge.ReactApplicationContext;
++import com.facebook.react.bridge.ReactContextBaseJavaModule;
++import com.facebook.react.bridge.ReactMethod;
++import com.facebook.react.bridge.ReadableMap;
++import com.facebook.react.turbomodule.core.interfaces.TurboModule;
++import javax.annotation.Nonnull;
++import javax.annotation.Nullable;
++
++public abstract class NativeAudioRecorderPlayerSpec extends ReactContextBaseJavaModule implements TurboModule {
++  public static final String NAME = "AudioRecorderPlayer";
++
++  public NativeAudioRecorderPlayerSpec(ReactApplicationContext reactContext) {
++    super(reactContext);
++  }
++
++  @Override
++  public @Nonnull String getName() {
++    return NAME;
++  }
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void startRecorder(@Nullable String uri, @Nullable ReadableMap audioSets, @Nullable Boolean meteringEnabled, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void pauseRecorder(Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void resumeRecorder(Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void stopRecorder(Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void startPlayer(@Nullable String uri, @Nullable ReadableMap httpHeaders, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void stopPlayer(Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void pausePlayer(Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void resumePlayer(Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void seekToPlayer(double time, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void setVolume(double volume, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void setPlaybackSpeed(double speed, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void setSubscriptionDuration(double sec);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void addRecordBackListener(Callback callback);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void removeRecordBackListener();
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void addPlayBackListener(Callback callback);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void removePlayBackListener();
++
++  @ReactMethod(isBlockingSynchronousMethod = true)
++  @DoNotStrip
++  public abstract String mmss(double secs);
++
++  @ReactMethod(isBlockingSynchronousMethod = true)
++  @DoNotStrip
++  public abstract String mmssss(double milisecs);
++}
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/AudioRecorderPlayerSpec-generated.cpp b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/AudioRecorderPlayerSpec-generated.cpp
+new file mode 100644
+index 0000000..524d9aa
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/AudioRecorderPlayerSpec-generated.cpp
+@@ -0,0 +1,134 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateModuleJniCpp.js
++ */
++
++#include "AudioRecorderPlayerSpec.h"
++
++namespace facebook::react {
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_startRecorder(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "startRecorder", "(Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/Boolean;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_pauseRecorder(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "pauseRecorder", "(Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_resumeRecorder(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "resumeRecorder", "(Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_stopRecorder(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "stopRecorder", "(Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_startPlayer(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "startPlayer", "(Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_stopPlayer(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "stopPlayer", "(Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_pausePlayer(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "pausePlayer", "(Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_resumePlayer(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "resumePlayer", "(Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_seekToPlayer(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "seekToPlayer", "(DLcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_setVolume(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "setVolume", "(DLcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_setPlaybackSpeed(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "setPlaybackSpeed", "(DLcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_setSubscriptionDuration(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "setSubscriptionDuration", "(D)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_addRecordBackListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "addRecordBackListener", "(Lcom/facebook/react/bridge/Callback;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_removeRecordBackListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "removeRecordBackListener", "()V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_addPlayBackListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "addPlayBackListener", "(Lcom/facebook/react/bridge/Callback;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_removePlayBackListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "removePlayBackListener", "()V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_mmss(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, StringKind, "mmss", "(D)Ljava/lang/String;", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeAudioRecorderPlayerSpecJSI_mmssss(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, StringKind, "mmssss", "(D)Ljava/lang/String;", args, count, cachedMethodId);
++}
++
++NativeAudioRecorderPlayerSpecJSI::NativeAudioRecorderPlayerSpecJSI(const JavaTurboModule::InitParams &params)
++  : JavaTurboModule(params) {
++  methodMap_["startRecorder"] = MethodMetadata {3, __hostFunction_NativeAudioRecorderPlayerSpecJSI_startRecorder};
++  methodMap_["pauseRecorder"] = MethodMetadata {0, __hostFunction_NativeAudioRecorderPlayerSpecJSI_pauseRecorder};
++  methodMap_["resumeRecorder"] = MethodMetadata {0, __hostFunction_NativeAudioRecorderPlayerSpecJSI_resumeRecorder};
++  methodMap_["stopRecorder"] = MethodMetadata {0, __hostFunction_NativeAudioRecorderPlayerSpecJSI_stopRecorder};
++  methodMap_["startPlayer"] = MethodMetadata {2, __hostFunction_NativeAudioRecorderPlayerSpecJSI_startPlayer};
++  methodMap_["stopPlayer"] = MethodMetadata {0, __hostFunction_NativeAudioRecorderPlayerSpecJSI_stopPlayer};
++  methodMap_["pausePlayer"] = MethodMetadata {0, __hostFunction_NativeAudioRecorderPlayerSpecJSI_pausePlayer};
++  methodMap_["resumePlayer"] = MethodMetadata {0, __hostFunction_NativeAudioRecorderPlayerSpecJSI_resumePlayer};
++  methodMap_["seekToPlayer"] = MethodMetadata {1, __hostFunction_NativeAudioRecorderPlayerSpecJSI_seekToPlayer};
++  methodMap_["setVolume"] = MethodMetadata {1, __hostFunction_NativeAudioRecorderPlayerSpecJSI_setVolume};
++  methodMap_["setPlaybackSpeed"] = MethodMetadata {1, __hostFunction_NativeAudioRecorderPlayerSpecJSI_setPlaybackSpeed};
++  methodMap_["setSubscriptionDuration"] = MethodMetadata {1, __hostFunction_NativeAudioRecorderPlayerSpecJSI_setSubscriptionDuration};
++  methodMap_["addRecordBackListener"] = MethodMetadata {1, __hostFunction_NativeAudioRecorderPlayerSpecJSI_addRecordBackListener};
++  methodMap_["removeRecordBackListener"] = MethodMetadata {0, __hostFunction_NativeAudioRecorderPlayerSpecJSI_removeRecordBackListener};
++  methodMap_["addPlayBackListener"] = MethodMetadata {1, __hostFunction_NativeAudioRecorderPlayerSpecJSI_addPlayBackListener};
++  methodMap_["removePlayBackListener"] = MethodMetadata {0, __hostFunction_NativeAudioRecorderPlayerSpecJSI_removePlayBackListener};
++  methodMap_["mmss"] = MethodMetadata {1, __hostFunction_NativeAudioRecorderPlayerSpecJSI_mmss};
++  methodMap_["mmssss"] = MethodMetadata {1, __hostFunction_NativeAudioRecorderPlayerSpecJSI_mmssss};
++}
++
++std::shared_ptr<TurboModule> AudioRecorderPlayerSpec_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params) {
++  if (moduleName == "AudioRecorderPlayer") {
++    return std::make_shared<NativeAudioRecorderPlayerSpecJSI>(params);
++  }
++  return nullptr;
++}
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/AudioRecorderPlayerSpec.h b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/AudioRecorderPlayerSpec.h
+new file mode 100644
+index 0000000..8809e98
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/AudioRecorderPlayerSpec.h
+@@ -0,0 +1,31 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateModuleJniH.js
++ */
++
++#pragma once
++
++#include <ReactCommon/JavaTurboModule.h>
++#include <ReactCommon/TurboModule.h>
++#include <jsi/jsi.h>
++
++namespace facebook::react {
++
++/**
++ * JNI C++ class for module 'NativeAudioRecorderPlayer'
++ */
++class JSI_EXPORT NativeAudioRecorderPlayerSpecJSI : public JavaTurboModule {
++public:
++  NativeAudioRecorderPlayerSpecJSI(const JavaTurboModule::InitParams &params);
++};
++
++
++JSI_EXPORT
++std::shared_ptr<TurboModule> AudioRecorderPlayerSpec_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params);
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/CMakeLists.txt b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/CMakeLists.txt
+new file mode 100644
+index 0000000..4921c72
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/CMakeLists.txt
+@@ -0,0 +1,28 @@
++# Copyright (c) Meta Platforms, Inc. and affiliates.
++#
++# This source code is licensed under the MIT license found in the
++# LICENSE file in the root directory of this source tree.
++
++cmake_minimum_required(VERSION 3.13)
++set(CMAKE_VERBOSE_MAKEFILE on)
++
++file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/AudioRecorderPlayerSpec/*.cpp)
++
++add_library(
++  react_codegen_AudioRecorderPlayerSpec
++  OBJECT
++  ${react_codegen_SRCS}
++)
++
++target_include_directories(react_codegen_AudioRecorderPlayerSpec PUBLIC . react/renderer/components/AudioRecorderPlayerSpec)
++
++target_link_libraries(
++  react_codegen_AudioRecorderPlayerSpec
++  fbjni
++  jsi
++  # We need to link different libraries based on whether we are building rncore or not, that's necessary
++  # because we want to break a circular dependency between react_codegen_rncore and reactnative
++  reactnative
++)
++
++target_compile_reactnative_options(react_codegen_AudioRecorderPlayerSpec PRIVATE)
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/AudioRecorderPlayerSpecJSI.h b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/AudioRecorderPlayerSpecJSI.h
+new file mode 100644
+index 0000000..a742291
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/AudioRecorderPlayerSpecJSI.h
+@@ -0,0 +1,420 @@
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateModuleH.js
++ */
++
++#pragma once
++
++#include <ReactCommon/TurboModule.h>
++#include <react/bridging/Bridging.h>
++
++namespace facebook::react {
++
++
++#pragma mark - NativeAudioRecorderPlayerAudioSet
++
++template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8, typename P9, typename P10>
++struct NativeAudioRecorderPlayerAudioSet {
++  P0 AudioEncoderAndroid{};
++  P1 AudioSourceAndroid{};
++  P2 AVModeIOS{};
++  P3 AVEncoderAudioQualityKeyIOS{};
++  P4 AVNumberOfChannelsKeyIOS{};
++  P5 AVFormatIDKeyIOS{};
++  P6 AudioSampleRateAndroid{};
++  P7 AudioChannelsAndroid{};
++  P8 AudioEncodingBitRateAndroid{};
++  P9 IncludeBase64{};
++  P10 OutputFormatAndroid;
++  bool operator==(const NativeAudioRecorderPlayerAudioSet &other) const {
++    return AudioEncoderAndroid == other.AudioEncoderAndroid && AudioSourceAndroid == other.AudioSourceAndroid && AVModeIOS == other.AVModeIOS && AVEncoderAudioQualityKeyIOS == other.AVEncoderAudioQualityKeyIOS && AVNumberOfChannelsKeyIOS == other.AVNumberOfChannelsKeyIOS && AVFormatIDKeyIOS == other.AVFormatIDKeyIOS && AudioSampleRateAndroid == other.AudioSampleRateAndroid && AudioChannelsAndroid == other.AudioChannelsAndroid && AudioEncodingBitRateAndroid == other.AudioEncodingBitRateAndroid && IncludeBase64 == other.IncludeBase64 && OutputFormatAndroid == other.OutputFormatAndroid;
++  }
++};
++
++template <typename T>
++struct NativeAudioRecorderPlayerAudioSetBridging {
++  static T types;
++
++  static T fromJs(
++      jsi::Runtime &rt,
++      const jsi::Object &value,
++      const std::shared_ptr<CallInvoker> &jsInvoker) {
++    T result{
++      bridging::fromJs<decltype(types.AudioEncoderAndroid)>(rt, value.getProperty(rt, "AudioEncoderAndroid"), jsInvoker),
++      bridging::fromJs<decltype(types.AudioSourceAndroid)>(rt, value.getProperty(rt, "AudioSourceAndroid"), jsInvoker),
++      bridging::fromJs<decltype(types.AVModeIOS)>(rt, value.getProperty(rt, "AVModeIOS"), jsInvoker),
++      bridging::fromJs<decltype(types.AVEncoderAudioQualityKeyIOS)>(rt, value.getProperty(rt, "AVEncoderAudioQualityKeyIOS"), jsInvoker),
++      bridging::fromJs<decltype(types.AVNumberOfChannelsKeyIOS)>(rt, value.getProperty(rt, "AVNumberOfChannelsKeyIOS"), jsInvoker),
++      bridging::fromJs<decltype(types.AVFormatIDKeyIOS)>(rt, value.getProperty(rt, "AVFormatIDKeyIOS"), jsInvoker),
++      bridging::fromJs<decltype(types.AudioSampleRateAndroid)>(rt, value.getProperty(rt, "AudioSampleRateAndroid"), jsInvoker),
++      bridging::fromJs<decltype(types.AudioChannelsAndroid)>(rt, value.getProperty(rt, "AudioChannelsAndroid"), jsInvoker),
++      bridging::fromJs<decltype(types.AudioEncodingBitRateAndroid)>(rt, value.getProperty(rt, "AudioEncodingBitRateAndroid"), jsInvoker),
++      bridging::fromJs<decltype(types.IncludeBase64)>(rt, value.getProperty(rt, "IncludeBase64"), jsInvoker),
++      bridging::fromJs<decltype(types.OutputFormatAndroid)>(rt, value.getProperty(rt, "OutputFormatAndroid"), jsInvoker)};
++    return result;
++  }
++
++#ifdef DEBUG
++  static double AudioEncoderAndroidToJs(jsi::Runtime &rt, decltype(types.AudioEncoderAndroid) value) {
++    return bridging::toJs(rt, value);
++  }
++  static double AudioSourceAndroidToJs(jsi::Runtime &rt, decltype(types.AudioSourceAndroid) value) {
++    return bridging::toJs(rt, value);
++  }
++  static double AVModeIOSToJs(jsi::Runtime &rt, decltype(types.AVModeIOS) value) {
++    return bridging::toJs(rt, value);
++  }
++  static double AVEncoderAudioQualityKeyIOSToJs(jsi::Runtime &rt, decltype(types.AVEncoderAudioQualityKeyIOS) value) {
++    return bridging::toJs(rt, value);
++  }
++  static double AVNumberOfChannelsKeyIOSToJs(jsi::Runtime &rt, decltype(types.AVNumberOfChannelsKeyIOS) value) {
++    return bridging::toJs(rt, value);
++  }
++  static jsi::String AVFormatIDKeyIOSToJs(jsi::Runtime &rt, decltype(types.AVFormatIDKeyIOS) value) {
++    return bridging::toJs(rt, value);
++  }
++  static double AudioSampleRateAndroidToJs(jsi::Runtime &rt, decltype(types.AudioSampleRateAndroid) value) {
++    return bridging::toJs(rt, value);
++  }
++  static double AudioChannelsAndroidToJs(jsi::Runtime &rt, decltype(types.AudioChannelsAndroid) value) {
++    return bridging::toJs(rt, value);
++  }
++  static double AudioEncodingBitRateAndroidToJs(jsi::Runtime &rt, decltype(types.AudioEncodingBitRateAndroid) value) {
++    return bridging::toJs(rt, value);
++  }
++  static bool IncludeBase64ToJs(jsi::Runtime &rt, decltype(types.IncludeBase64) value) {
++    return bridging::toJs(rt, value);
++  }
++  static double OutputFormatAndroidToJs(jsi::Runtime &rt, decltype(types.OutputFormatAndroid) value) {
++    return bridging::toJs(rt, value);
++  }
++#endif
++
++  static jsi::Object toJs(
++      jsi::Runtime &rt,
++      const T &value,
++      const std::shared_ptr<CallInvoker> &jsInvoker) {
++    auto result = facebook::jsi::Object(rt);
++    if (value.AudioEncoderAndroid) {
++      result.setProperty(rt, "AudioEncoderAndroid", bridging::toJs(rt, value.AudioEncoderAndroid.value(), jsInvoker));
++    }
++    if (value.AudioSourceAndroid) {
++      result.setProperty(rt, "AudioSourceAndroid", bridging::toJs(rt, value.AudioSourceAndroid.value(), jsInvoker));
++    }
++    if (value.AVModeIOS) {
++      result.setProperty(rt, "AVModeIOS", bridging::toJs(rt, value.AVModeIOS.value(), jsInvoker));
++    }
++    if (value.AVEncoderAudioQualityKeyIOS) {
++      result.setProperty(rt, "AVEncoderAudioQualityKeyIOS", bridging::toJs(rt, value.AVEncoderAudioQualityKeyIOS.value(), jsInvoker));
++    }
++    if (value.AVNumberOfChannelsKeyIOS) {
++      result.setProperty(rt, "AVNumberOfChannelsKeyIOS", bridging::toJs(rt, value.AVNumberOfChannelsKeyIOS.value(), jsInvoker));
++    }
++    if (value.AVFormatIDKeyIOS) {
++      result.setProperty(rt, "AVFormatIDKeyIOS", bridging::toJs(rt, value.AVFormatIDKeyIOS.value(), jsInvoker));
++    }
++    if (value.AudioSampleRateAndroid) {
++      result.setProperty(rt, "AudioSampleRateAndroid", bridging::toJs(rt, value.AudioSampleRateAndroid.value(), jsInvoker));
++    }
++    if (value.AudioChannelsAndroid) {
++      result.setProperty(rt, "AudioChannelsAndroid", bridging::toJs(rt, value.AudioChannelsAndroid.value(), jsInvoker));
++    }
++    if (value.AudioEncodingBitRateAndroid) {
++      result.setProperty(rt, "AudioEncodingBitRateAndroid", bridging::toJs(rt, value.AudioEncodingBitRateAndroid.value(), jsInvoker));
++    }
++    if (value.IncludeBase64) {
++      result.setProperty(rt, "IncludeBase64", bridging::toJs(rt, value.IncludeBase64.value(), jsInvoker));
++    }
++    if (value.OutputFormatAndroid) {
++      result.setProperty(rt, "OutputFormatAndroid", bridging::toJs(rt, value.OutputFormatAndroid.value(), jsInvoker));
++    }
++    return result;
++  }
++};
++
++
++
++#pragma mark - NativeAudioRecorderPlayerPlayBackType
++
++template <typename P0, typename P1, typename P2>
++struct NativeAudioRecorderPlayerPlayBackType {
++  P0 isMuted{};
++  P1 currentPosition{};
++  P2 duration;
++  bool operator==(const NativeAudioRecorderPlayerPlayBackType &other) const {
++    return isMuted == other.isMuted && currentPosition == other.currentPosition && duration == other.duration;
++  }
++};
++
++template <typename T>
++struct NativeAudioRecorderPlayerPlayBackTypeBridging {
++  static T types;
++
++  static T fromJs(
++      jsi::Runtime &rt,
++      const jsi::Object &value,
++      const std::shared_ptr<CallInvoker> &jsInvoker) {
++    T result{
++      bridging::fromJs<decltype(types.isMuted)>(rt, value.getProperty(rt, "isMuted"), jsInvoker),
++      bridging::fromJs<decltype(types.currentPosition)>(rt, value.getProperty(rt, "currentPosition"), jsInvoker),
++      bridging::fromJs<decltype(types.duration)>(rt, value.getProperty(rt, "duration"), jsInvoker)};
++    return result;
++  }
++
++#ifdef DEBUG
++  static bool isMutedToJs(jsi::Runtime &rt, decltype(types.isMuted) value) {
++    return bridging::toJs(rt, value);
++  }
++  static double currentPositionToJs(jsi::Runtime &rt, decltype(types.currentPosition) value) {
++    return bridging::toJs(rt, value);
++  }
++  static double durationToJs(jsi::Runtime &rt, decltype(types.duration) value) {
++    return bridging::toJs(rt, value);
++  }
++#endif
++
++  static jsi::Object toJs(
++      jsi::Runtime &rt,
++      const T &value,
++      const std::shared_ptr<CallInvoker> &jsInvoker) {
++    auto result = facebook::jsi::Object(rt);
++    if (value.isMuted) {
++      result.setProperty(rt, "isMuted", bridging::toJs(rt, value.isMuted.value(), jsInvoker));
++    }
++    result.setProperty(rt, "currentPosition", bridging::toJs(rt, value.currentPosition, jsInvoker));
++    result.setProperty(rt, "duration", bridging::toJs(rt, value.duration, jsInvoker));
++    return result;
++  }
++};
++
++
++
++#pragma mark - NativeAudioRecorderPlayerRecordBackType
++
++template <typename P0, typename P1, typename P2>
++struct NativeAudioRecorderPlayerRecordBackType {
++  P0 isRecording{};
++  P1 currentPosition{};
++  P2 currentMetering;
++  bool operator==(const NativeAudioRecorderPlayerRecordBackType &other) const {
++    return isRecording == other.isRecording && currentPosition == other.currentPosition && currentMetering == other.currentMetering;
++  }
++};
++
++template <typename T>
++struct NativeAudioRecorderPlayerRecordBackTypeBridging {
++  static T types;
++
++  static T fromJs(
++      jsi::Runtime &rt,
++      const jsi::Object &value,
++      const std::shared_ptr<CallInvoker> &jsInvoker) {
++    T result{
++      bridging::fromJs<decltype(types.isRecording)>(rt, value.getProperty(rt, "isRecording"), jsInvoker),
++      bridging::fromJs<decltype(types.currentPosition)>(rt, value.getProperty(rt, "currentPosition"), jsInvoker),
++      bridging::fromJs<decltype(types.currentMetering)>(rt, value.getProperty(rt, "currentMetering"), jsInvoker)};
++    return result;
++  }
++
++#ifdef DEBUG
++  static bool isRecordingToJs(jsi::Runtime &rt, decltype(types.isRecording) value) {
++    return bridging::toJs(rt, value);
++  }
++  static double currentPositionToJs(jsi::Runtime &rt, decltype(types.currentPosition) value) {
++    return bridging::toJs(rt, value);
++  }
++  static double currentMeteringToJs(jsi::Runtime &rt, decltype(types.currentMetering) value) {
++    return bridging::toJs(rt, value);
++  }
++#endif
++
++  static jsi::Object toJs(
++      jsi::Runtime &rt,
++      const T &value,
++      const std::shared_ptr<CallInvoker> &jsInvoker) {
++    auto result = facebook::jsi::Object(rt);
++    if (value.isRecording) {
++      result.setProperty(rt, "isRecording", bridging::toJs(rt, value.isRecording.value(), jsInvoker));
++    }
++    result.setProperty(rt, "currentPosition", bridging::toJs(rt, value.currentPosition, jsInvoker));
++    if (value.currentMetering) {
++      result.setProperty(rt, "currentMetering", bridging::toJs(rt, value.currentMetering.value(), jsInvoker));
++    }
++    return result;
++  }
++};
++
++
++template <typename T>
++class JSI_EXPORT NativeAudioRecorderPlayerCxxSpec : public TurboModule {
++public:
++  static constexpr std::string_view kModuleName = "AudioRecorderPlayer";
++
++protected:
++  NativeAudioRecorderPlayerCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeAudioRecorderPlayerCxxSpec::kModuleName}, jsInvoker) {
++    methodMap_["startRecorder"] = MethodMetadata {.argCount = 3, .invoker = __startRecorder};
++    methodMap_["pauseRecorder"] = MethodMetadata {.argCount = 0, .invoker = __pauseRecorder};
++    methodMap_["resumeRecorder"] = MethodMetadata {.argCount = 0, .invoker = __resumeRecorder};
++    methodMap_["stopRecorder"] = MethodMetadata {.argCount = 0, .invoker = __stopRecorder};
++    methodMap_["startPlayer"] = MethodMetadata {.argCount = 2, .invoker = __startPlayer};
++    methodMap_["stopPlayer"] = MethodMetadata {.argCount = 0, .invoker = __stopPlayer};
++    methodMap_["pausePlayer"] = MethodMetadata {.argCount = 0, .invoker = __pausePlayer};
++    methodMap_["resumePlayer"] = MethodMetadata {.argCount = 0, .invoker = __resumePlayer};
++    methodMap_["seekToPlayer"] = MethodMetadata {.argCount = 1, .invoker = __seekToPlayer};
++    methodMap_["setVolume"] = MethodMetadata {.argCount = 1, .invoker = __setVolume};
++    methodMap_["setPlaybackSpeed"] = MethodMetadata {.argCount = 1, .invoker = __setPlaybackSpeed};
++    methodMap_["setSubscriptionDuration"] = MethodMetadata {.argCount = 1, .invoker = __setSubscriptionDuration};
++    methodMap_["addRecordBackListener"] = MethodMetadata {.argCount = 1, .invoker = __addRecordBackListener};
++    methodMap_["removeRecordBackListener"] = MethodMetadata {.argCount = 0, .invoker = __removeRecordBackListener};
++    methodMap_["addPlayBackListener"] = MethodMetadata {.argCount = 1, .invoker = __addPlayBackListener};
++    methodMap_["removePlayBackListener"] = MethodMetadata {.argCount = 0, .invoker = __removePlayBackListener};
++    methodMap_["mmss"] = MethodMetadata {.argCount = 1, .invoker = __mmss};
++    methodMap_["mmssss"] = MethodMetadata {.argCount = 1, .invoker = __mmssss};
++  }
++  
++private:
++  static jsi::Value __startRecorder(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++    static_assert(
++      bridging::getParameterCount(&T::startRecorder) == 4,
++      "Expected startRecorder(...) to have 4 parameters");
++    return bridging::callFromJs<jsi::Value>(rt, &T::startRecorder,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
++      count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asString(rt)),
++      count <= 1 || args[1].isUndefined() ? std::nullopt : std::make_optional(args[1].asObject(rt)),
++      count <= 2 || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asBool()));
++  }
++
++  static jsi::Value __pauseRecorder(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
++    static_assert(
++      bridging::getParameterCount(&T::pauseRecorder) == 1,
++      "Expected pauseRecorder(...) to have 1 parameters");
++    return bridging::callFromJs<jsi::Value>(rt, &T::pauseRecorder,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
++  }
++
++  static jsi::Value __resumeRecorder(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
++    static_assert(
++      bridging::getParameterCount(&T::resumeRecorder) == 1,
++      "Expected resumeRecorder(...) to have 1 parameters");
++    return bridging::callFromJs<jsi::Value>(rt, &T::resumeRecorder,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
++  }
++
++  static jsi::Value __stopRecorder(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
++    static_assert(
++      bridging::getParameterCount(&T::stopRecorder) == 1,
++      "Expected stopRecorder(...) to have 1 parameters");
++    return bridging::callFromJs<jsi::Value>(rt, &T::stopRecorder,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
++  }
++
++  static jsi::Value __startPlayer(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++    static_assert(
++      bridging::getParameterCount(&T::startPlayer) == 3,
++      "Expected startPlayer(...) to have 3 parameters");
++    return bridging::callFromJs<jsi::Value>(rt, &T::startPlayer,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
++      count <= 0 || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asString(rt)),
++      count <= 1 || args[1].isUndefined() ? std::nullopt : std::make_optional(args[1].asObject(rt)));
++  }
++
++  static jsi::Value __stopPlayer(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
++    static_assert(
++      bridging::getParameterCount(&T::stopPlayer) == 1,
++      "Expected stopPlayer(...) to have 1 parameters");
++    return bridging::callFromJs<jsi::Value>(rt, &T::stopPlayer,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
++  }
++
++  static jsi::Value __pausePlayer(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
++    static_assert(
++      bridging::getParameterCount(&T::pausePlayer) == 1,
++      "Expected pausePlayer(...) to have 1 parameters");
++    return bridging::callFromJs<jsi::Value>(rt, &T::pausePlayer,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
++  }
++
++  static jsi::Value __resumePlayer(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
++    static_assert(
++      bridging::getParameterCount(&T::resumePlayer) == 1,
++      "Expected resumePlayer(...) to have 1 parameters");
++    return bridging::callFromJs<jsi::Value>(rt, &T::resumePlayer,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
++  }
++
++  static jsi::Value __seekToPlayer(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++    static_assert(
++      bridging::getParameterCount(&T::seekToPlayer) == 2,
++      "Expected seekToPlayer(...) to have 2 parameters");
++    return bridging::callFromJs<jsi::Value>(rt, &T::seekToPlayer,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
++      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber());
++  }
++
++  static jsi::Value __setVolume(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++    static_assert(
++      bridging::getParameterCount(&T::setVolume) == 2,
++      "Expected setVolume(...) to have 2 parameters");
++    return bridging::callFromJs<jsi::Value>(rt, &T::setVolume,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
++      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber());
++  }
++
++  static jsi::Value __setPlaybackSpeed(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++    static_assert(
++      bridging::getParameterCount(&T::setPlaybackSpeed) == 2,
++      "Expected setPlaybackSpeed(...) to have 2 parameters");
++    return bridging::callFromJs<jsi::Value>(rt, &T::setPlaybackSpeed,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
++      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber());
++  }
++
++  static jsi::Value __setSubscriptionDuration(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++    static_assert(
++      bridging::getParameterCount(&T::setSubscriptionDuration) == 2,
++      "Expected setSubscriptionDuration(...) to have 2 parameters");
++    bridging::callFromJs<void>(rt, &T::setSubscriptionDuration,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
++      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber());return jsi::Value::undefined();
++  }
++
++  static jsi::Value __addRecordBackListener(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++    static_assert(
++      bridging::getParameterCount(&T::addRecordBackListener) == 2,
++      "Expected addRecordBackListener(...) to have 2 parameters");
++    bridging::callFromJs<void>(rt, &T::addRecordBackListener,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
++      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt).asFunction(rt));return jsi::Value::undefined();
++  }
++
++  static jsi::Value __removeRecordBackListener(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
++    static_assert(
++      bridging::getParameterCount(&T::removeRecordBackListener) == 1,
++      "Expected removeRecordBackListener(...) to have 1 parameters");
++    bridging::callFromJs<void>(rt, &T::removeRecordBackListener,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));return jsi::Value::undefined();
++  }
++
++  static jsi::Value __addPlayBackListener(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++    static_assert(
++      bridging::getParameterCount(&T::addPlayBackListener) == 2,
++      "Expected addPlayBackListener(...) to have 2 parameters");
++    bridging::callFromJs<void>(rt, &T::addPlayBackListener,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
++      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt).asFunction(rt));return jsi::Value::undefined();
++  }
++
++  static jsi::Value __removePlayBackListener(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
++    static_assert(
++      bridging::getParameterCount(&T::removePlayBackListener) == 1,
++      "Expected removePlayBackListener(...) to have 1 parameters");
++    bridging::callFromJs<void>(rt, &T::removePlayBackListener,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));return jsi::Value::undefined();
++  }
++
++  static jsi::Value __mmss(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++    static_assert(
++      bridging::getParameterCount(&T::mmss) == 2,
++      "Expected mmss(...) to have 2 parameters");
++    return bridging::callFromJs<jsi::String>(rt, &T::mmss,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
++      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber());
++  }
++
++  static jsi::Value __mmssss(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++    static_assert(
++      bridging::getParameterCount(&T::mmssss) == 2,
++      "Expected mmssss(...) to have 2 parameters");
++    return bridging::callFromJs<jsi::String>(rt, &T::mmssss,  static_cast<NativeAudioRecorderPlayerCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
++      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asNumber());
++  }
++};
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/ComponentDescriptors.cpp b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/ComponentDescriptors.cpp
+new file mode 100644
+index 0000000..95e4501
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/ComponentDescriptors.cpp
+@@ -0,0 +1,22 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateComponentDescriptorCpp.js
++ */
++
++#include <react/renderer/components/AudioRecorderPlayerSpec/ComponentDescriptors.h>
++#include <react/renderer/core/ConcreteComponentDescriptor.h>
++#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
++
++namespace facebook::react {
++
++void AudioRecorderPlayerSpec_registerComponentDescriptorsFromCodegen(
++  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry) {
++
++}
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/ComponentDescriptors.h b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/ComponentDescriptors.h
+new file mode 100644
+index 0000000..aa2420f
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/ComponentDescriptors.h
+@@ -0,0 +1,24 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateComponentDescriptorH.js
++ */
++
++#pragma once
++
++#include <react/renderer/components/AudioRecorderPlayerSpec/ShadowNodes.h>
++#include <react/renderer/core/ConcreteComponentDescriptor.h>
++#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
++
++namespace facebook::react {
++
++
++
++void AudioRecorderPlayerSpec_registerComponentDescriptorsFromCodegen(
++  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/EventEmitters.cpp b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/EventEmitters.cpp
+new file mode 100644
+index 0000000..34d2f1a
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/EventEmitters.cpp
+@@ -0,0 +1,16 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateEventEmitterCpp.js
++ */
++
++#include <react/renderer/components/AudioRecorderPlayerSpec/EventEmitters.h>
++
++
++namespace facebook::react {
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/EventEmitters.h b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/EventEmitters.h
+new file mode 100644
+index 0000000..2845a63
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/EventEmitters.h
+@@ -0,0 +1,17 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateEventEmitterH.js
++ */
++#pragma once
++
++#include <react/renderer/components/view/ViewEventEmitter.h>
++
++
++namespace facebook::react {
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/Props.cpp b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/Props.cpp
+new file mode 100644
+index 0000000..064d01a
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/Props.cpp
+@@ -0,0 +1,19 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GeneratePropsCpp.js
++ */
++
++#include <react/renderer/components/AudioRecorderPlayerSpec/Props.h>
++#include <react/renderer/core/PropsParserContext.h>
++#include <react/renderer/core/propsConversions.h>
++
++namespace facebook::react {
++
++
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/Props.h b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/Props.h
+new file mode 100644
+index 0000000..870864b
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/Props.h
+@@ -0,0 +1,18 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GeneratePropsH.js
++ */
++#pragma once
++
++
++
++namespace facebook::react {
++
++
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/ShadowNodes.cpp b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/ShadowNodes.cpp
+new file mode 100644
+index 0000000..73c3bf3
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/ShadowNodes.cpp
+@@ -0,0 +1,17 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateShadowNodeCpp.js
++ */
++
++#include <react/renderer/components/AudioRecorderPlayerSpec/ShadowNodes.h>
++
++namespace facebook::react {
++
++
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/ShadowNodes.h b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/ShadowNodes.h
+new file mode 100644
+index 0000000..b859f0d
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/ShadowNodes.h
+@@ -0,0 +1,23 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateShadowNodeH.js
++ */
++
++#pragma once
++
++#include <react/renderer/components/AudioRecorderPlayerSpec/EventEmitters.h>
++#include <react/renderer/components/AudioRecorderPlayerSpec/Props.h>
++#include <react/renderer/components/AudioRecorderPlayerSpec/States.h>
++#include <react/renderer/components/view/ConcreteViewShadowNode.h>
++#include <jsi/jsi.h>
++
++namespace facebook::react {
++
++
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/States.cpp b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/States.cpp
+new file mode 100644
+index 0000000..90c6741
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/States.cpp
+@@ -0,0 +1,16 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateStateCpp.js
++ */
++#include <react/renderer/components/AudioRecorderPlayerSpec/States.h>
++
++namespace facebook::react {
++
++
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/States.h b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/States.h
+new file mode 100644
+index 0000000..2e55bce
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/jni/react/renderer/components/AudioRecorderPlayerSpec/States.h
+@@ -0,0 +1,20 @@
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateStateH.js
++ */
++#pragma once
++
++#include <react/renderer/core/StateData.h>
++#ifdef RN_SERIALIZABLE_STATE
++#include <folly/dynamic.h>
++#endif
++
++namespace facebook::react {
++
++
++
++} // namespace facebook::react
+\ No newline at end of file
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/schema.json b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/schema.json
+new file mode 100644
+index 0000000..68a1c58
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/generated/source/codegen/schema.json
+@@ -0,0 +1 @@
++{"libraryName":"","modules":{"NativeAudioRecorderPlayer":{"type":"NativeModule","aliasMap":{"AudioSet":{"type":"ObjectTypeAnnotation","properties":[{"name":"AudioEncoderAndroid","optional":true,"typeAnnotation":{"type":"NumberTypeAnnotation"}},{"name":"AudioSourceAndroid","optional":true,"typeAnnotation":{"type":"NumberTypeAnnotation"}},{"name":"AVModeIOS","optional":true,"typeAnnotation":{"type":"NumberTypeAnnotation"}},{"name":"AVEncoderAudioQualityKeyIOS","optional":true,"typeAnnotation":{"type":"NumberTypeAnnotation"}},{"name":"AVNumberOfChannelsKeyIOS","optional":true,"typeAnnotation":{"type":"NumberTypeAnnotation"}},{"name":"AVFormatIDKeyIOS","optional":true,"typeAnnotation":{"type":"StringTypeAnnotation"}},{"name":"AudioSampleRateAndroid","optional":true,"typeAnnotation":{"type":"NumberTypeAnnotation"}},{"name":"AudioChannelsAndroid","optional":true,"typeAnnotation":{"type":"NumberTypeAnnotation"}},{"name":"AudioEncodingBitRateAndroid","optional":true,"typeAnnotation":{"type":"NumberTypeAnnotation"}},{"name":"IncludeBase64","optional":true,"typeAnnotation":{"type":"BooleanTypeAnnotation"}},{"name":"OutputFormatAndroid","optional":true,"typeAnnotation":{"type":"NumberTypeAnnotation"}}]},"PlayBackType":{"type":"ObjectTypeAnnotation","properties":[{"name":"isMuted","optional":true,"typeAnnotation":{"type":"BooleanTypeAnnotation"}},{"name":"currentPosition","optional":false,"typeAnnotation":{"type":"NumberTypeAnnotation"}},{"name":"duration","optional":false,"typeAnnotation":{"type":"NumberTypeAnnotation"}}]},"RecordBackType":{"type":"ObjectTypeAnnotation","properties":[{"name":"isRecording","optional":true,"typeAnnotation":{"type":"BooleanTypeAnnotation"}},{"name":"currentPosition","optional":false,"typeAnnotation":{"type":"NumberTypeAnnotation"}},{"name":"currentMetering","optional":true,"typeAnnotation":{"type":"NumberTypeAnnotation"}}]}},"enumMap":{},"spec":{"eventEmitters":[],"methods":[{"name":"startRecorder","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"StringTypeAnnotation"}},"params":[{"name":"uri","optional":true,"typeAnnotation":{"type":"StringTypeAnnotation"}},{"name":"audioSets","optional":true,"typeAnnotation":{"type":"TypeAliasTypeAnnotation","name":"AudioSet"}},{"name":"meteringEnabled","optional":true,"typeAnnotation":{"type":"BooleanTypeAnnotation"}}]}},{"name":"pauseRecorder","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"StringTypeAnnotation"}},"params":[]}},{"name":"resumeRecorder","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"StringTypeAnnotation"}},"params":[]}},{"name":"stopRecorder","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"StringTypeAnnotation"}},"params":[]}},{"name":"startPlayer","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"StringTypeAnnotation"}},"params":[{"name":"uri","optional":true,"typeAnnotation":{"type":"StringTypeAnnotation"}},{"name":"httpHeaders","optional":true,"typeAnnotation":{"type":"GenericObjectTypeAnnotation"}}]}},{"name":"stopPlayer","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"StringTypeAnnotation"}},"params":[]}},{"name":"pausePlayer","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"StringTypeAnnotation"}},"params":[]}},{"name":"resumePlayer","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"StringTypeAnnotation"}},"params":[]}},{"name":"seekToPlayer","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"StringTypeAnnotation"}},"params":[{"name":"time","optional":false,"typeAnnotation":{"type":"NumberTypeAnnotation"}}]}},{"name":"setVolume","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"StringTypeAnnotation"}},"params":[{"name":"volume","optional":false,"typeAnnotation":{"type":"NumberTypeAnnotation"}}]}},{"name":"setPlaybackSpeed","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"StringTypeAnnotation"}},"params":[{"name":"speed","optional":false,"typeAnnotation":{"type":"NumberTypeAnnotation"}}]}},{"name":"setSubscriptionDuration","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"VoidTypeAnnotation"},"params":[{"name":"sec","optional":false,"typeAnnotation":{"type":"NumberTypeAnnotation"}}]}},{"name":"addRecordBackListener","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"VoidTypeAnnotation"},"params":[{"name":"callback","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"VoidTypeAnnotation"},"params":[{"name":"recordBackType","optional":false,"typeAnnotation":{"type":"TypeAliasTypeAnnotation","name":"RecordBackType"}}]}}]}},{"name":"removeRecordBackListener","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"VoidTypeAnnotation"},"params":[]}},{"name":"addPlayBackListener","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"VoidTypeAnnotation"},"params":[{"name":"callback","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"VoidTypeAnnotation"},"params":[{"name":"playBackType","optional":false,"typeAnnotation":{"type":"TypeAliasTypeAnnotation","name":"PlayBackType"}}]}}]}},{"name":"removePlayBackListener","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"VoidTypeAnnotation"},"params":[]}},{"name":"mmss","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"StringTypeAnnotation"},"params":[{"name":"secs","optional":false,"typeAnnotation":{"type":"NumberTypeAnnotation"}}]}},{"name":"mmssss","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"StringTypeAnnotation"},"params":[{"name":"milisecs","optional":false,"typeAnnotation":{"type":"NumberTypeAnnotation"}}]}}]},"moduleName":"AudioRecorderPlayer"}}}
+\ No newline at end of file
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml b/node_modules/react-native-audio-recorder-player/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+new file mode 100644
+index 0000000..7ff9b32
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+@@ -0,0 +1,14 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.audiorecorderplayer" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++    <uses-permission android:name="android.permission.RECORD_AUDIO" />
++    <uses-permission
++        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
++        android:maxSdkVersion="28" />
++    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
++    <uses-permission android:name="android.permission.INTERNET" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json b/node_modules/react-native-audio-recorder-player/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+new file mode 100644
+index 0000000..0ab11f2
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+@@ -0,0 +1,18 @@
++{
++  "version": 3,
++  "artifactType": {
++    "type": "AAPT_FRIENDLY_MERGED_MANIFESTS",
++    "kind": "Directory"
++  },
++  "applicationId": "com.audiorecorderplayer",
++  "variantName": "debug",
++  "elements": [
++    {
++      "type": "SINGLE",
++      "filters": [],
++      "attributes": [],
++      "outputFile": "AndroidManifest.xml"
++    }
++  ],
++  "elementType": "File"
++}
+\ No newline at end of file
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties b/node_modules/react-native-audio-recorder-player/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+new file mode 100644
+index 0000000..1211b1e
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+@@ -0,0 +1,6 @@
++aarFormatVersion=1.0
++aarMetadataVersion=1.0
++minCompileSdk=1
++minCompileSdkExtension=0
++minAndroidGradlePluginVersion=1.0.0
++coreLibraryDesugaringEnabled=false
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json b/node_modules/react-native-audio-recorder-player/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+new file mode 100644
+index 0000000..9e26dfe
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+@@ -0,0 +1 @@
++{}
+\ No newline at end of file
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar b/node_modules/react-native-audio-recorder-player/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar
+new file mode 100644
+index 0000000..97478c6
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar b/node_modules/react-native-audio-recorder-player/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar
+new file mode 100644
+index 0000000..702a133
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt b/node_modules/react-native-audio-recorder-player/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties b/node_modules/react-native-audio-recorder-player/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+new file mode 100644
+index 0000000..d6f825f
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+@@ -0,0 +1 @@
++#Wed May 06 16:40:06 JST 2026
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml b/node_modules/react-native-audio-recorder-player/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+new file mode 100644
+index 0000000..254c162
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/build/generated/res/resValues/debug"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/incremental/mergeDebugAssets/merger.xml b/node_modules/react-native-audio-recorder-player/android/build/intermediates/incremental/mergeDebugAssets/merger.xml
+new file mode 100644
+index 0000000..52272e3
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/intermediates/incremental/mergeDebugAssets/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/assets"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/debug/assets"/></dataSet><dataSet config="generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/build/intermediates/shader_assets/debug/compileDebugShaders/out"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/react-native-audio-recorder-player/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+new file mode 100644
+index 0000000..9eadd9f
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/debug/jniLibs"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/react-native-audio-recorder-player/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+new file mode 100644
+index 0000000..037080a
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/debug/shaders"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/java_res/debug/processDebugJavaRes/out/META-INF/react-native-audio-recorder-player_debug.kotlin_module b/node_modules/react-native-audio-recorder-player/android/build/intermediates/java_res/debug/processDebugJavaRes/out/META-INF/react-native-audio-recorder-player_debug.kotlin_module
+new file mode 100644
+index 0000000..9dbc290
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/intermediates/java_res/debug/processDebugJavaRes/out/META-INF/react-native-audio-recorder-player_debug.kotlin_module differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/audiorecorderplayer/BuildConfig.class b/node_modules/react-native-audio-recorder-player/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/audiorecorderplayer/BuildConfig.class
+new file mode 100644
+index 0000000..e30c625
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/audiorecorderplayer/BuildConfig.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/audiorecorderplayer/NativeAudioRecorderPlayerSpec.class b/node_modules/react-native-audio-recorder-player/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/audiorecorderplayer/NativeAudioRecorderPlayerSpec.class
+new file mode 100644
+index 0000000..8e60058
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/audiorecorderplayer/NativeAudioRecorderPlayerSpec.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt b/node_modules/react-native-audio-recorder-player/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+new file mode 100644
+index 0000000..78ac5b8
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+@@ -0,0 +1,2 @@
++R_DEF: Internal format may change without notice
++local
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt b/node_modules/react-native-audio-recorder-player/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+new file mode 100644
+index 0000000..92cf061
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+@@ -0,0 +1,23 @@
++1<?xml version="1.0" encoding="utf-8"?>
++2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++3    package="com.audiorecorderplayer" >
++4
++5    <uses-sdk android:minSdkVersion="24" />
++6
++7    <uses-permission android:name="android.permission.RECORD_AUDIO" />
++7-->/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:2:5-71
++7-->/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:2:22-68
++8    <uses-permission
++8-->/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:3:5-108
++9        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
++9-->/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:3:22-78
++10        android:maxSdkVersion="28" />
++10-->/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:3:79-105
++11    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
++11-->/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:4:5-80
++11-->/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:4:22-77
++12    <uses-permission android:name="android.permission.INTERNET" />
++12-->/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:5:5-67
++12-->/Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:5:22-64
++13
++14</manifest>
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml b/node_modules/react-native-audio-recorder-player/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+new file mode 100644
+index 0000000..7ff9b32
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+@@ -0,0 +1,14 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.audiorecorderplayer" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++    <uses-permission android:name="android.permission.RECORD_AUDIO" />
++    <uses-permission
++        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
++        android:maxSdkVersion="28" />
++    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
++    <uses-permission android:name="android.permission.INTERNET" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json b/node_modules/react-native-audio-recorder-player/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+new file mode 100644
+index 0000000..0637a08
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+@@ -0,0 +1 @@
++[]
+\ No newline at end of file
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt b/node_modules/react-native-audio-recorder-player/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+new file mode 100644
+index 0000000..08f4ebe
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+@@ -0,0 +1 @@
++0 Warning/Error
+\ No newline at end of file
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/META-INF/react-native-audio-recorder-player_debug.kotlin_module b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/META-INF/react-native-audio-recorder-player_debug.kotlin_module
+new file mode 100644
+index 0000000..9dbc290
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/META-INF/react-native-audio-recorder-player_debug.kotlin_module differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerModule$Companion.class b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerModule$Companion.class
+new file mode 100644
+index 0000000..c2445a0
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerModule$Companion.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerModule$startPlayTimer$1.class b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerModule$startPlayTimer$1.class
+new file mode 100644
+index 0000000..1018091
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerModule$startPlayTimer$1.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecordTimer$1.class b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecordTimer$1.class
+new file mode 100644
+index 0000000..b92920a
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecordTimer$1.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecorder$1.class b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecorder$1.class
+new file mode 100644
+index 0000000..8bf9790
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecorder$1.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerModule.class b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerModule.class
+new file mode 100644
+index 0000000..08b847e
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerModule.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerPackage.class b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerPackage.class
+new file mode 100644
+index 0000000..4c15177
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/AudioRecorderPlayerPackage.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/BuildConfig.class b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/BuildConfig.class
+new file mode 100644
+index 0000000..e30c625
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/BuildConfig.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/NativeAudioRecorderPlayerSpec.class b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/NativeAudioRecorderPlayerSpec.class
+new file mode 100644
+index 0000000..8e60058
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/audiorecorderplayer/NativeAudioRecorderPlayerSpec.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar
+new file mode 100644
+index 0000000..556df50
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt b/node_modules/react-native-audio-recorder-player/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+new file mode 100644
+index 0000000..ead6cc8
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+@@ -0,0 +1 @@
++com.audiorecorderplayer
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab
+new file mode 100644
+index 0000000..286273b
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.keystream b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.keystream
+new file mode 100644
+index 0000000..492044b
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.keystream differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.keystream.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.keystream.len
+new file mode 100644
+index 0000000..ee2e3cc
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.keystream.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.len
+new file mode 100644
+index 0000000..01bdaa1
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.values.at b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.values.at
+new file mode 100644
+index 0000000..424edd6
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.values.at differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab_i b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab_i
+new file mode 100644
+index 0000000..b8d65f3
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab_i differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab_i.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab_i.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab
+new file mode 100644
+index 0000000..9c3f105
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.keystream b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.keystream
+new file mode 100644
+index 0000000..bf84fa0
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.keystream differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.keystream.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.keystream.len
+new file mode 100644
+index 0000000..42df8b9
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.keystream.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.len
+new file mode 100644
+index 0000000..a9f80ae
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.values.at b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.values.at
+new file mode 100644
+index 0000000..fe23964
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.values.at differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab_i b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab_i
+new file mode 100644
+index 0000000..30b51d5
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab_i differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab_i.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab_i.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab
+new file mode 100644
+index 0000000..415cf85
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream
+new file mode 100644
+index 0000000..bf84fa0
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream.len
+new file mode 100644
+index 0000000..42df8b9
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.len
+new file mode 100644
+index 0000000..a9f80ae
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at
+new file mode 100644
+index 0000000..5b7aa60
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i
+new file mode 100644
+index 0000000..30b51d5
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab
+new file mode 100644
+index 0000000..bdf584a
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab.keystream b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab.keystream
+new file mode 100644
+index 0000000..1be8909
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab.keystream differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab.keystream.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab.keystream.len
+new file mode 100644
+index 0000000..55b698c
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab.keystream.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab.len
+new file mode 100644
+index 0000000..2a17e6e
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab.values.at b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab.values.at
+new file mode 100644
+index 0000000..19a1572
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab.values.at differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab_i b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab_i
+new file mode 100644
+index 0000000..bdf96e1
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab_i differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab_i.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/constants.tab_i.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab
+new file mode 100644
+index 0000000..92b25d5
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream
+new file mode 100644
+index 0000000..673e60b
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream.len
+new file mode 100644
+index 0000000..2f831b5
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.len
+new file mode 100644
+index 0000000..9e27f73
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at
+new file mode 100644
+index 0000000..fb37647
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i
+new file mode 100644
+index 0000000..ad490c1
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab
+new file mode 100644
+index 0000000..7b2de6e
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.keystream b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.keystream
+new file mode 100644
+index 0000000..64f736b
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.keystream differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.keystream.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.keystream.len
+new file mode 100644
+index 0000000..fa43224
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.keystream.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.len
+new file mode 100644
+index 0000000..93a595b
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.values.at b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.values.at
+new file mode 100644
+index 0000000..f4343d9
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.values.at differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab_i b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab_i
+new file mode 100644
+index 0000000..a211cea
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab_i differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab_i.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab_i.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab
+new file mode 100644
+index 0000000..5b04216
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream
+new file mode 100644
+index 0000000..492044b
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream.len
+new file mode 100644
+index 0000000..ee2e3cc
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.len
+new file mode 100644
+index 0000000..01bdaa1
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at
+new file mode 100644
+index 0000000..30ea5bf
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab_i b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab_i
+new file mode 100644
+index 0000000..b8d65f3
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab_i differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab_i.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab_i.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab
+new file mode 100644
+index 0000000..5b5958d
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.keystream b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.keystream
+new file mode 100644
+index 0000000..b696aba
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.keystream differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.keystream.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.keystream.len
+new file mode 100644
+index 0000000..8790089
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.keystream.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.len
+new file mode 100644
+index 0000000..01bdaa1
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.values.at b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.values.at
+new file mode 100644
+index 0000000..a77d832
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.values.at differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab_i b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab_i
+new file mode 100644
+index 0000000..8aff134
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab_i differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab_i.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab_i.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab
+new file mode 100644
+index 0000000..5714bd7
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.keystream b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.keystream
+new file mode 100644
+index 0000000..8465039
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.keystream differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.keystream.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.keystream.len
+new file mode 100644
+index 0000000..f69038b
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.keystream.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.len
+new file mode 100644
+index 0000000..01bdaa1
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.values.at b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.values.at
+new file mode 100644
+index 0000000..d744315
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.values.at differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab_i b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab_i
+new file mode 100644
+index 0000000..c267f97
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab_i differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab_i.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab_i.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/counters.tab b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/counters.tab
+new file mode 100644
+index 0000000..2ceb12b
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/counters.tab
+@@ -0,0 +1,2 @@
++2
++0
+\ No newline at end of file
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab
+new file mode 100644
+index 0000000..40ff8bd
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.keystream b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.keystream
+new file mode 100644
+index 0000000..492044b
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.keystream differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.keystream.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.keystream.len
+new file mode 100644
+index 0000000..ee2e3cc
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.keystream.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.len
+new file mode 100644
+index 0000000..01bdaa1
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.values.at b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.values.at
+new file mode 100644
+index 0000000..7d30a43
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.values.at differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab_i b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab_i
+new file mode 100644
+index 0000000..b8d65f3
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab_i differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab_i.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab_i.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab
+new file mode 100644
+index 0000000..ea546e9
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream
+new file mode 100644
+index 0000000..100d205
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream.len
+new file mode 100644
+index 0000000..ccfcbf4
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.len
+new file mode 100644
+index 0000000..01bdaa1
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.values.at b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.values.at
+new file mode 100644
+index 0000000..245a619
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.values.at differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i
+new file mode 100644
+index 0000000..f768a77
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab
+new file mode 100644
+index 0000000..86d79c8
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.keystream b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.keystream
+new file mode 100644
+index 0000000..6515858
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.keystream differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.keystream.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.keystream.len
+new file mode 100644
+index 0000000..176ad27
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.keystream.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.len
+new file mode 100644
+index 0000000..b957d7e
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.values.at b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.values.at
+new file mode 100644
+index 0000000..c78c37d
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.values.at differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab_i b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab_i
+new file mode 100644
+index 0000000..ad02f23
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab_i differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab_i.len b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab_i.len differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/last-build.bin b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/last-build.bin
+new file mode 100644
+index 0000000..bf5b8b6
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/cacheable/last-build.bin differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/classpath-snapshot/shrunk-classpath-snapshot.bin b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/classpath-snapshot/shrunk-classpath-snapshot.bin
+new file mode 100644
+index 0000000..be645b4
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/classpath-snapshot/shrunk-classpath-snapshot.bin differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/local-state/build-history.bin b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/local-state/build-history.bin
+new file mode 100644
+index 0000000..953ad45
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/kotlin/compileDebugKotlin/local-state/build-history.bin differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/react-native-audio-recorder-player/android/build/outputs/logs/manifest-merger-debug-report.txt
+new file mode 100644
+index 0000000..0b2797f
+--- /dev/null
++++ b/node_modules/react-native-audio-recorder-player/android/build/outputs/logs/manifest-merger-debug-report.txt
+@@ -0,0 +1,34 @@
++-- Merging decision tree log ---
++manifest
++ADDED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:1:1-6:12
++INJECTED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:1:1-6:12
++	package
++		INJECTED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml
++	xmlns:android
++		ADDED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:1:11-69
++uses-permission#android.permission.RECORD_AUDIO
++ADDED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:2:5-71
++	android:name
++		ADDED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:2:22-68
++uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
++ADDED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:3:5-108
++	android:maxSdkVersion
++		ADDED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:3:79-105
++	android:name
++		ADDED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:3:22-78
++uses-permission#android.permission.READ_EXTERNAL_STORAGE
++ADDED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:4:5-80
++	android:name
++		ADDED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:4:22-77
++uses-permission#android.permission.INTERNET
++ADDED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:5:5-67
++	android:name
++		ADDED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml:5:22-64
++uses-sdk
++INJECTED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml
++INJECTED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml
++	android:targetSdkVersion
++		INJECTED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml
++	android:minSdkVersion
++		INJECTED from /Users/user/Desktop/rio-eigotaisenn/EigoTaisen/node_modules/react-native-audio-recorder-player/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/react-native-audio-recorder-player/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
+new file mode 100644
+index 0000000..f5da72b
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/META-INF/react-native-audio-recorder-player_debug.kotlin_module b/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/META-INF/react-native-audio-recorder-player_debug.kotlin_module
+new file mode 100644
+index 0000000..9dbc290
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/META-INF/react-native-audio-recorder-player_debug.kotlin_module differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerModule$Companion.class b/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerModule$Companion.class
+new file mode 100644
+index 0000000..c2445a0
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerModule$Companion.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerModule$startPlayTimer$1.class b/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerModule$startPlayTimer$1.class
+new file mode 100644
+index 0000000..1018091
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerModule$startPlayTimer$1.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecordTimer$1.class b/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecordTimer$1.class
+new file mode 100644
+index 0000000..b92920a
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecordTimer$1.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecorder$1.class b/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecorder$1.class
+new file mode 100644
+index 0000000..8bf9790
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerModule$startRecorder$1.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerModule.class b/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerModule.class
+new file mode 100644
+index 0000000..08b847e
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerModule.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerPackage.class b/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerPackage.class
+new file mode 100644
+index 0000000..4c15177
+Binary files /dev/null and b/node_modules/react-native-audio-recorder-player/android/build/tmp/kotlin-classes/debug/com/audiorecorderplayer/AudioRecorderPlayerPackage.class differ
+diff --git a/node_modules/react-native-audio-recorder-player/src/NativeAudioRecorderPlayer.ts b/node_modules/react-native-audio-recorder-player/src/NativeAudioRecorderPlayer.ts
+index a9fc097..4c458d5 100644
+--- a/node_modules/react-native-audio-recorder-player/src/NativeAudioRecorderPlayer.ts
++++ b/node_modules/react-native-audio-recorder-player/src/NativeAudioRecorderPlayer.ts
+@@ -52,7 +52,7 @@ export interface AudioSet {
+   AVModeIOS?: number;
+   AVEncoderAudioQualityKeyIOS?: number;
+   AVNumberOfChannelsKeyIOS?: number;
+-  AVFormatIDKeyIOS?: number | string;
++  AVFormatIDKeyIOS?: string;
+   AudioSampleRateAndroid?: number;
+   AudioChannelsAndroid?: number;
+   AudioEncodingBitRateAndroid?: number;
+@@ -84,7 +84,7 @@ export interface Spec extends TurboModule {
+   stopRecorder(): Promise<string>;
+ 
+   // Playback methods
+-  startPlayer(uri?: string, httpHeaders?: Object): Promise<string>;
++  startPlayer(uri?: string, httpHeaders?: {[key: string]: string}): Promise<string>;
+   stopPlayer(): Promise<string>;
+   pausePlayer(): Promise<string>;
+   resumePlayer(): Promise<string>;
