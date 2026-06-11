@@ -5,6 +5,10 @@
   "build": {
     "production": {
       "node": "22.11.0",
+      "cache": {
+        "key": "v1",
+        "paths": ["node_modules", "ios/Pods"]
+      },
       "ios": {
         "simulator": false
       }
