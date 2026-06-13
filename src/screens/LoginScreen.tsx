@@ -4,6 +4,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -107,98 +108,104 @@ export function LoginScreen({ onLoggedIn }: Props) {
   return (
     <SafeAreaView style={styles.screen}>
       <KeyboardAvoidingView
-        style={styles.inner}
+        style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={styles.logoArea}>
-          <Text style={styles.emoji}>🗣️</Text>
-          <Text style={styles.title}>英単語対戦</Text>
-          <Text style={styles.subtitle}>
-            {isLogin ? 'ログインして始めよう' : 'アカウントを作成'}
-          </Text>
-        </View>
+        <ScrollView
+          contentContainerStyle={styles.inner}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.logoArea}>
+            <Text style={styles.emoji}>🗣️</Text>
+            <Text style={styles.title}>英単語対戦</Text>
+            <Text style={styles.subtitle}>
+              {isLogin ? 'ログインして始めよう' : 'アカウントを作成'}
+            </Text>
+          </View>
 
-        {/* タブ切り替え */}
-        <View style={styles.tabRow}>
-          <TouchableOpacity
-            style={[styles.tab, isLogin && styles.tabActive]}
-            onPress={() => !isLogin && switchMode()}
-          >
-            <Text style={[styles.tabText, isLogin && styles.tabTextActive]}>ログイン</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.tab, !isLogin && styles.tabActive]}
-            onPress={() => isLogin && switchMode()}
-          >
-            <Text style={[styles.tabText, !isLogin && styles.tabTextActive]}>新規登録</Text>
-          </TouchableOpacity>
-        </View>
+          {/* タブ切り替え */}
+          <View style={styles.tabRow}>
+            <TouchableOpacity
+              style={[styles.tab, isLogin && styles.tabActive]}
+              onPress={() => !isLogin && switchMode()}
+            >
+              <Text style={[styles.tabText, isLogin && styles.tabTextActive]}>ログイン</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tab, !isLogin && styles.tabActive]}
+              onPress={() => isLogin && switchMode()}
+            >
+              <Text style={[styles.tabText, !isLogin && styles.tabTextActive]}>新規登録</Text>
+            </TouchableOpacity>
+          </View>
 
-        <View style={styles.form}>
-          {!isLogin && (
-            <>
-              <Text style={styles.label}>ユーザー名</Text>
-              <TextInput
-                style={styles.input}
-                value={username}
-                onChangeText={setUsername}
-                placeholder="ニックネームを入力"
-                placeholderTextColor="#94a3b8"
-                autoCorrect={false}
-              />
-            </>
-          )}
-
-          <Text style={styles.label}>メールアドレス</Text>
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="example@email.com"
-            placeholderTextColor="#94a3b8"
-            autoCapitalize="none"
-            keyboardType="email-address"
-            autoCorrect={false}
-          />
-
-          <Text style={styles.label}>パスワード</Text>
-          <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={setPassword}
-            placeholder={isLogin ? 'パスワードを入力' : '6文字以上'}
-            placeholderTextColor="#94a3b8"
-            secureTextEntry
-          />
-
-          {!isLogin && (
-            <>
-              <Text style={styles.label}>パスワード（確認）</Text>
-              <TextInput
-                style={styles.input}
-                value={passwordConfirm}
-                onChangeText={setPasswordConfirm}
-                placeholder="もう一度入力"
-                placeholderTextColor="#94a3b8"
-                secureTextEntry
-              />
-            </>
-          )}
-
-          <TouchableOpacity
-            style={[styles.submitButton, loading && styles.submitButtonDisabled]}
-            onPress={isLogin ? handleLogin : handleSignUp}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#ffffff" />
-            ) : (
-              <Text style={styles.submitButtonText}>
-                {isLogin ? 'ログイン' : 'アカウント作成'}
-              </Text>
+          <View style={styles.form}>
+            {!isLogin && (
+              <>
+                <Text style={styles.label}>ユーザー名</Text>
+                <TextInput
+                  style={styles.input}
+                  value={username}
+                  onChangeText={setUsername}
+                  placeholder="ニックネームを入力"
+                  placeholderTextColor="#94a3b8"
+                  autoCorrect={false}
+                />
+              </>
             )}
-          </TouchableOpacity>
-        </View>
+
+            <Text style={styles.label}>メールアドレス</Text>
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="example@email.com"
+              placeholderTextColor="#94a3b8"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              autoCorrect={false}
+            />
+
+            <Text style={styles.label}>パスワード</Text>
+            <TextInput
+              style={styles.input}
+              value={password}
+              onChangeText={setPassword}
+              placeholder={isLogin ? 'パスワードを入力' : '6文字以上'}
+              placeholderTextColor="#94a3b8"
+              secureTextEntry
+            />
+
+            {!isLogin && (
+              <>
+                <Text style={styles.label}>パスワード（確認）</Text>
+                <TextInput
+                  style={styles.input}
+                  value={passwordConfirm}
+                  onChangeText={setPasswordConfirm}
+                  placeholder="もう一度入力"
+                  placeholderTextColor="#94a3b8"
+                  secureTextEntry
+                />
+              </>
+            )}
+
+            <TouchableOpacity
+              style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+              onPress={isLogin ? handleLogin : handleSignUp}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <Text style={styles.submitButtonText}>
+                  {isLogin ? 'ログイン' : 'アカウント作成'}
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -209,10 +216,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ecfeff',
   },
-  inner: {
+  keyboardView: {
     flex: 1,
+  },
+  inner: {
+    flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 32,
+    paddingVertical: 24,
     gap: 20,
   },
   logoArea: {

@@ -1,54 +1,14 @@
 PODS:
-  - AsyncStorage (3.0.1):
-    - hermes-engine
+  - AudioRecorderPlayer (5.0.0-rc.1):
     - RCTRequired
     - RCTTypeSafety
+    - React-Codegen
     - React-Core
-    - React-Core-prebuilt
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - Yoga
   - FBLazyVector (0.84.1)
   - hermes-engine (250829098.0.9):
     - hermes-engine/Pre-built (= 250829098.0.9)
   - hermes-engine/Pre-built (250829098.0.9)
-  - NitroAudioRecorderPlayer (4.5.0):
-    - hermes-engine
-    - NitroModules
-    - RCTRequired
-    - RCTTypeSafety
-    - React-callinvoker
-    - React-Core
-    - React-Core-prebuilt
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - Yoga
   - NitroIap (15.2.0):
     - hermes-engine
     - NitroModules
@@ -143,6 +103,7 @@ PODS:
     - React-RCTText (= 0.84.1)
     - React-RCTVibration (= 0.84.1)
   - React-callinvoker (0.84.1)
+  - React-Codegen (0.1.0)
   - React-Core (0.84.1):
     - hermes-engine
     - RCTDeprecation
@@ -2018,6 +1979,28 @@ PODS:
     - React-utils (= 0.84.1)
     - ReactNativeDependencies
   - ReactNativeDependencies (0.84.1)
+  - RNCAsyncStorage (2.2.0):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - RNFS (2.20.0):
     - React-Core
   - RNSVG (15.15.4):
@@ -2065,15 +2048,12 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - TextToSpeech (4.1.1):
-    - React-Core
   - Yoga (0.0.0)
 
 DEPENDENCIES:
-  - "AsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - AudioRecorderPlayer (from `../node_modules/react-native-audio-recorder-player`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
-  - NitroAudioRecorderPlayer (from `../node_modules/react-native-audio-recorder-player`)
   - NitroIap (from `../node_modules/react-native-iap`)
   - NitroModules (from `../node_modules/react-native-nitro-modules`)
   - "op-sqlite (from `../node_modules/@op-engineering/op-sqlite`)"
@@ -2151,25 +2131,24 @@ DEPENDENCIES:
   - ReactCodegen (from `build/generated/ios/ReactCodegen`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeDependencies (from `../node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec`)
+  - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - RNFS (from `../node_modules/react-native-fs`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - TextToSpeech (from `../node_modules/react-native-tts`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   trunk:
     - openiap
+    - React-Codegen
 
 EXTERNAL SOURCES:
-  AsyncStorage:
-    :path: "../node_modules/@react-native-async-storage/async-storage"
+  AudioRecorderPlayer:
+    :path: "../node_modules/react-native-audio-recorder-player"
   FBLazyVector:
     :path: "../node_modules/react-native/Libraries/FBLazyVector"
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-v250829098.0.9
-  NitroAudioRecorderPlayer:
-    :path: "../node_modules/react-native-audio-recorder-player"
   NitroIap:
     :path: "../node_modules/react-native-iap"
   NitroModules:
@@ -2322,20 +2301,19 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativeDependencies:
     :podspec: "../node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-async-storage/async-storage"
   RNFS:
     :path: "../node_modules/react-native-fs"
   RNSVG:
     :path: "../node_modules/react-native-svg"
-  TextToSpeech:
-    :path: "../node_modules/react-native-tts"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  AsyncStorage: 0a927dc82ea8eaa0350779b37d73b11d070ea677
+  AudioRecorderPlayer: a3ca51f81a49810410959bccd183d0ef57aff9c0
   FBLazyVector: e97c19a5a442429d1988f182a1940fb08df514da
   hermes-engine: eb548e81907bef5329e92734b21c16b9026e2f39
-  NitroAudioRecorderPlayer: 8901d8a6c05a2ad3c8242678ba253eb7d7df38a7
   NitroIap: bccb23143b29f7d3ca7e9ce0bbdc96ca63579cf8
   NitroModules: 113b4a704e0d6a436d2c5600d5af41f847b0fdd1
   op-sqlite: f829a85aa73c4e0e320e9006fca164cc0dc460d8
@@ -2347,6 +2325,7 @@ SPEC CHECKSUMS:
   RCTTypeSafety: d13e192a37f151ce354641184bf4239844a3be17
   React: 1ba7d364ade7d883a1ec055bfc3606f35fdee17b
   React-callinvoker: bc2a26f8d84fb01f003fc6de6c9337b64715f95b
+  React-Codegen: 4b8b4817cea7a54b83851d4c1f91f79aa73de30a
   React-Core: bdaa87b276ca31877632a982ecf7c36f8c826414
   React-Core-prebuilt: f3a86539e84184f627e1eb5e7863f420a55535ec
   React-CoreModules: b24989f62d56390ae08ca4f65e6f38fe6802de42
@@ -2413,11 +2392,11 @@ SPEC CHECKSUMS:
   ReactCodegen: 4fa1b291ad275013e39212f2463c46480fb53afe
   ReactCommon: 309419492d417c4cbb87af06f67735afa40ecb9d
   ReactNativeDependencies: 06c6768b1322ece061168d414cbee8a13af391eb
+  RNCAsyncStorage: e85a99325df9eb0191a6ee2b2a842644c7eb29f4
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNSVG: 2ead7004a54d1cded41af4e6ee29104e94ba48c6
-  TextToSpeech: 2b930ec3756afde499061f4f01ea895e1f75dccb
   Yoga: c0b3f2c7e8d3e327e450223a2414ca3fa296b9a2
 
-PODFILE CHECKSUM: 0e7568471352f0dfabbbf5ef6f6b639deda647fc
+PODFILE CHECKSUM: dbea7d7568c5efd5de4a68939691b457b5e03677
 
 COCOAPODS: 1.16.2
