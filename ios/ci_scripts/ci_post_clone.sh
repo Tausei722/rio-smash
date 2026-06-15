@@ -35,7 +35,7 @@ npm install
 # Bundler 経由で CocoaPods をインストール（Gemfile のバージョンを使用）
 export GEM_HOME="$HOME/.gem"
 export PATH="$GEM_HOME/bin:$PATH"
-gem install bundler --no-document
+gem install bundler -v 2.4.22 --no-document
 bundle install
 
 # CocoaPods
