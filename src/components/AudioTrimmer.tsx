@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   PanResponder,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -19,6 +20,19 @@ type Props = {
 };
 
 export function AudioTrimmer({ audioPath, onTrimmed, onCancel }: Props) {
+  if (Platform.OS !== 'ios') {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>✂️ 音声トリム</Text>
+        <Text style={{ textAlign: 'center', color: '#94a3b8', marginVertical: 24 }}>
+          音声トリムはiOSのみ対応しています
+        </Text>
+        <TouchableOpacity style={styles.cancelBtn} onPress={onCancel}>
+          <Text style={styles.cancelBtnText}>閉じる</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
   const [duration, setDuration] = useState(0);
   const [waveform, setWaveform] = useState<number[]>([]);
   const [startRatio, setStartRatio] = useState(0);

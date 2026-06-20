@@ -7,7 +7,7 @@
     "version": "1.2.4",
     "ios": {
       "bundleIdentifier": "com.rioshikiego.samplerApp",
-      "buildNumber": "22"
+      "buildNumber": "23"
     },
     "extra": {
       "eas": {

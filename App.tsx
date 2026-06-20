@@ -195,6 +195,8 @@ function GameApp() {
   useEffect(() => {
     if (screen === 'home') {
       fetchAllWords(isPremium).then(rows => setAllWords(rows)).catch(() => {});
+      fetchPremiumCategories().then(cats => setPremiumCategories(cats)).catch(() => {});
+      fetchCategoryList().then(catList => setCategories(catList)).catch(() => {});
     }
   }, [screen, isPremium]);
 
@@ -570,6 +572,7 @@ function GameApp() {
         editingWord={editingWord}
         onBack={() => setScreen('admin')}
         onSaved={() => { reloadWords(); setScreen('admin'); }}
+        categories={categories}
       />
     );
   }

@@ -15,7 +15,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import RNFS from 'react-native-fs';
-import { insertWord, updateWord, uploadAudio, downloadAudioToLocal, WordRow, CATEGORIES } from '../db/database';
+import { insertWord, updateWord, uploadAudio, downloadAudioToLocal, WordRow } from '../db/database';
 import { AudioTrimmer } from '../components/AudioTrimmer';
 
 const audioRecorderPlayer = AudioRecorderPlayer;
@@ -24,9 +24,10 @@ type Props = {
   editingWord?: WordRow | null;
   onBack: () => void;
   onSaved: () => void;
+  categories: string[];
 };
 
-export function WordFormScreen({ editingWord, onBack, onSaved }: Props) {
+export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Props) {
   const [katakana, setKatakana] = useState(editingWord?.katakana ?? '');
   const [english, setEnglish] = useState(editingWord?.english ?? '');
   const [japanese, setJapanese] = useState(editingWord?.japanese ?? '');
@@ -215,7 +216,7 @@ export function WordFormScreen({ editingWord, onBack, onSaved }: Props) {
         {/* カテゴリ選択 */}
         <Text style={styles.label}>カテゴリ（任意）</Text>
         <View style={styles.categoryGrid}>
-          {CATEGORIES.map(cat => (
+          {categories.map(cat => (
             <TouchableOpacity
               key={cat}
               style={[styles.categoryChip, category === cat && styles.categoryChipSelected]}
@@ -255,34 +256,35 @@ export function WordFormScreen({ editingWord, onBack, onSaved }: Props) {
         {audioPath ? (
           <>
             <Text style={styles.audioStatus}>✅ 音声が録音されています</Text>
-            <TouchableOpacity
-              style={[styles.trimButton, isDownloading && styles.saveButtonDisabled]}
-              disabled={isDownloading}
-              onPress={async () => {
-                if (audioPath.startsWith('http')) {
-                  // Supabase上の音声をローカルにダウンロードしてからトリム
-                  setIsDownloading(true);
-                  try {
-                    const dest = await downloadAudioToLocal(audioPath);
-                    setLocalAudioPath(dest);
+            {Platform.OS === 'ios' && (
+              <TouchableOpacity
+                style={[styles.trimButton, isDownloading && styles.saveButtonDisabled]}
+                disabled={isDownloading}
+                onPress={async () => {
+                  if (audioPath.startsWith('http')) {
+                    setIsDownloading(true);
+                    try {
+                      const dest = await downloadAudioToLocal(audioPath);
+                      setLocalAudioPath(dest);
+                      setShowTrimmer(true);
+                    } catch (e: any) {
+                      Alert.alert('エラー', '音声のダウンロードに失敗しました');
+                    } finally {
+                      setIsDownloading(false);
+                    }
+                  } else {
+                    setLocalAudioPath(audioPath);
                     setShowTrimmer(true);
-                  } catch (e: any) {
-                    Alert.alert('エラー', '音声のダウンロードに失敗しました');
-                  } finally {
-                    setIsDownloading(false);
                   }
-                } else {
-                  setLocalAudioPath(audioPath);
-                  setShowTrimmer(true);
-                }
-              }}
-            >
-              {isDownloading ? (
-                <ActivityIndicator color="#475569" size="small" />
-              ) : (
-                <Text style={styles.trimButtonText}>✂️ トリム（前後カット）</Text>
-              )}
-            </TouchableOpacity>
+                }}
+              >
+                {isDownloading ? (
+                  <ActivityIndicator color="#475569" size="small" />
+                ) : (
+                  <Text style={styles.trimButtonText}>✂️ トリム（前後カット）</Text>
+                )}
+              </TouchableOpacity>
+            )}
           </>
         ) : (
           <Text style={styles.audioHint}>（任意）参考音声がなくても保存できます</Text>
