@@ -32,12 +32,8 @@ echo "npm: $(npm --version)"
 cd "$CI_PRIMARY_REPOSITORY_PATH"
 npm install
 
-# Bundler 経由で CocoaPods をインストール（Gemfile のバージョンを使用）
-export GEM_HOME="$HOME/.gem"
-export PATH="$GEM_HOME/bin:$PATH"
-gem install bundler -v 2.4.22 --no-document
-bundle install
-
-# CocoaPods
+# CocoaPods — Xcode Cloud にプリインストール済みのシステム pod を直接使用
+# bundle install は rubygems.org へのネットワーク接続が必要なため使用しない
+echo "pod: $(pod --version)"
 cd "$CI_PRIMARY_REPOSITORY_PATH/ios"
-bundle exec pod install
+pod install
