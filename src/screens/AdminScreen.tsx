@@ -495,7 +495,7 @@ function WordList({
         )}
         ListEmptyComponent={
           <Text style={styles.empty}>
-            {q ? '該当する単語がありません' : '単語がありません。追加してください。'}
+            {searchQuery.trim() ? '該当する単語がありません' : '単語がありません。追加してください。'}
           </Text>
         }
       />
