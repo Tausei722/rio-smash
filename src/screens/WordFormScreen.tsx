@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+import { NativeModules } from 'react-native';
 import RNFS from 'react-native-fs';
 import { insertWord, updateWord, uploadAudio, downloadAudioToLocal, WordRow } from '../db/database';
 import { getAudioDuration } from '../native/AudioTrim';
@@ -52,21 +53,22 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
   // 音声録音開始/停止
   const handleRecordToggle = async () => {
     if (isRecording) {
+      setIsRecording(false);
+      let finalPath = recordingPathRef.current;
+      recordingPathRef.current = null;
       try {
+        // ライブラリ経由で停止を試みる
         const rawPath = await audioRecorderPlayer.stopRecorder();
-        setIsRecording(false);
         const rawStr = typeof rawPath === 'string' ? rawPath : rawPath.filePath;
-        const path = rawStr.startsWith('file://') ? rawStr.slice(7) : rawStr;
-        setAudioPath(path);
-        recordingPathRef.current = null;
+        finalPath = rawStr.startsWith('file://') ? rawStr.slice(7) : rawStr;
       } catch {
-        // stopRecorder が失敗してもファイルは書き込み済みなので開始時のパスを使う
-        setIsRecording(false);
-        if (recordingPathRef.current) {
-          setAudioPath(recordingPathRef.current);
-          recordingPathRef.current = null;
-        }
+        // ライブラリが失敗した場合、ネイティブモジュールに直接停止をかける
+        // これにより録音ファイルが正しく書き込まれる
+        try {
+          await NativeModules.AudioRecorderPlayer?.stopRecorder?.();
+        } catch {}
       }
+      if (finalPath) setAudioPath(finalPath);
     } else {
       try {
         const dir = Platform.OS === 'ios'
