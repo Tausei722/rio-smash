@@ -16,6 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import RNFS from 'react-native-fs';
 import { insertWord, updateWord, uploadAudio, downloadAudioToLocal, WordRow } from '../db/database';
+import { getAudioDuration } from '../native/AudioTrim';
 import { AudioTrimmer } from '../components/AudioTrimmer';
 
 const audioRecorderPlayer = AudioRecorderPlayer;
@@ -84,23 +85,27 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
   };
 
   // 音声再生
+  const playTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const handlePlay = async () => {
     if (!audioPath) return;
     if (isPlaying) {
+      if (playTimerRef.current) { clearTimeout(playTimerRef.current); playTimerRef.current = null; }
       await audioRecorderPlayer.stopPlayer();
-      audioRecorderPlayer.removePlayBackListener();
       setIsPlaying(false);
     } else {
       try {
         setIsPlaying(true);
         const playPath = await downloadAudioToLocal(audioPath);
+        let durationMs = 5000;
+        try {
+          const secs = await getAudioDuration(playPath);
+          if (secs > 0) durationMs = Math.ceil(secs * 1000);
+        } catch {}
         await audioRecorderPlayer.startPlayer(playPath);
-        audioRecorderPlayer.addPlayBackListener(e => {
-          if (e.currentPosition === e.duration) {
-            setIsPlaying(false);
-            audioRecorderPlayer.removePlayBackListener();
-          }
-        });
+        playTimerRef.current = setTimeout(() => {
+          setIsPlaying(false);
+          playTimerRef.current = null;
+        }, durationMs + 300);
       } catch (e: any) {
         setIsPlaying(false);
         Alert.alert('再生エラー', e?.message ?? '音声を再生できませんでした');
