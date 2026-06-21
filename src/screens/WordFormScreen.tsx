@@ -52,7 +52,6 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
     if (isRecording) {
       try {
         const rawPath = await audioRecorderPlayer.stopRecorder();
-        audioRecorderPlayer.removeRecordBackListener();
         setIsRecording(false);
         // file:// プレフィックスを除去して統一（RNFS.readFile / startPlayer 両方に対応）
         const path = rawPath.startsWith('file://') ? rawPath.slice(7) : rawPath;
