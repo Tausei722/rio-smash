@@ -60,7 +60,7 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
         // ライブラリ経由で停止を試みる
         const rawPath = await audioRecorderPlayer.stopRecorder();
         const rawStr = typeof rawPath === 'string' ? rawPath : rawPath.filePath;
-        finalPath = rawStr.startsWith('file://') ? rawStr.slice(7) : rawStr;
+        finalPath = rawStr.replace(/^file:\/+/, '/');
       } catch {
         // ライブラリが失敗した場合、ネイティブモジュールに直接停止をかける
         // これにより録音ファイルが正しく書き込まれる
@@ -114,7 +114,8 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
           if (secs > 0) durationMs = Math.ceil(secs * 1000);
         } catch {}
         // startPlayer はローカルファイルに file:// が必要
-        const playerUri = playPath.startsWith('http') ? playPath : `file://${playPath}`;
+        const barePath = playPath.replace(/^file:\/+/, '/');
+        const playerUri = playPath.startsWith('http') ? playPath : `file://${barePath}`;
         await audioRecorderPlayer.startPlayer(playerUri);
         playTimerRef.current = setTimeout(() => {
           setIsPlaying(false);
