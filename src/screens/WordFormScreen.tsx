@@ -46,6 +46,8 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
   const [localAudioPath, setLocalAudioPath] = useState<string | null>(null);
 
   const isEdit = !!editingWord;
+  // 録音開始時のパスを保持（stopRecorder が失敗しても使えるよう）
+  const recordingPathRef = React.useRef<string | null>(null);
 
   // 音声録音開始/停止
   const handleRecordToggle = async () => {
@@ -56,9 +58,14 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
         const rawStr = typeof rawPath === 'string' ? rawPath : rawPath.filePath;
         const path = rawStr.startsWith('file://') ? rawStr.slice(7) : rawStr;
         setAudioPath(path);
-      } catch (e: any) {
+        recordingPathRef.current = null;
+      } catch {
+        // stopRecorder が失敗してもファイルは書き込み済みなので開始時のパスを使う
         setIsRecording(false);
-        Alert.alert('録音エラー', e?.message ?? '録音の停止に失敗しました');
+        if (recordingPathRef.current) {
+          setAudioPath(recordingPathRef.current);
+          recordingPathRef.current = null;
+        }
       }
     } else {
       try {
@@ -70,9 +77,11 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
         const filePath = `${dir}/${fileName}`;
 
         await audioRecorderPlayer.startRecorder(filePath);
+        recordingPathRef.current = filePath;
         setIsRecording(true);
       } catch (e: any) {
         setIsRecording(false);
+        recordingPathRef.current = null;
         const msg = e?.message ?? '録音を開始できませんでした';
         const isSessionError = msg.includes('Session activation failed') || msg.includes('session');
         Alert.alert(
