@@ -13,14 +13,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AudioRecorderPlayer from 'react-native-audio-recorder-player';
-import { NativeModules } from 'react-native';
 import RNFS from 'react-native-fs';
 import { insertWord, updateWord, uploadAudio, downloadAudioToLocal, WordRow } from '../db/database';
 import { getAudioDuration } from '../native/AudioTrim';
+import { AudioRecorder } from '../native/AudioRecorder';
 import { AudioTrimmer } from '../components/AudioTrimmer';
-
-const audioRecorderPlayer = AudioRecorderPlayer;
 
 type Props = {
   editingWord?: WordRow | null;
@@ -48,27 +45,16 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
 
   const isEdit = !!editingWord;
   // 録音開始時のパスを保持（stopRecorder が失敗しても使えるよう）
-  const recordingPathRef = React.useRef<string | null>(null);
-
   // 音声録音開始/停止
   const handleRecordToggle = async () => {
     if (isRecording) {
       setIsRecording(false);
-      let finalPath = recordingPathRef.current;
-      recordingPathRef.current = null;
       try {
-        // ライブラリ経由で停止を試みる
-        const rawPath = await audioRecorderPlayer.stopRecorder();
-        const rawStr = typeof rawPath === 'string' ? rawPath : rawPath.filePath;
-        finalPath = rawStr.replace(/^file:\/+/, '/');
-      } catch {
-        // ライブラリが失敗した場合、ネイティブモジュールに直接停止をかける
-        // これにより録音ファイルが正しく書き込まれる
-        try {
-          await NativeModules.AudioRecorderPlayer?.stopRecorder?.();
-        } catch {}
+        const path = await AudioRecorder.stopRecording();
+        setAudioPath(path);
+      } catch (e: any) {
+        Alert.alert('録音エラー', e?.message ?? '録音の停止に失敗しました');
       }
-      if (finalPath) setAudioPath(finalPath);
     } else {
       try {
         const dir = Platform.OS === 'ios'
@@ -76,14 +62,10 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
           : RNFS.ExternalDirectoryPath ?? RNFS.DocumentDirectoryPath;
         const safeName = (english || 'audio').replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30);
         const fileName = `word_${safeName}_${Date.now()}.m4a`;
-        const filePath = `${dir}/${fileName}`;
-
-        await audioRecorderPlayer.startRecorder(filePath);
-        recordingPathRef.current = filePath;
+        await AudioRecorder.startRecording(`${dir}/${fileName}`);
         setIsRecording(true);
       } catch (e: any) {
         setIsRecording(false);
-        recordingPathRef.current = null;
         const msg = e?.message ?? '録音を開始できませんでした';
         const isSessionError = msg.includes('Session activation failed') || msg.includes('session');
         Alert.alert(
@@ -102,7 +84,7 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
     if (!audioPath) return;
     if (isPlaying) {
       if (playTimerRef.current) { clearTimeout(playTimerRef.current); playTimerRef.current = null; }
-      await audioRecorderPlayer.stopPlayer();
+      await AudioRecorder.stopPlayback();
       setIsPlaying(false);
     } else {
       try {
@@ -113,10 +95,7 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
           const secs = await getAudioDuration(playPath);
           if (secs > 0) durationMs = Math.ceil(secs * 1000);
         } catch {}
-        // startPlayer はローカルファイルに file:// が必要
-        const barePath = playPath.replace(/^file:\/+/, '/');
-        const playerUri = playPath.startsWith('http') ? playPath : `file://${barePath}`;
-        await audioRecorderPlayer.startPlayer(playerUri);
+        await AudioRecorder.startPlayback(playPath);
         playTimerRef.current = setTimeout(() => {
           setIsPlaying(false);
           playTimerRef.current = null;
