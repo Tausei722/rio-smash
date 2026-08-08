@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Alert,
   Modal,
+  PermissionsAndroid,
   Platform,
   StyleSheet,
   Switch,
@@ -57,6 +58,16 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
       }
     } else {
       try {
+        if (Platform.OS === 'android') {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+            { title: 'マイクの使用許可', message: '録音のためにマイクへのアクセスが必要です', buttonPositive: '許可' },
+          );
+          if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+            Alert.alert('権限エラー', 'マイクの使用が許可されていません。設定から許可してください。');
+            return;
+          }
+        }
         const dir = Platform.OS === 'ios'
           ? RNFS.DocumentDirectoryPath
           : RNFS.ExternalDirectoryPath ?? RNFS.DocumentDirectoryPath;

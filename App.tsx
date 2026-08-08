@@ -3,6 +3,7 @@ import {
   Animated,
   Alert,
   Modal,
+  PermissionsAndroid,
   Platform,
   ScrollView,
   StatusBar,
@@ -14,10 +15,7 @@ import {
 } from 'react-native';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Voice, {
-  SpeechErrorEvent,
-  SpeechResultsEvent,
-} from '@react-native-voice/voice';
+import { PlatformVoice as Voice, SpeechErrorEvent, SpeechResultsEvent } from './src/native/PlatformVoice';
 
 import { fetchAllWords, initDB, downloadAudioToLocal, WordRow, CATEGORIES, fetchPremiumCategories, savePremiumCategories, fetchCategoryList, saveCategoryList, renameCategory } from './src/db/database';
 import { supabase } from './src/db/supabase';
@@ -325,6 +323,18 @@ function GameApp() {
       } else {
         // 開始 → 成功してからstateを更新
         isManualStopRef.current = false;
+        if (Platform.OS === 'android') {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+            { title: 'マイクの使用許可', message: '発音認識のためにマイクへのアクセスが必要です', buttonPositive: '許可' },
+          );
+          if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+            isRecordingRef.current = false;
+            setIsRecording(false);
+            Alert.alert('権限エラー', 'マイクの使用が許可されていません。設定から許可してください。');
+            return;
+          }
+        }
         await Voice.start('en-US');
         isRecordingRef.current = true;
         setIsRecording(true);
