@@ -3,49 +3,90 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>プライバシーポリシー - 英単語対戦</title>
+  <title>プライバシーポリシー - リオ小池 親子で「英語発音」対戦</title>
   <style>
     body { font-family: sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; color: #333; line-height: 1.8; }
     h1 { color: #D75F1B; }
     h2 { margin-top: 32px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }
   </style>
 </head>
 <body>
   <h1>プライバシーポリシー</h1>
-  <p>本プライバシーポリシーは、英単語対戦（以下「本アプリ」）における利用者情報の取り扱いについて定めるものです。</p>
+
+  <p>本プライバシーポリシー（以下「本ポリシー」）は、以下のアプリおよび開発者における利用者情報の取り扱いについて定めるものです。</p>
+
+  <h2>対象アプリおよび開発者</h2>
+  <table>
+    <tr><th>アプリ名</th><td>リオ小池 親子で「英語発音」対戦</td></tr>
+    <tr><th>パッケージ名 / Bundle ID</th><td>com.rioshikieigo.taisen（Android） / com.rioshikiego.samplerApp（iOS）</td></tr>
+    <tr><th>配信元ストア</th><td>Google Play ストア / Apple App Store</td></tr>
+    <tr><th>開発者名（Google Play デベロッパー名）</th><td>riokoike</td></tr>
+    <tr><th>運営者</th><td>小池 諒亮（Ryosuke Koike）／個人</td></tr>
+    <tr><th>所在地</th><td>〒445-0062 愛知県西尾市</td></tr>
+    <tr><th>連絡先</th><td><a href="mailto:sjigata@gmail.com">sjigata@gmail.com</a></td></tr>
+  </table>
+  <p>本ポリシー内で「本アプリ」とは上記「リオ小池 親子で「英語発音」対戦」を、「当方」とは上記開発者 riokoike（小池 諒亮）を指します。</p>
 
   <h2>収集する情報</h2>
-  <ul>
-    <li><strong>メールアドレス</strong>：アカウント登録・ログインのために収集します。</li>
-    <li><strong>音声データ</strong>：発音認識機能のためにマイクを使用します。音声データはデバイス上で処理され、サーバーには保存されません。</li>
-  </ul>
+  <table>
+    <tr><th>データの種類</th><th>収集目的</th><th>取り扱い</th></tr>
+    <tr>
+      <td>メールアドレス</td>
+      <td>アカウントの登録・ログイン・認証</td>
+      <td>認証基盤（Supabase）に保存されます。第三者への販売・提供は行いません。</td>
+    </tr>
+    <tr>
+      <td>音声データ（マイク入力）</td>
+      <td>発音認識および発音スコアの計算</td>
+      <td>音声認識処理のために利用されます。当方のサーバーには録音として保存しません。Android では端末の音声認識機能（Google 音声認識）に送信されて処理されます。</td>
+    </tr>
+    <tr>
+      <td>アプリ内の進捗・スコア等の利用データ</td>
+      <td>アプリ機能の提供</td>
+      <td>アカウントに紐づけて Supabase に保存される場合があります。</td>
+    </tr>
+  </table>
+  <p>本アプリは、広告 ID、位置情報、連絡先、写真、通話履歴等は収集しません。</p>
 
   <h2>情報の利用目的</h2>
   <ul>
     <li>アカウントの認証・管理</li>
-    <li>発音スコアの計算（端末内処理のみ）</li>
+    <li>発音認識および発音スコアの計算</li>
     <li>アプリ機能の提供および改善</li>
+    <li>不正利用の防止およびお問い合わせ対応</li>
   </ul>
 
-  <h2>第三者への提供</h2>
-  <p>収集した個人情報は、法令に基づく場合を除き、第三者に提供することはありません。</p>
-
-  <h2>使用している外部サービス</h2>
-  <ul>
-    <li><strong>Supabase</strong>：アカウント情報の管理に使用しています。</li>
-    <li><strong>Google Speech Recognition</strong>（Android）：発音認識に使用しています。</li>
-  </ul>
+  <h2>第三者への提供・利用している外部サービス</h2>
+  <p>収集した個人情報は、法令に基づく場合を除き、第三者に販売または提供することはありません。本アプリは以下の外部サービスを利用しており、それぞれのプライバシーポリシーが適用されます。</p>
+  <table>
+    <tr><th>サービス</th><th>用途</th><th>プライバシーポリシー</th></tr>
+    <tr><td>Supabase</td><td>アカウント情報・利用データの管理（認証・データベース）</td><td><a href="https://supabase.com/privacy" target="_blank" rel="noopener">https://supabase.com/privacy</a></td></tr>
+    <tr><td>Google 音声認識（Android）</td><td>音声からの発音認識</td><td><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">https://policies.google.com/privacy</a></td></tr>
+    <tr><td>Apple（App Store・App内課金）</td><td>アプリ配信および App 内課金の処理</td><td><a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">https://www.apple.com/legal/privacy/</a></td></tr>
+  </table>
 
   <h2>マイクの使用について</h2>
-  <p>本アプリは発音練習機能のためにマイクへのアクセスを要求します。録音データはスコア計算のためにのみ使用され、外部に送信・保存されることはありません。</p>
+  <p>本アプリは発音練習機能のためにマイクへのアクセスを要求します。マイク入力は発音認識とスコア計算のためにのみ使用され、当方のサーバーに録音として保存されることはありません。</p>
+
+  <h2>データの保管と保護</h2>
+  <p>アカウント情報は Supabase の基盤上で保管され、通信は暗号化されます。当方は取得した情報を利用目的の達成に必要な範囲でのみ取り扱います。</p>
+
+  <h2>データの削除・アカウントの削除</h2>
+  <p>利用者は、アプリ内のマイページからアカウントを削除できます。アカウントを削除すると、当方が保持するアカウント情報および紐づく利用データは削除されます。削除方法の詳細は、アプリ内の案内、またはメール（<a href="mailto:sjigata@gmail.com">sjigata@gmail.com</a>）でのお問い合わせにて案内します。</p>
+
+  <h2>子どものプライバシー</h2>
+  <p>本アプリは親子での利用を想定していますが、13歳未満の利用者から意図的に個人情報を収集することはありません。保護者の管理のもとでご利用ください。</p>
 
   <h2>お問い合わせ</h2>
-  <p>プライバシーポリシーに関するご質問は、以下のメールアドレスまでお問い合わせください。<br>
-  <a href="mailto:yusami.kei825@gmail.com">yusami.kei825@gmail.com</a></p>
+  <p>本ポリシーおよび個人情報の取り扱いに関するお問い合わせは、以下までご連絡ください。<br>
+  riokoike（小池 諒亮）<br>
+  <a href="mailto:sjigata@gmail.com">sjigata@gmail.com</a></p>
 
   <h2>改定について</h2>
-  <p>本ポリシーは必要に応じて改定することがあります。最新の内容は本ページでご確認ください。</p>
+  <p>本ポリシーは必要に応じて改定することがあります。重要な変更がある場合は本ページで告知します。</p>
 
-  <p style="color:#999; font-size:13px; margin-top:40px;">最終更新日：2026年8月8日</p>
+  <p style="color:#999; font-size:13px; margin-top:40px;">最終更新日：2026年9月7日</p>
 </body>
 </html>
