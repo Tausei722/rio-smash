@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { getAudioDuration, getWaveformData, playPreview, stopPreview, trimAudio } from '../native/AudioTrim';
+import { Icon } from './Icon';
 
 const NUM_BARS = 80;
 
@@ -23,7 +24,10 @@ export function AudioTrimmer({ audioPath, onTrimmed, onCancel }: Props) {
   if (Platform.OS !== 'ios') {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>✂️ 音声トリム</Text>
+        <View style={styles.titleRow}>
+        <Icon name="trim" size="md" color="#0e7490" />
+        <Text style={styles.title}>音声トリム</Text>
+      </View>
         <Text style={{ textAlign: 'center', color: '#94a3b8', marginVertical: 24 }}>
           音声トリムはiOSのみ対応しています
         </Text>
@@ -148,7 +152,10 @@ export function AudioTrimmer({ audioPath, onTrimmed, onCancel }: Props) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>✂️ 音声トリム</Text>
+      <View style={styles.titleRow}>
+        <Icon name="trim" size="md" color="#0e7490" />
+        <Text style={styles.title}>音声トリム</Text>
+      </View>
 
       {loading ? (
         <View style={styles.loadingArea}>
@@ -197,7 +204,7 @@ export function AudioTrimmer({ audioPath, onTrimmed, onCancel }: Props) {
             >
               <View style={styles.handleLine} />
               <View style={styles.handleKnob}>
-                <Text style={styles.handleArrow}>◀</Text>
+                <Icon name="caretLeft" size={12} color="#ffffff" />
               </View>
             </View>
 
@@ -207,7 +214,7 @@ export function AudioTrimmer({ audioPath, onTrimmed, onCancel }: Props) {
             >
               <View style={styles.handleLine} />
               <View style={styles.handleKnob}>
-                <Text style={styles.handleArrow}>▶</Text>
+                <Icon name="caretRight" size={12} color="#ffffff" />
               </View>
             </View>
           </View>
@@ -218,9 +225,10 @@ export function AudioTrimmer({ audioPath, onTrimmed, onCancel }: Props) {
             <Text style={styles.timeText}>{fmt(endRatio)}</Text>
           </View>
 
-          <TouchableOpacity style={styles.previewBtn} onPress={handlePreview}>
+          <TouchableOpacity style={[styles.previewBtn, styles.previewBtnRow]} onPress={handlePreview}>
+            <Icon name={isPlaying ? 'stop' : 'play'} size="sm" color="#0284c7" />
             <Text style={styles.previewBtnText}>
-              {isPlaying ? '⏹ 停止' : '▶ 選択範囲を試聴'}
+              {isPlaying ? '停止' : '選択範囲を試聴'}
             </Text>
           </TouchableOpacity>
 
@@ -232,7 +240,10 @@ export function AudioTrimmer({ audioPath, onTrimmed, onCancel }: Props) {
             {isTrimming ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.trimBtnText}>✂️ この範囲でトリム</Text>
+              <View style={styles.trimBtnInner}>
+                <Icon name="trim" size="sm" color="#ffffff" />
+                <Text style={styles.trimBtnText}>この範囲でトリム</Text>
+              </View>
             )}
           </TouchableOpacity>
         </>
@@ -259,12 +270,24 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginBottom: 20,
+  },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#0e7490',
-    marginBottom: 20,
     textAlign: 'center',
+  },
+  trimBtnInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
   },
   loadingArea: {
     alignItems: 'center',
@@ -360,6 +383,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     marginBottom: 10,
+  },
+  previewBtnRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 6,
   },
   previewBtnText: {
     color: '#0284c7',

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Icon } from './Icon';
 
 type Props = {
   isRecording: boolean;
@@ -35,7 +36,9 @@ export function MicButton({ isRecording, onPress, disabled }: Props) {
         {isRecording && (
           <Animated.View style={[styles.ripple, { transform: [{ scale: pulse }] }]} />
         )}
-        <Text style={styles.icon}>🎤</Text>
+        <View style={styles.icon}>
+          <Icon name="mic" size="xl" color="#fff" accessibilityLabel="録音" />
+        </View>
       </TouchableOpacity>
       <Text style={[styles.hint, isRecording && styles.hintRecording]}>
         {isRecording ? '録音中... もう一度押して停止' : '押して発音'}
@@ -72,7 +75,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     zIndex: 10,
-    fontSize: 30,
   },
   hint: {
     marginTop: 12,

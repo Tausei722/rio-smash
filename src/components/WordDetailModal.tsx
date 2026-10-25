@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Icon } from './Icon';
 
 type Props = {
   visible: boolean;
@@ -39,7 +40,7 @@ export function WordDetailModal({ visible, english, japanese, detail, onClose }:
               {japanese ? <Text style={styles.japanese}>{japanese}</Text> : null}
             </View>
             <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-              <Text style={styles.closeBtnText}>✕</Text>
+              <Icon name="close" size="sm" color="#64748b" accessibilityLabel="閉じる" />
             </TouchableOpacity>
           </View>
 

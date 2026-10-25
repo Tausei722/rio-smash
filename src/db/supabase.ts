@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AppState } from 'react-native';
+import { secureSessionStorage } from './sessionStorage';
 
 const SUPABASE_URL = 'https://xilrpvnierjjuouduqsg.supabase.co';
 const SUPABASE_ANON_KEY =
@@ -7,9 +8,29 @@ const SUPABASE_ANON_KEY =
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
-    storage: AsyncStorage,
+    // セッションは OS セキュアストア（iOS: Keychain / Android: Keystore）に保存する。
+    storage: secureSessionStorage,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
   },
 });
+
+// React Native では、アプリがフォアグラウンドのときだけトークン自動更新を回す必要がある。
+// これをしないと、バックグラウンド中に更新タイマーが空回りして失敗し、
+// リフレッシュトークンのローテーション再利用検知でセッションごと失効＝強制ログアウトになる。
+let autoRefreshRunning = false;
+const syncAutoRefresh = (state: string) => {
+  if (state === 'active') {
+    if (!autoRefreshRunning) {
+      supabase.auth.startAutoRefresh();
+      autoRefreshRunning = true;
+    }
+  } else if (autoRefreshRunning) {
+    supabase.auth.stopAutoRefresh();
+    autoRefreshRunning = false;
+  }
+};
+
+syncAutoRefresh(AppState.currentState ?? 'active');
+AppState.addEventListener('change', syncAutoRefresh);

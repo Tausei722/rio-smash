@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../db/supabase';
+import { Icon } from '../components/Icon';
 
 type Props = {
   onLoggedIn: () => void;
@@ -117,7 +118,7 @@ export function LoginScreen({ onLoggedIn }: Props) {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.logoArea}>
-            <Text style={styles.emoji}>🗣️</Text>
+            <Icon name="speak" size={56} color="#0e7490" accessibilityLabel="英単語対戦" />
             <Text style={styles.title}>英単語対戦</Text>
             <Text style={styles.subtitle}>
               {isLogin ? 'ログインして始めよう' : 'アカウントを作成'}

@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { scoreColor, scoreMessage } from '../utils/scoring';
+import { Icon } from './Icon';
 import { WordDetailModal } from './WordDetailModal';
 
 type Props = {
   score: number;
   spokenText: string;
+  failed?: boolean;
   expectedWord: string;
   japanese?: string | null;
   detail?: string | null;
@@ -14,7 +16,7 @@ type Props = {
 };
 
 // このカードは #E8B526 単色テーマ
-export function ScoreReveal({ score, spokenText, expectedWord, japanese, detail, currentPlayer, onNext }: Props) {
+export function ScoreReveal({ score, spokenText, failed, expectedWord, japanese, detail, currentPlayer, onNext }: Props) {
   const scale = useRef(new Animated.Value(0.5)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const [showDetail, setShowDetail] = useState(false);
@@ -36,9 +38,17 @@ export function ScoreReveal({ score, spokenText, expectedWord, japanese, detail,
           <Text style={styles.playerText}>プレイヤー {currentPlayer}</Text>
         </View>
 
-        <Text style={[styles.score, { color }]}>{score}</Text>
-        <Text style={styles.scoreUnit}>点</Text>
-        <Text style={[styles.message, { color }]}>{message}</Text>
+        {failed ? (
+          <Text style={styles.failedMessage}>
+            音声を認識できませんでした。{'\n'}もう一度挑戦するか、そのまま次へ進めます。
+          </Text>
+        ) : (
+          <>
+            <Text style={[styles.score, { color }]}>{score}</Text>
+            <Text style={styles.scoreUnit}>点</Text>
+            <Text style={[styles.message, { color }]}>{message}</Text>
+          </>
+        )}
 
         <View style={styles.divider} />
 
@@ -58,12 +68,14 @@ export function ScoreReveal({ score, spokenText, expectedWord, japanese, detail,
           </View>
         </View>
 
-        <TouchableOpacity style={styles.detailButton} onPress={() => setShowDetail(true)}>
-          <Text style={styles.detailButtonText}>📖 使い方・文法を見る</Text>
+        <TouchableOpacity style={[styles.detailButton, styles.rowCenter]} onPress={() => setShowDetail(true)}>
+          <Icon name="book" size="sm" color="#E8B526" />
+          <Text style={styles.detailButtonText}>使い方・文法を見る</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.nextButton} onPress={onNext}>
-          <Text style={styles.nextText}>次へ →</Text>
+        <TouchableOpacity style={[styles.nextButton, styles.rowCenter]} onPress={onNext}>
+          <Text style={styles.nextText}>次へ</Text>
+          <Icon name="next" size="sm" color="#ffffff" />
         </TouchableOpacity>
       </Animated.View>
 
@@ -125,6 +137,14 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     marginBottom: 20,
   },
+  failedMessage: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#9A6A3A',
+    textAlign: 'center',
+    lineHeight: 22,
+    marginVertical: 24,
+  },
   divider: {
     width: '100%',
     height: 2,
@@ -169,6 +189,12 @@ const styles = StyleSheet.create({
     color: '#9A8A7A',
     marginTop: 2,
     textAlign: 'right',
+  },
+  rowCenter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
   },
   detailButton: {
     width: '100%',

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Icon } from './Icon';
 
 type Props = {
   player1Score: number;
@@ -20,13 +21,17 @@ export function GameOver({ player1Score, player2Score, onRestart }: Props) {
 
         {winner ? (
           <>
-            <Text style={styles.trophy}>🏆</Text>
+            <View style={styles.resultIcon}>
+              <Icon name="win" size={56} color="#25935F" accessibilityLabel="勝利" />
+            </View>
             <Text style={styles.winner}>{winner}</Text>
             <Text style={styles.winnerSub}>の勝利！</Text>
           </>
         ) : (
           <>
-            <Text style={styles.trophy}>🤝</Text>
+            <View style={styles.resultIcon}>
+              <Icon name="draw" size={56} color="#25935F" accessibilityLabel="引き分け" />
+            </View>
             <Text style={styles.winner}>引き分け</Text>
             <Text style={styles.winnerSub}>いい勝負！</Text>
           </>
@@ -49,7 +54,10 @@ export function GameOver({ player1Score, player2Score, onRestart }: Props) {
         </View>
 
         <TouchableOpacity style={styles.button} onPress={onRestart}>
-          <Text style={styles.buttonText}>もう一度プレイ 🎮</Text>
+          <View style={styles.buttonInner}>
+            <Text style={styles.buttonText}>もう一度プレイ</Text>
+            <Icon name="replay" size="md" color="#ffffff" />
+          </View>
         </TouchableOpacity>
       </View>
     </View>
@@ -80,8 +88,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     letterSpacing: 1,
   },
-  trophy: {
-    fontSize: 64,
+  resultIcon: {
     marginBottom: 8,
   },
   winner: {
@@ -136,6 +143,12 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     borderRadius: 18,
     alignItems: 'center',
+  },
+  buttonInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
   },
   buttonText: {
     color: '#ffffff',

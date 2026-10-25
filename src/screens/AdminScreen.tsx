@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Alert,
   FlatList,
+  Modal,
   ScrollView,
   StyleSheet,
   Switch,
@@ -10,8 +11,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { deleteWord, fetchAllWords, WordRow } from '../db/database';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { Icon } from '../components/Icon';
+import {
+  deleteWord, fetchAllWords, WordRow,
+  fetchAllProfiles, fetchCategoryAccess, assignCategoryToUser, clearCategoryAccess, renameCategoryAccess,
+  ProfileRow, CategoryAccessMap,
+} from '../db/database';
 
 type Props = {
   onBack: () => void;
@@ -34,14 +40,75 @@ export function AdminScreen({ onBack, onAddWord, onEditWord, premiumCategories, 
   const [newCatInput, setNewCatInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // 個人限定カテゴリ（誰のアカウントにだけ表示するか）
+  const [profiles, setProfiles] = useState<ProfileRow[]>([]);
+  const [categoryAccess, setCategoryAccess] = useState<CategoryAccessMap>({});
+  const [assigningCat, setAssigningCat] = useState<string | null>(null);
+  const [userQuery, setUserQuery] = useState('');
+  const [assignSaving, setAssignSaving] = useState(false);
+
   const load = useCallback(async () => {
     const rows = await fetchAllWords(true);
     setWords(rows);
   }, []);
 
+  const loadAccess = useCallback(async () => {
+    const [profileRows, accessMap] = await Promise.all([fetchAllProfiles(), fetchCategoryAccess()]);
+    setProfiles(profileRows);
+    setCategoryAccess(accessMap);
+  }, []);
+
   useEffect(() => {
     load();
-  }, [load]);
+    loadAccess();
+  }, [load, loadAccess]);
+
+  function usernameOf(userId: string): string {
+    return profiles.find(p => p.id === userId)?.username || '(名前未設定)';
+  }
+
+  function openAssign(cat: string) {
+    setUserQuery('');
+    setAssigningCat(cat);
+  }
+
+  async function confirmAssign(userId: string) {
+    if (!assigningCat) return;
+    const cat = assigningCat;
+    setAssigningCat(null);
+    setAssignSaving(true);
+    try {
+      await assignCategoryToUser(cat, userId);
+      await loadAccess();
+    } catch (e: any) {
+      Alert.alert('エラー', '割り当てに失敗しました: ' + (e?.message ?? String(e)));
+    } finally {
+      setAssignSaving(false);
+    }
+  }
+
+  function unassign(cat: string) {
+    Alert.alert(
+      '個人限定を解除',
+      `「${cat}」の個人限定を解除して共有カテゴリに戻しますか？`,
+      [
+        { text: 'キャンセル', style: 'cancel' },
+        {
+          text: '解除',
+          style: 'destructive',
+          onPress: async () => {
+            setAssignSaving(true);
+            try {
+              await clearCategoryAccess(cat);
+              await loadAccess();
+            } finally {
+              setAssignSaving(false);
+            }
+          },
+        },
+      ],
+    );
+  }
 
   const handleDelete = (word: WordRow) => {
     Alert.alert(
@@ -100,10 +167,12 @@ export function AdminScreen({ onBack, onAddWord, onEditWord, premiumCategories, 
       // 名前が変わったカテゴリを DB に反映
       for (let i = 0; i < originalCatNames.current.length; i++) {
         await onRenameCategory(originalCatNames.current[i], catNames[i]);
+        await renameCategoryAccess(originalCatNames.current[i], catNames[i]);
       }
       originalCatNames.current = [...catNames];
       await onSaveCategories(catNames);
       await onSavePremiumCategories(localPremiumCats);
+      await loadAccess();
       Alert.alert('保存しました');
     } catch {
       Alert.alert('エラー', '保存に失敗しました');
@@ -117,7 +186,8 @@ export function AdminScreen({ onBack, onAddWord, onEditWord, premiumCategories, 
       {/* ヘッダー */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Text style={styles.backText}>← 戻る</Text>
+          <Icon name="back" size="sm" color="#ffffff" />
+          <Text style={styles.backText}>戻る</Text>
         </TouchableOpacity>
         <Text style={styles.title}>管理者画面</Text>
         {tab === 'words' ? (
@@ -162,31 +232,54 @@ export function AdminScreen({ onBack, onAddWord, onEditWord, premiumCategories, 
         </>
       ) : (
         <ScrollView contentContainerStyle={styles.catList}>
-          <Text style={styles.catHint}>名前を編集して保存できます。🔒 スイッチで有料設定。</Text>
-          {catNames.map((cat, index) => (
-            <View key={index} style={styles.catRow}>
-              <TextInput
-                style={styles.catNameInput}
-                value={cat}
-                onChangeText={text => updateCatName(index, text)}
-                placeholder="カテゴリ名"
-                placeholderTextColor="#94a3b8"
-              />
-              <View style={styles.catRight}>
-                {localPremiumCats.has(cat) && (
-                  <View style={styles.lockBadge}>
-                    <Text style={styles.lockBadgeText}>🔒</Text>
+          <Text style={styles.catHint}>名前を編集して保存できます。ロックのスイッチで有料設定。</Text>
+          {catNames.map((cat, index) => {
+            const assignedUserId = categoryAccess[cat]?.[0] ?? null;
+            return (
+              <View key={index} style={styles.catCard}>
+                <View style={styles.catRow}>
+                  <TextInput
+                    style={styles.catNameInput}
+                    value={cat}
+                    onChangeText={text => updateCatName(index, text)}
+                    placeholder="カテゴリ名"
+                    placeholderTextColor="#94a3b8"
+                  />
+                  <View style={styles.catRight}>
+                    {localPremiumCats.has(cat) && (
+                      <View style={styles.lockBadge}>
+                        <Icon name="lock" size={12} color="#d97706" accessibilityLabel="有料" />
+                      </View>
+                    )}
+                    <Switch
+                      value={localPremiumCats.has(cat)}
+                      onValueChange={() => toggleCat(cat)}
+                      trackColor={{ false: '#e2e8f0', true: '#fbbf24' }}
+                      thumbColor={localPremiumCats.has(cat) ? '#d97706' : '#f1f5f9'}
+                    />
                   </View>
-                )}
-                <Switch
-                  value={localPremiumCats.has(cat)}
-                  onValueChange={() => toggleCat(cat)}
-                  trackColor={{ false: '#e2e8f0', true: '#fbbf24' }}
-                  thumbColor={localPremiumCats.has(cat) ? '#d97706' : '#f1f5f9'}
-                />
+                </View>
+                <View style={styles.assignRow}>
+                  {assignedUserId ? (
+                    <>
+                      <View style={[styles.personalBadge, styles.badgeRow]}>
+                        <Icon name="lock" size={12} color="#db2777" />
+                        <Text style={styles.personalBadgeText}>{usernameOf(assignedUserId)}専用</Text>
+                      </View>
+                      <TouchableOpacity onPress={() => unassign(cat)} disabled={assignSaving}>
+                        <Text style={styles.assignLinkDanger}>個人限定を解除</Text>
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <TouchableOpacity onPress={() => openAssign(cat)} disabled={assignSaving} style={styles.badgeRow}>
+                      <Icon name="profile" size="sm" color="#0e7490" />
+                      <Text style={styles.assignLink}>特定のユーザーと紐付ける</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
               </View>
-            </View>
-          ))}
+            );
+          })}
           <View style={styles.addCatRow}>
             <TextInput
               style={styles.addCatInput}
@@ -205,6 +298,34 @@ export function AdminScreen({ onBack, onAddWord, onEditWord, premiumCategories, 
           </View>
         </ScrollView>
       )}
+
+      <Modal visible={assigningCat !== null} animationType="slide" onRequestClose={() => setAssigningCat(null)}>
+        {/* Modalは親のSafeAreaProviderの外に別階層で表示されるため、ここで包み直してセーフエリアを効かせる */}
+        <SafeAreaProvider>
+          <SafeAreaView style={styles.screen}>
+            <View style={styles.header}>
+              <TouchableOpacity onPress={() => setAssigningCat(null)} style={styles.backButton}>
+                <Icon name="back" size="sm" color="#ffffff" />
+                <Text style={styles.backText}>戻る</Text>
+              </TouchableOpacity>
+              <Text style={styles.title} numberOfLines={1}>ユーザーを選択</Text>
+              <View style={{ width: 60 }} />
+            </View>
+            <View style={styles.searchRow}>
+              <TextInput
+                style={styles.searchInput}
+                value={userQuery}
+                onChangeText={setUserQuery}
+                placeholder="ユーザー名で検索..."
+                placeholderTextColor="#94a3b8"
+                clearButtonMode="while-editing"
+                autoFocus
+              />
+            </View>
+            <UserPickerList profiles={profiles} query={userQuery} onPick={confirmAssign} />
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -224,6 +345,9 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   backText: {
     color: '#ffffff',
@@ -284,7 +408,17 @@ const styles = StyleSheet.create({
   audioBadge: {
     fontSize: 11,
     color: '#22c55e',
+  },
+  audioBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     marginTop: 4,
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
   },
   actions: {
     flexDirection: 'row',
@@ -354,9 +488,57 @@ const styles = StyleSheet.create({
     color: '#94a3b8',
     marginBottom: 8,
   },
-  catRow: {
+  catCard: {
     backgroundColor: '#ffffff',
     borderRadius: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  catRow: {
+    padding: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  assignRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 14,
+    paddingBottom: 12,
+    paddingTop: 4,
+    borderTopWidth: 1,
+    borderTopColor: '#f1f5f9',
+  },
+  assignLink: {
+    fontSize: 13,
+    color: '#0e7490',
+    fontWeight: '600',
+  },
+  assignLinkDanger: {
+    fontSize: 13,
+    color: '#dc2626',
+    fontWeight: '600',
+  },
+  personalBadge: {
+    backgroundColor: '#fdf2f8',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderWidth: 1,
+    borderColor: '#f9a8d4',
+  },
+  personalBadgeText: {
+    fontSize: 12,
+    color: '#db2777',
+    fontWeight: '700',
+  },
+  userRow: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
     padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
@@ -366,6 +548,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 4,
     elevation: 2,
+  },
+  userRowName: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#0f172a',
+  },
+  userRowId: {
+    fontSize: 12,
+    color: '#94a3b8',
   },
   catName: {
     fontSize: 16,
@@ -448,6 +639,38 @@ const styles = StyleSheet.create({
   },
 });
 
+function UserPickerList({
+  profiles,
+  query,
+  onPick,
+}: {
+  profiles: ProfileRow[];
+  query: string;
+  onPick: (userId: string) => void;
+}) {
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return q
+      ? profiles.filter(p => (p.username ?? '').toLowerCase().includes(q))
+      : profiles;
+  }, [profiles, query]);
+
+  return (
+    <FlatList
+      data={filtered}
+      keyExtractor={item => item.id}
+      contentContainerStyle={styles.list}
+      renderItem={({ item }) => (
+        <TouchableOpacity style={styles.userRow} onPress={() => onPick(item.id)}>
+          <Text style={styles.userRowName}>{item.username || '(名前未設定)'}</Text>
+          <Text style={styles.userRowId}>{item.id.slice(0, 8)}</Text>
+        </TouchableOpacity>
+      )}
+      ListEmptyComponent={<Text style={styles.empty}>該当するユーザーがいません</Text>}
+    />
+  );
+}
+
 function WordList({
   words,
   searchQuery,
@@ -461,12 +684,14 @@ function WordList({
 }) {
   const filtered = useMemo(() => {
     const q = searchQuery.trim();
+    const k = (w: WordRow) => String(w.katakana ?? '');
+    const e = (w: WordRow) => String(w.english ?? '');
     return (q
       ? words.filter(w =>
-          w.katakana.includes(q) || w.english.toLowerCase().includes(q.toLowerCase()),
+          k(w).includes(q) || e(w).toLowerCase().includes(q.toLowerCase()),
         )
       : [...words]
-    ).sort((a, b) => a.katakana.localeCompare(b.katakana, 'ja'));
+    ).sort((a, b) => k(a).localeCompare(k(b)));
   }, [words, searchQuery]);
 
   return (
@@ -481,7 +706,12 @@ function WordList({
             <View style={styles.wordInfo}>
               <Text style={styles.katakana}>{item.katakana}</Text>
               <Text style={styles.english}>{item.english}</Text>
-              {item.audio_path && <Text style={styles.audioBadge}>🎤 音声あり</Text>}
+              {item.audio_path && (
+                <View style={styles.audioBadgeRow}>
+                  <Icon name="mic" size={12} color="#22c55e" />
+                  <Text style={styles.audioBadge}>音声あり</Text>
+                </View>
+              )}
             </View>
             <View style={styles.actions}>
               <TouchableOpacity style={styles.editBtn} onPress={() => onEdit(item)}>

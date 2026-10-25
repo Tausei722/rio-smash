@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Voice, { SpeechResultsEvent } from '@react-native-voice/voice';
+import { Icon } from '../components/Icon';
 
 type Props = {
   onBack: () => void;
@@ -121,8 +122,9 @@ export function FlashWordScreen({ onBack }: Props) {
 
       {/* 戻るボタン・録音インジケーター（オーバーレイ） */}
       <View style={styles.topOverlay}>
-        <TouchableOpacity onPress={onBack} style={styles.backBtn}>
-          <Text style={styles.backText}>← 戻る</Text>
+        <TouchableOpacity onPress={onBack} style={[styles.backBtn, styles.backBtnRow]}>
+          <Icon name="back" size="sm" color="rgba(255,255,255,0.5)" />
+          <Text style={styles.backText}>戻る</Text>
         </TouchableOpacity>
         {isRecording && (
           <View style={styles.recordingBadge}>
@@ -148,7 +150,9 @@ export function FlashWordScreen({ onBack }: Props) {
           )
         ) : (
           <View style={styles.idleArea}>
-            <Text style={styles.idleEmoji}>🎤</Text>
+            <View style={styles.idleEmoji}>
+              <Icon name="mic" size={72} color="#ffffff" />
+            </View>
             <Text style={styles.idleText}>
               ボタンを押して{'\n'}英語を話してください
             </Text>
@@ -193,7 +197,7 @@ export function FlashWordScreen({ onBack }: Props) {
           onPress={handleMicPress}
           activeOpacity={0.8}
         >
-          <Text style={styles.micBtnEmoji}>{isRecording ? '⏹' : '🎤'}</Text>
+          <Icon name={isRecording ? 'stop' : 'mic'} size="xl" color="#ffffff" accessibilityLabel={isRecording ? '停止' : '録音'} />
           <Text style={styles.micBtnLabel}>
             {isRecording ? '停止' : 'スタート'}
           </Text>
@@ -220,6 +224,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   backBtn: { padding: 8 },
+  backBtnRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   backText: { color: 'rgba(255,255,255,0.5)', fontSize: 15 },
   recordingBadge: {
     flexDirection: 'row',
@@ -268,7 +273,6 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   idleEmoji: {
-    fontSize: 80,
     opacity: 0.2,
   },
   idleText: {

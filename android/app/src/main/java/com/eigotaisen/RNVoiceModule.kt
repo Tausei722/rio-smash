@@ -19,6 +19,17 @@ class RNVoiceModule(private val reactContext: ReactApplicationContext) :
     override fun getName() = "RNVoice"
 
     @ReactMethod
+    fun isAvailable(promise: Promise) {
+        mainHandler.post {
+            try {
+                promise.resolve(SpeechRecognizer.isRecognitionAvailable(reactContext))
+            } catch (e: Exception) {
+                promise.resolve(false)
+            }
+        }
+    }
+
+    @ReactMethod
     fun start(locale: String, promise: Promise) {
         mainHandler.post {
             try {
@@ -52,7 +63,7 @@ class RNVoiceModule(private val reactContext: ReactApplicationContext) :
                     }
 
                     override fun onEndOfSpeech() {
-                        sendEvent("RNVoice.onSpeechEnd", "")
+                        // onResults か onError の後に onSpeechEnd を送るため、ここでは何もしない
                     }
 
                     override fun onError(error: Int) {

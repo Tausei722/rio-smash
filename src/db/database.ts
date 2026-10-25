@@ -52,6 +52,62 @@ export async function savePremiumCategories(categories: string[]): Promise<void>
     .upsert({ key: 'premium_categories', value: categories });
   if (error) throw error;
 }
+
+export type ProfileRow = { id: string; username: string | null };
+
+// 自分のユーザー名を更新
+export async function updateUsername(userId: string, username: string): Promise<void> {
+  const { error } = await supabase.from('profiles').update({ username }).eq('id', userId);
+  if (error) throw error;
+}
+
+// ユーザー一覧取得（個人限定カテゴリの割り当て先選択用）
+export async function fetchAllProfiles(): Promise<ProfileRow[]> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, username')
+    .order('username', { ascending: true });
+  if (error || !data) return [];
+  return data;
+}
+
+export type CategoryAccessMap = Record<string, string[]>; // category -> user_id[]
+
+// カテゴリごとの個人限定アクセス一覧を取得
+export async function fetchCategoryAccess(): Promise<CategoryAccessMap> {
+  const { data, error } = await supabase.from('category_access').select('category, user_id');
+  if (error || !data) return {};
+  const map: CategoryAccessMap = {};
+  data.forEach(row => {
+    (map[row.category] ??= []).push(row.user_id);
+  });
+  return map;
+}
+
+// カテゴリを1ユーザーの個人限定にする（既存の割り当ては置き換え）
+export async function assignCategoryToUser(category: string, userId: string): Promise<void> {
+  const { error: delError } = await supabase.from('category_access').delete().eq('category', category);
+  if (delError) throw delError;
+  const { error } = await supabase.from('category_access').insert({ category, user_id: userId });
+  if (error) throw error;
+}
+
+// 個人限定を解除し、共有カテゴリに戻す
+export async function clearCategoryAccess(category: string): Promise<void> {
+  const { error } = await supabase.from('category_access').delete().eq('category', category);
+  if (error) throw error;
+}
+
+// カテゴリ名変更時、個人限定の割り当ても新しい名前に追従させる
+export async function renameCategoryAccess(oldName: string, newName: string): Promise<void> {
+  if (oldName === newName) return;
+  const { error } = await supabase
+    .from('category_access')
+    .update({ category: newName })
+    .eq('category', oldName);
+  if (error) throw error;
+}
+
 export type Category = typeof CATEGORIES[number];
 
 export type WordRow = {

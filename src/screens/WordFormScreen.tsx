@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import RNFS from 'react-native-fs';
+import { Icon } from '../components/Icon';
 import { insertWord, updateWord, uploadAudio, downloadAudioToLocal, WordRow } from '../db/database';
 import { getAudioDuration } from '../native/AudioTrim';
 import { AudioRecorder } from '../native/AudioRecorder';
@@ -157,8 +158,9 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
     <SafeAreaView style={styles.screen}>
       {/* ヘッダー */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Text style={styles.backText}>← 戻る</Text>
+        <TouchableOpacity onPress={onBack} style={[styles.backButton, styles.backRow]}>
+          <Icon name="back" size="sm" color="#ffffff" />
+          <Text style={styles.backText}>戻る</Text>
         </TouchableOpacity>
         <Text style={styles.title}>{isEdit ? '単語を編集' : '単語を追加'}</Text>
         <View style={{ width: 60 }} />
@@ -246,9 +248,12 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
             style={[styles.audioBtn, isRecording && styles.audioBtnRecording]}
             onPress={handleRecordToggle}
           >
-            <Text style={styles.audioBtnText}>
-              {isRecording ? '⏹ 録音停止' : '🎤 録音開始'}
-            </Text>
+            <View style={styles.audioBtnInner}>
+              <Icon name={isRecording ? 'stop' : 'mic'} size="sm" color="#ffffff" />
+              <Text style={styles.audioBtnText}>
+                {isRecording ? '録音停止' : '録音開始'}
+              </Text>
+            </View>
           </TouchableOpacity>
 
           {audioPath && (
@@ -256,16 +261,22 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
               style={[styles.audioBtn, styles.audioBtnPlay, isPlaying && styles.audioBtnPlaying]}
               onPress={handlePlay}
             >
-              <Text style={styles.audioBtnText}>
-                {isPlaying ? '⏹ 停止' : '▶ 再生'}
-              </Text>
+              <View style={styles.audioBtnInner}>
+                <Icon name={isPlaying ? 'stop' : 'play'} size="sm" color="#ffffff" />
+                <Text style={styles.audioBtnText}>
+                  {isPlaying ? '停止' : '再生'}
+                </Text>
+              </View>
             </TouchableOpacity>
           )}
         </View>
 
         {audioPath ? (
           <>
-            <Text style={styles.audioStatus}>✅ 音声が録音されています</Text>
+            <View style={styles.audioStatusRow}>
+              <Icon name="checkCircle" size="sm" color="#22c55e" />
+              <Text style={styles.audioStatus}>音声が録音されています</Text>
+            </View>
             {Platform.OS === 'ios' && (
               <TouchableOpacity
                 style={[styles.trimButton, isDownloading && styles.saveButtonDisabled]}
@@ -291,7 +302,10 @@ export function WordFormScreen({ editingWord, onBack, onSaved, categories }: Pro
                 {isDownloading ? (
                   <ActivityIndicator color="#475569" size="small" />
                 ) : (
-                  <Text style={styles.trimButtonText}>✂️ トリム（前後カット）</Text>
+                  <View style={styles.trimButtonInner}>
+                    <Icon name="trim" size="sm" color="#475569" />
+                    <Text style={styles.trimButtonText}>トリム（前後カット）</Text>
+                  </View>
                 )}
               </TouchableOpacity>
             )}
@@ -392,6 +406,29 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
+  },
+  audioBtnInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  backRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  audioStatusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 4,
+  },
+  trimButtonInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
   },
   audioBtnRecording: {
     backgroundColor: '#ef4444',

@@ -17,7 +17,7 @@ import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { PlatformVoice as Voice, SpeechErrorEvent, SpeechResultsEvent } from './src/native/PlatformVoice';
 
-import { fetchAllWords, initDB, downloadAudioToLocal, WordRow, CATEGORIES, fetchPremiumCategories, savePremiumCategories, fetchCategoryList, saveCategoryList, renameCategory } from './src/db/database';
+import { fetchAllWords, initDB, downloadAudioToLocal, WordRow, CATEGORIES, fetchPremiumCategories, savePremiumCategories, fetchCategoryList, saveCategoryList, renameCategory, updateUsername, fetchCategoryAccess, CategoryAccessMap } from './src/db/database';
 import { supabase } from './src/db/supabase';
 import {
   setupIAP,
@@ -28,18 +28,27 @@ import {
 } from './src/services/purchase';
 import { getAudioDuration } from './src/native/AudioTrim';
 import { calcPronunciationScore } from './src/utils/scoring';
+import {
+  oyakoCategoriesForUser,
+  sharedCategories,
+  wordsForOpenBattle,
+  wordsForCategories,
+} from './src/utils/categoryVisibility';
 import { GameOver } from './src/components/GameOver';
+import { Icon } from './src/components/Icon';
 import { MicButton } from './src/components/MicButton';
 import { ScoreBoard } from './src/components/ScoreBoard';
 import { ScoreReveal } from './src/components/ScoreReveal';
 import { WordCard } from './src/components/WordCard';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { AdminScreen } from './src/screens/AdminScreen';
+import { ProfileScreen } from './src/screens/ProfileScreen';
 import { AIConversationScreen } from './src/screens/AIConversationScreen';
 import { FlashWordScreen } from './src/screens/FlashWordScreen';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { WordFormScreen } from './src/screens/WordFormScreen';
 
-type Screen = 'home' | 'game' | 'gameover' | 'admin' | 'wordform' | 'ai' | 'flash';
+type Screen = 'home' | 'game' | 'gameover' | 'admin' | 'wordform' | 'ai' | 'flash' | 'profile';
 
 // AudioRecorderPlayer はすでにインスタンスとして export されている
 const audioPlayer = AudioRecorderPlayer;
@@ -48,27 +57,13 @@ function shuffleArray<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
 }
 
-const CATEGORY_EMOJI: Record<string, string> = {
-  'yesterday':    '📅',
-  'human nature': '🧠',
-  'お土産':        '🎁',
-  '挨拶':          '👋',
-  '試着':          '👗',
-  '写真':          '📷',
-  '道教え':        '🗺️',
-  '道迷い':        '🧭',
-  '6歳以上':       '🔢',
-  '6歳以下':       '👶',
-  'monkey magic': '🐒',
-  'ラップ':        '🎤',
-  '放送禁止':      '🔞',
-};
-
 export default function App() {
   return (
     <SafeAreaProvider>
       <StatusBar barStyle="dark-content" backgroundColor="#ecfeff" />
-      <GameApp />
+      <ErrorBoundary>
+        <GameApp />
+      </ErrorBoundary>
     </SafeAreaProvider>
   );
 }
@@ -85,34 +80,58 @@ function GameApp() {
   const [isRecording, setIsRecording] = useState(false);
   const [isPlayingSample, setIsPlayingSample] = useState(false);
   const [liveText, setLiveText] = useState('');
-  const [reveal, setReveal] = useState<{ score: number; spoken: string } | null>(null);
+  const [reveal, setReveal] = useState<{ score: number; spoken: string; failed?: boolean } | null>(null);
+  // 端末で音声認識が使えるか（null=未確認）。使えない/失敗時はスキップ導線を出す。
+  const [speechAvailable, setSpeechAvailable] = useState<boolean | null>(null);
+  const [showSkip, setShowSkip] = useState(false);
   const [editingWord, setEditingWord] = useState<WordRow | null>(null);
   const [authReady, setAuthReady] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [premiumCategories, setPremiumCategories] = useState<Set<string>>(new Set());
+  const [categoryAccess, setCategoryAccess] = useState<CategoryAccessMap>({});
   const [categories, setCategories] = useState<string[]>([...CATEGORIES]);
 
   // セッション確認 & isAdmin / isPremium 取得
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
+    let session = (await supabase.auth.getSession()).data.session;
+    if (!session) {
+      // 保存済みセッションはあるが読み込みに失敗した等の一時不整合に備え、一度だけ明示更新を試す
+      try {
+        session = (await supabase.auth.refreshSession()).data.session ?? null;
+      } catch {
+        // セッションが本当に無い場合は例外になる。そのまま未ログイン扱いへ。
+      }
+    }
     if (!session) {
       setIsLoggedIn(false);
       setIsAdmin(false);
       setIsPremium(false);
+      setUserId(null);
+      setUsername(null);
       setAuthReady(true);
       return;
     }
     setIsLoggedIn(true);
+    setUserId(session.user.id);
     const { data } = await supabase
       .from('profiles')
-      .select('is_admin, is_premium')
+      .select('is_admin, is_premium, username')
       .eq('id', session.user.id)
       .single();
     setIsAdmin(data?.is_admin === true);
     setIsPremium(data?.is_premium === true);
+    setUsername(data?.username ?? null);
     setAuthReady(true);
+  };
+
+  const handleSaveUsername = async (newName: string) => {
+    if (!userId) return;
+    await updateUsername(userId, newName);
+    setUsername(newName);
   };
 
   const handlePurchase = async () => {
@@ -147,39 +166,55 @@ function GameApp() {
 
     (async () => {
       await initDB();
-      const [rows, cats, catList] = await Promise.all([
-        fetchAllWords(isPremium),
+      const [rows, cats, catList, access] = await Promise.all([
+        // 紐づいたカテゴリはプレミアム単語も見せるため、常に全件取得してクライアント側で絞る
+        fetchAllWords(true),
         fetchPremiumCategories().catch(() => new Set<string>()),
         fetchCategoryList().catch(() => [...CATEGORIES]),
+        fetchCategoryAccess().catch(() => ({})),
       ]);
       setAllWords(rows);
       setDbReady(true);
       setPremiumCategories(cats);
       setCategories(catList);
+      setCategoryAccess(access);
     })();
     checkAuth();
 
     const cleanupPurchase = setupPurchaseListeners(
       async (purchase) => {
-        await activatePremium(purchase);
-        setIsPremium(true);
-        const rows = await fetchAllWords(true);
-        setAllWords(rows);
-        Alert.alert('購入完了', 'プレミアムプランへようこそ！');
+        try {
+          await activatePremium(purchase);
+          setIsPremium(true);
+          const rows = await fetchAllWords(true);
+          setAllWords(rows);
+          Alert.alert('購入完了', 'プレミアムプランへようこそ！');
+        } catch (e) {
+          // 起動時にキューへ残った取引で発火した場合など。落とさない。
+          console.warn('purchase success handler failed:', (e as Error)?.message);
+        }
       },
       (error) => {
-        if ((error.code as string) !== 'E_USER_CANCELLED') {
-          Alert.alert('購入エラー', error.message);
+        const code = (error?.code ?? '') as string;
+        if (code && code !== 'E_USER_CANCELLED') {
+          Alert.alert('購入エラー', error?.message ?? '購入処理でエラーが発生しました。');
         }
       },
     );
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // 明示的なサインアウト／ユーザー削除のときだけログイン画面へ戻す。
+      // それ以外のイベントで一時的に session が null でも、追い出さない（通信瞬断対策）。
+      if (event === 'SIGNED_OUT') {
         setIsLoggedIn(false);
         setIsAdmin(false);
+        setIsPremium(false);
+        setUserId(null);
+        setUsername(null);
         setScreen('home');
-      } else {
+        return;
+      }
+      if (session) {
         setIsLoggedIn(true);
         checkAuth();
       }
@@ -192,9 +227,10 @@ function GameApp() {
 
   useEffect(() => {
     if (screen === 'home') {
-      fetchAllWords(isPremium).then(rows => setAllWords(rows)).catch(() => {});
+      fetchAllWords(true).then(rows => setAllWords(rows)).catch(() => {});
       fetchPremiumCategories().then(cats => setPremiumCategories(cats)).catch(() => {});
       fetchCategoryList().then(catList => setCategories(catList)).catch(() => {});
+      fetchCategoryAccess().then(access => setCategoryAccess(access)).catch(() => {});
     }
   }, [screen, isPremium]);
 
@@ -205,15 +241,13 @@ function GameApp() {
   const currentWordRef = useRef(currentWord);
   useEffect(() => { currentWordRef.current = currentWord; }, [currentWord]);
 
-  // 実際の録音状態をrefで管理（UIのisRecordingと分離）
+  // 録音中かどうか（UIのisRecordingと分離）
   const isRecordingRef = useRef(false);
   // 連打防止フラグ
   const isProcessingRef = useRef(false);
-  // 手動停止フラグ
-  const isManualStopRef = useRef(false);
-  // 認識テキスト蓄積（手動停止まで上書き更新）
+  // 認識テキスト蓄積
   const latestSpokenRef = useRef('');
-  // 無音タイマー
+  // 無音タイマー（2秒無音で自動停止）
   const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const SILENCE_TIMEOUT_MS = 2000;
 
@@ -224,7 +258,6 @@ function GameApp() {
     }
     isRecordingRef.current = false;
     isProcessingRef.current = false;
-    isManualStopRef.current = false;
     setIsRecording(false);
     setLiveText('');
     const word = currentWordRef.current;
@@ -232,7 +265,9 @@ function GameApp() {
     latestSpokenRef.current = '';
     if (!word) return;
     if (!finalText) {
-      Alert.alert('エラー', '音声を認識できませんでした。もう一度試してください。');
+      // 認識できなかった場合もモーダルで止めず、結果カード（0点＋スキップ導線）を出して次へ進めるようにする
+      setShowSkip(true);
+      setReveal({ score: 0, spoken: '', failed: true });
       return;
     }
     const score = calcPronunciationScore(finalText, word.english);
@@ -250,17 +285,28 @@ function GameApp() {
   // Voiceイベントはゲーム画面のときだけ登録
   useEffect(() => {
     if (screen !== 'game') return;
-    // リアルタイム部分認識 → 表示更新 + 蓄積 + 無音タイマーリセット
+
+    // この端末で音声認識が使えるか確認。使えなければ最初からスキップ導線を出す。
+    setShowSkip(false);
+    Voice.isAvailable()
+      .then(ok => {
+        setSpeechAvailable(ok);
+        if (!ok) setShowSkip(true);
+      })
+      .catch(() => {
+        setSpeechAvailable(false);
+        setShowSkip(true);
+      });
+
     Voice.onSpeechPartialResults = (e: SpeechResultsEvent) => {
       const text = e.value?.[0] ?? '';
-      setLiveText(text);
       if (text) {
+        setLiveText(text);
         latestSpokenRef.current = text;
         resetSilenceTimer();
       }
     };
 
-    // 確定テキスト → 蓄積のみ（判断は onSpeechEnd に任せる）
     Voice.onSpeechResults = (e: SpeechResultsEvent) => {
       const spoken = e.value?.[0] ?? '';
       if (spoken) {
@@ -269,72 +315,56 @@ function GameApp() {
       }
     };
 
-    // セッション終了 → 発話あり or 手動停止ならスコア確定、なければ再スタート
+    // 認識セッション終了 → そのままスコア確定
     Voice.onSpeechEnd = () => {
-      if (!isRecordingRef.current) return;
-
-      if (isManualStopRef.current || latestSpokenRef.current) {
+      if (isRecordingRef.current) {
         commitScore();
-      } else {
-        // まだ何も話していない → 再スタートして聞き続ける
-        Voice.start('en-US').catch(() => {
-          isRecordingRef.current = false;
-          isProcessingRef.current = false;
-          setIsRecording(false);
-        });
       }
     };
 
-    // エラー → 発話あれば確定、なければアラート
+    // エラー → そのままスコア確定（自動再スタートしない）
     Voice.onSpeechError = (_e: SpeechErrorEvent) => {
+      if (isRecordingRef.current) {
+        commitScore();
+      }
+    };
+
+    return () => {
       if (silenceTimerRef.current) {
         clearTimeout(silenceTimerRef.current);
         silenceTimerRef.current = null;
       }
-      if (isRecordingRef.current && !isManualStopRef.current && !latestSpokenRef.current) {
-        Voice.start('en-US').catch(() => {
-          isRecordingRef.current = false;
-          isProcessingRef.current = false;
-          setIsRecording(false);
-        });
-      } else {
-        commitScore();
-      }
-    };
-    return () => {
-      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       Voice.destroy().then(Voice.removeAllListeners);
     };
-  }, [screen]); // game画面に入ったときだけ登録
+  }, [screen]);
 
   const handleMicPress = useCallback(async () => {
-    if (isProcessingRef.current) return; // 連打ガード
+    if (isProcessingRef.current) return;
     isProcessingRef.current = true;
 
     try {
       if (isRecordingRef.current) {
-        // 手動停止
+        // 停止 → onSpeechEnd が発火して commitScore が呼ばれる
         if (silenceTimerRef.current) {
           clearTimeout(silenceTimerRef.current);
           silenceTimerRef.current = null;
         }
-        isManualStopRef.current = true;
         await Voice.stop();
       } else {
-        // 開始 → 成功してからstateを更新
-        isManualStopRef.current = false;
+        // 開始
         if (Platform.OS === 'android') {
           const granted = await PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
             { title: 'マイクの使用許可', message: '発音認識のためにマイクへのアクセスが必要です', buttonPositive: '許可' },
           );
           if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-            isRecordingRef.current = false;
-            setIsRecording(false);
-            Alert.alert('権限エラー', 'マイクの使用が許可されていません。設定から許可してください。');
+            setShowSkip(true);
+            Alert.alert('権限エラー', 'マイクの使用が許可されていません。設定から許可するか、「スキップ」で次に進めます。');
             return;
           }
         }
+        latestSpokenRef.current = '';
+        setLiveText('');
         await Voice.start('en-US');
         isRecordingRef.current = true;
         setIsRecording(true);
@@ -342,19 +372,41 @@ function GameApp() {
     } catch {
       isRecordingRef.current = false;
       setIsRecording(false);
-      Alert.alert('エラー', 'マイクを開始できませんでした。');
+      setSpeechAvailable(false);
+      setShowSkip(true);
+      Alert.alert('エラー', 'この端末では音声認識を開始できませんでした。「スキップ」で次に進めます。');
     } finally {
       isProcessingRef.current = false;
     }
   }, []);
 
+  // 音声認識が使えない／うまくいかないとき、採点せずに次の単語へ進む
+  const handleSkip = useCallback(async () => {
+    if (isProcessingRef.current) return;
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+    try { await Voice.stop(); } catch {}
+    try { await Voice.destroy(); } catch {}
+    isRecordingRef.current = false;
+    latestSpokenRef.current = '';
+    setIsRecording(false);
+    setLiveText('');
+    setReveal(null);
+    if (isLastQuestion) {
+      setScreen('gameover');
+    } else {
+      setQuestionIndex(i => i + 1);
+      setCurrentPlayer(p => (p === 1 ? 2 : 1));
+    }
+  }, [isLastQuestion]);
+
   const handleNext = useCallback(async () => {
     if (!reveal) return;
-    // 条件に関係なく常にVoiceセッションをキャンセルして確実に停止
-    try { await Voice.cancel(); } catch {}
+    try { await Voice.destroy(); } catch {}
     isRecordingRef.current = false;
     isProcessingRef.current = false;
-    isManualStopRef.current = false;
     latestSpokenRef.current = '';
     setIsRecording(false);
     if (currentPlayer === 1) setPlayer1Score(p => p + reveal.score);
@@ -457,16 +509,14 @@ function GameApp() {
   };
 
   const startGame = (categories?: string[]) => {
-    if (isRecordingRef.current) {
-      Voice.stop().catch(() => {});
-    }
+    Voice.destroy().catch(() => {});
     isRecordingRef.current = false;
     isProcessingRef.current = false;
-    isManualStopRef.current = false;
     latestSpokenRef.current = '';
+    const visOpts = { access: categoryAccess, userId, isPremium };
     const filtered = categories && categories.length > 0
-      ? allWords.filter(w => w.category !== null && categories.includes(w.category))
-      : allWords;
+      ? wordsForCategories(allWords, categories, visOpts)
+      : wordsForOpenBattle(allWords, visOpts);
     if (filtered.length === 0) {
       Alert.alert('単語がありません', 'このカテゴリにはまだ単語が登録されていません。');
       return;
@@ -501,9 +551,9 @@ function GameApp() {
             if (isRecordingRef.current) {
               try { await Voice.stop(); } catch {}
             }
+            try { await Voice.destroy(); } catch {}
             isRecordingRef.current = false;
             isProcessingRef.current = false;
-            isManualStopRef.current = false;
             latestSpokenRef.current = '';
             setIsRecording(false);
             // サンプル再生中なら停止
@@ -524,7 +574,7 @@ function GameApp() {
   };
 
   const reloadWords = async () => {
-    const rows = await fetchAllWords();
+    const rows = await fetchAllWords(true);
     setAllWords(rows);
   };
 
@@ -552,6 +602,23 @@ function GameApp() {
   // --- フラッシュ英単語 ---
   if (screen === 'flash') {
     return <FlashWordScreen onBack={() => setScreen('home')} />;
+  }
+
+  // --- マイページ ---
+  if (screen === 'profile') {
+    return (
+      <ProfileScreen
+        onBack={() => setScreen('home')}
+        username={username}
+        isPremium={isPremium}
+        isAdmin={isAdmin}
+        onSaveUsername={handleSaveUsername}
+        onPurchase={handlePurchase}
+        onRestore={handleRestore}
+        onLogout={() => supabase.auth.signOut()}
+        onDeleteAccount={handleDeleteAccount}
+      />
+    );
   }
 
   // --- Admin ナビゲーション ---
@@ -604,8 +671,9 @@ function GameApp() {
       <SafeAreaView style={styles.screen}>
         <View style={styles.gameHeader}>
           <Text style={styles.turnText}>プレイヤー {currentPlayer} のターン</Text>
-          <TouchableOpacity style={styles.quitButton} onPress={handleQuitGame}>
-            <Text style={styles.quitButtonText}>✕ やめる</Text>
+          <TouchableOpacity style={[styles.quitButton, styles.iconRow]} onPress={handleQuitGame}>
+            <Icon name="close" size="sm" color="#D75F1B" />
+            <Text style={styles.quitButtonText}>やめる</Text>
           </TouchableOpacity>
         </View>
         <ScrollView contentContainerStyle={styles.gameScroll} keyboardShouldPersistTaps="handled">
@@ -632,9 +700,12 @@ function GameApp() {
               disabled={isRecording}
               activeOpacity={0.7}
             >
-              <Text style={styles.sampleButtonText}>
-                {isPlayingSample ? '🔊 再生中...' : '🔊 長押しで見本を聞く'}
-              </Text>
+              <View style={styles.iconRow}>
+                <Icon name="sound" size="sm" color="#D75F1B" />
+                <Text style={styles.sampleButtonText}>
+                  {isPlayingSample ? '再生中...' : '長押しで見本を聞く'}
+                </Text>
+              </View>
             </TouchableOpacity>
           )}
           <View style={styles.micArea}>
@@ -649,11 +720,22 @@ function GameApp() {
               onPress={handleMicPress}
               disabled={reveal !== null}
             />
+            {speechAvailable === false && !reveal && (
+              <Text style={styles.speechUnavailableText}>
+                この端末では音声認識が使えません。{'\n'}「スキップ」で次に進めます。
+              </Text>
+            )}
+            {showSkip && !reveal && !isRecording && (
+              <TouchableOpacity style={styles.skipButton} onPress={handleSkip} activeOpacity={0.7}>
+                <Text style={styles.skipButtonText}>スキップ</Text>
+              </TouchableOpacity>
+            )}
           </View>
           {reveal && (
             <ScoreReveal
               score={reveal.score}
               spokenText={reveal.spoken}
+              failed={reveal.failed}
               expectedWord={currentWord.english}
               japanese={currentWord.japanese}
               detail={currentWord.detail}
@@ -666,6 +748,19 @@ function GameApp() {
     );
   }
 
+  // カテゴリの振り分けは category_access の紐づけで決める（docs/spec-category-access.md）
+  const homeVisOpts = { access: categoryAccess, userId, isPremium };
+
+  // 紐づいたカテゴリ = 親子三代英語ゲーム側（本人にだけ出す）。空ならカード非表示。
+  const oyakoCategories = oyakoCategoriesForUser(categories, categoryAccess, userId);
+  const oyakoWordCount = wordsForCategories(allWords, oyakoCategories, homeVisOpts).length;
+
+  // 紐づいていない共有カテゴリ = 2人対戦のカテゴリ選択側
+  const visibleCategories = sharedCategories(categories, categoryAccess);
+
+  // カテゴリ無し「2人対戦」で遊べる語数（紐づけ済みカテゴリの単語は除外）
+  const openBattleWordCount = wordsForOpenBattle(allWords, homeVisOpts).length;
+
   // --- ホーム画面 ---
   return (
     <HomeScreen
@@ -673,16 +768,19 @@ function GameApp() {
       onStartAI={() => setScreen('ai')}
       onStartFlash={() => setScreen('flash')}
       onAdmin={() => setScreen('admin')}
+      onProfile={() => setScreen('profile')}
       onLogout={() => supabase.auth.signOut()}
       onDeleteAccount={handleDeleteAccount}
       onPurchase={handlePurchase}
       onRestore={handleRestore}
-      wordCount={allWords.length}
+      wordCount={openBattleWordCount}
+      oyakoCategories={oyakoCategories}
+      oyakoWordCount={oyakoWordCount}
       dbReady={dbReady}
       isAdmin={isAdmin}
       isPremium={isPremium}
       premiumCategories={premiumCategories}
-      categories={categories}
+      categories={visibleCategories}
     />
   );
 }
@@ -692,11 +790,14 @@ function HomeScreen({
   onStartAI,
   onStartFlash,
   onAdmin,
+  onProfile,
   onLogout,
   onDeleteAccount,
   onPurchase,
   onRestore,
   wordCount,
+  oyakoCategories,
+  oyakoWordCount,
   dbReady,
   isAdmin,
   isPremium,
@@ -707,11 +808,14 @@ function HomeScreen({
   onStartAI: () => void;
   onStartFlash: () => void;
   onAdmin: () => void;
+  onProfile: () => void;
   onLogout: () => void;
   onDeleteAccount: () => void;
   onPurchase: () => void;
   onRestore: () => void;
   wordCount: number;
+  oyakoCategories: string[];
+  oyakoWordCount: number;
   dbReady: boolean;
   isAdmin: boolean;
   isPremium: boolean;
@@ -723,10 +827,14 @@ function HomeScreen({
   const [showCategoryPicker, setShowCategoryPicker] = React.useState(false);
   const slideAnim = React.useRef(new Animated.Value(240)).current;
 
+  // 「親子3代英語シーン別辞書」は専用ゲームカードに独立させたので、
+  // 汎用カテゴリピッカーには重複して出さない
+  const pickerCategories = categories.filter(c => !oyakoCategories.includes(c));
+
   const toggleCategory = (cat: string) => {
     if (premiumCategories.has(cat) && !isPremium) {
       Alert.alert(
-        '🔒 プレミアム限定',
+        'プレミアム限定',
         `「${cat}」はプレミアム会員限定のカテゴリです。\n購入してすべてのカテゴリを楽しもう！`,
         [
           { text: 'キャンセル', style: 'cancel' },
@@ -763,7 +871,7 @@ function HomeScreen({
           <Text style={styles.homeSubtitle}>モードを選んでスタート</Text>
         </View>
         <TouchableOpacity style={styles.hamburgerButton} onPress={openMenu}>
-          <Text style={styles.hamburgerIcon}>☰</Text>
+          <Icon name="menu" size="lg" color="#D75F1B" accessibilityLabel="メニューを開く" />
         </TouchableOpacity>
       </View>
 
@@ -773,19 +881,26 @@ function HomeScreen({
           <Animated.View style={[styles.sideMenu, { transform: [{ translateX: slideAnim }] }]}>
             <View style={styles.sideMenuHeader}>
               <TouchableOpacity onPress={() => closeMenu()} style={styles.sideMenuClose}>
-                <Text style={styles.sideMenuCloseText}>✕</Text>
+                <Icon name="close" size="md" color="#9A8A7A" accessibilityLabel="メニューを閉じる" />
               </TouchableOpacity>
             </View>
+            <TouchableOpacity style={styles.menuItem} onPress={() => closeMenu(onProfile)}>
+              <Icon name="profile" size="md" color="#3A2A1A" />
+              <Text style={[styles.menuItemText, styles.menuItemLabel]}>マイページ</Text>
+            </TouchableOpacity>
             {isAdmin && (
               <TouchableOpacity style={styles.menuItem} onPress={() => closeMenu(onAdmin)}>
-                <Text style={styles.menuItemText}>⚙️ 管理</Text>
+                <Icon name="settings" size="md" color="#3A2A1A" />
+                <Text style={[styles.menuItemText, styles.menuItemLabel]}>管理</Text>
               </TouchableOpacity>
             )}
             <TouchableOpacity style={styles.menuItem} onPress={() => closeMenu(onLogout)}>
-              <Text style={styles.menuItemText}>ログアウト</Text>
+              <Icon name="logout" size="md" color="#3A2A1A" />
+              <Text style={[styles.menuItemText, styles.menuItemLabel]}>ログアウト</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.menuItem, styles.menuItemDanger]} onPress={() => closeMenu(onDeleteAccount)}>
-              <Text style={styles.menuItemTextDanger}>アカウント削除</Text>
+              <Icon name="deleteAccount" size="md" color="#D75F1B" />
+              <Text style={[styles.menuItemTextDanger, styles.menuItemLabel]}>アカウント削除</Text>
             </TouchableOpacity>
           </Animated.View>
         </>
@@ -801,21 +916,28 @@ function HomeScreen({
             activeOpacity={0.85}
           >
             <View style={styles.modeCardInner}>
-              <Text style={styles.modeEmoji}>⚔️</Text>
+              <View style={styles.modeEmoji}>
+                <Icon name="battle" size={40} color="#D75F1B" />
+              </View>
               <View style={styles.modeTextArea}>
                 <Text style={styles.modeTitle}>2人対戦</Text>
                 <Text style={styles.modeDesc}>
                   カタカナ英語を発音して{'\n'}2人で精度を競おう
                 </Text>
-                <Text style={styles.modeWordCount}>
-                  {dbReady ? `📚 ${wordCount}語` : '読み込み中...'}
-                </Text>
+                <View style={styles.modeWordCountRow}>
+                  {dbReady ? (
+                    <>
+                      <Icon name="words" size={12} color="#D75F1B" />
+                      <Text style={styles.modeWordCount}>{wordCount}語</Text>
+                    </>
+                  ) : (
+                    <Text style={styles.modeWordCount}>読み込み中...</Text>
+                  )}
+                </View>
               </View>
               <Text style={styles.modeArrow}>›</Text>
             </View>
-          </TouchableOpacity>
-          {/* カテゴリ選択して対戦 */}
-          <View style={styles.categorySelectCard}>
+            {/* カテゴリ選択して対戦 */}
             <Text style={styles.categorySelectTitle}>カテゴリを選んで対戦</Text>
 
             {/* プルダウントリガー */}
@@ -824,11 +946,14 @@ function HomeScreen({
               onPress={() => setShowCategoryPicker(true)}
               activeOpacity={0.8}
             >
-              <Text style={styles.categoryDropdownBtnText}>
-                {selectedCategories.length === 0
-                  ? 'カテゴリを選択　▼'
-                  : `${selectedCategories.map(c => CATEGORY_EMOJI[c] + ' ' + c).join('、')}　▼`}
-              </Text>
+              <View style={styles.categoryDropdownRow}>
+                <Text style={styles.categoryDropdownBtnText} numberOfLines={1}>
+                  {selectedCategories.length === 0
+                    ? 'カテゴリを選択'
+                    : selectedCategories.join('、')}
+                </Text>
+                <Icon name="caretDown" size="sm" color="#D75F1B" />
+              </View>
             </TouchableOpacity>
 
             {/* 選択後スタートボタン */}
@@ -839,10 +964,44 @@ function HomeScreen({
               activeOpacity={0.85}
             >
               <Text style={styles.categoryStartBtnText}>
-                {selectedCategories.length === 0 ? 'カテゴリを選んでください' : `${selectedCategories.length}件 ▶ 対戦スタート`}
+                {selectedCategories.length === 0 ? 'カテゴリを選んでください' : `${selectedCategories.length}件で対戦スタート`}
               </Text>
             </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
+
+          {/* 親子三代英語ゲーム: 紐づいたカテゴリがあるユーザーにだけ出す */}
+          {oyakoCategories.length > 0 && (
+            <TouchableOpacity
+              style={[styles.modeCard, (!dbReady || oyakoWordCount === 0) && styles.modeCardDisabled]}
+              onPress={() => onStartBattle(oyakoCategories)}
+              disabled={!dbReady || oyakoWordCount === 0}
+              activeOpacity={0.85}
+            >
+              <View style={styles.modeCardInner}>
+                <View style={styles.modeEmoji}>
+                  <Icon name="family" size={40} color="#D75F1B" />
+                </View>
+                <View style={styles.modeTextArea}>
+                  <Text style={styles.modeTitle}>親子3代英語シーン別辞書</Text>
+                  <Text style={styles.modeDesc}>
+                    シーン別のフレーズで{'\n'}親子3世代で楽しく対戦
+                  </Text>
+                  <View style={styles.modeWordCountRow}>
+                    {dbReady ? (
+                      <>
+                        <Icon name="words" size={12} color="#D75F1B" />
+                        <Text style={styles.modeWordCount}>{oyakoWordCount}語</Text>
+                      </>
+                    ) : (
+                      <Text style={styles.modeWordCount}>読み込み中...</Text>
+                    )}
+                  </View>
+                </View>
+                <Text style={styles.modeArrow}>›</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+
         </View>
 
         {/* AI英語モード */}
@@ -852,7 +1011,9 @@ function HomeScreen({
           activeOpacity={0.85}
         >
           <View style={styles.modeCardInner}>
-            <Text style={styles.modeEmoji}>🤖</Text>
+            <View style={styles.modeEmoji}>
+              <Icon name="ai" size={40} color="#D75F1B" />
+            </View>
             <View style={styles.modeTextArea}>
               <Text style={styles.modeTitle}>AI英語練習</Text>
               <Text style={styles.modeDesc}>
@@ -873,7 +1034,9 @@ function HomeScreen({
           activeOpacity={0.85}
         >
           <View style={styles.modeCardInner}>
-            <Text style={styles.modeEmoji}>⚡</Text>
+            <View style={styles.modeEmoji}>
+              <Icon name="power" size={40} color="#D75F1B" />
+            </View>
             <View style={styles.modeTextArea}>
               <Text style={styles.modeTitle}>フラッシュ英単語</Text>
               <Text style={styles.modeDesc}>
@@ -895,7 +1058,7 @@ function HomeScreen({
               </TouchableOpacity>
             </View>
             <ScrollView>
-              {categories.map(cat => {
+              {pickerCategories.map(cat => {
                 const selected = selectedCategories.includes(cat);
                 const locked = premiumCategories.has(cat) && !isPremium;
                 return (
@@ -905,16 +1068,21 @@ function HomeScreen({
                     onPress={() => toggleCategory(cat)}
                     activeOpacity={0.7}
                   >
-                    <Text style={styles.pickerRowEmoji}>{CATEGORY_EMOJI[cat] ?? '📂'}</Text>
                     <Text style={[styles.pickerRowText, selected && styles.pickerRowTextOn, locked && styles.pickerRowTextLocked]}>
                       {cat}
                     </Text>
                     {locked ? (
-                      <View style={styles.premiumCatBadge}>
-                        <Text style={styles.premiumCatBadgeText}>🔒 有料</Text>
+                      <View style={[styles.premiumCatBadge, styles.iconRow]}>
+                        <Icon name="lock" size={11} color="#E8B526" />
+                        <Text style={styles.premiumCatBadgeText}>有料</Text>
                       </View>
                     ) : (
-                      <Text style={styles.pickerRowCheck}>{selected ? '☑' : '☐'}</Text>
+                      <Icon
+                        name={selected ? 'checkboxOn' : 'checkboxOff'}
+                        size="md"
+                        color="#D75F1B"
+                        accessibilityLabel={selected ? '選択中' : '未選択'}
+                      />
                     )}
                   </TouchableOpacity>
                 );
@@ -928,12 +1096,18 @@ function HomeScreen({
       {/* プレミアムバナー（下固定） */}
       {isPremium ? (
         <View style={styles.premiumBanner}>
-          <Text style={styles.premiumBannerText}>⭐ プレミアム会員</Text>
+          <View style={styles.iconRow}>
+            <Icon name="premium" size="sm" color="#ffffff" fill="#ffffff" />
+            <Text style={styles.premiumBannerText}>プレミアム会員</Text>
+          </View>
         </View>
       ) : (
         <View style={styles.premiumCard}>
           <View style={styles.premiumCardLeft}>
-            <Text style={styles.premiumCardTitle}>⭐ プレミアムプラン</Text>
+            <View style={styles.iconRow}>
+              <Icon name="premium" size="sm" color="#E8B526" fill="#E8B526" />
+              <Text style={styles.premiumCardTitle}>プレミアムプラン</Text>
+            </View>
             <Text style={styles.premiumCardDesc}>プレミアム単語もプレイできる</Text>
           </View>
           <View style={styles.premiumCardButtons}>
@@ -988,6 +1162,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 24,
+  },
+  speechUnavailableText: {
+    marginTop: 14,
+    fontSize: 13,
+    color: '#9A8A7A',
+    textAlign: 'center',
+    lineHeight: 19,
+  },
+  skipButton: {
+    marginTop: 14,
+    paddingHorizontal: 22,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: '#D7B08A',
+    backgroundColor: '#ffffff',
+  },
+  skipButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#9A6A3A',
   },
   liveTextBox: {
     backgroundColor: 'rgba(215,95,27,0.08)',
@@ -1150,7 +1345,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 12,
-    backgroundColor: '#FFF0D9',
     borderRadius: 12,
   },
   modeCard: {
@@ -1169,7 +1363,13 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   modeEmoji: {
-    fontSize: 44,
+    width: 44,
+    alignItems: 'center',
+  },
+  iconRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   modeTextArea: {
     flex: 1,
@@ -1189,8 +1389,13 @@ const styles = StyleSheet.create({
   modeWordCount: {
     fontSize: 12,
     color: '#D75F1B',
-    marginTop: 4,
     fontWeight: '700',
+  },
+  modeWordCountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 4,
   },
   modeArrow: {
     fontSize: 28,
@@ -1354,6 +1559,9 @@ const styles = StyleSheet.create({
     color: '#3A2A1A',
     fontWeight: '600',
   },
+  menuItemLabel: {
+    marginLeft: 10,
+  },
   menuItemDanger: {
     borderTopWidth: 1,
     borderTopColor: 'rgba(0,0,0,0.08)',
@@ -1400,12 +1608,9 @@ const styles = StyleSheet.create({
   },
   categorySelectCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: '#F0D0B8',
     padding: 16,
     marginHorizontal: 16,
-    marginBottom: 16,
+    marginVertical: 8,
     gap: 8,
   },
   categorySelectTitle: {
@@ -1472,6 +1677,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#D75F1B',
     fontWeight: '700',
+    flexShrink: 1,
+  },
+  categoryDropdownRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 6,
   },
   pickerOverlay: {
     flex: 1,

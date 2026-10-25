@@ -8,6 +8,7 @@ interface VoiceInterface {
   onSpeechPartialResults: ((e: SpeechResultsEvent) => void) | null;
   onSpeechEnd: (() => void) | null;
   onSpeechError: ((e: SpeechErrorEvent) => void) | null;
+  isAvailable: () => Promise<boolean>;
   start: (locale: string) => Promise<void>;
   stop: () => Promise<void>;
   cancel: () => Promise<void>;
@@ -23,6 +24,13 @@ const createAndroidVoice = (): VoiceInterface => {
     onSpeechPartialResults: null,
     onSpeechEnd: null,
     onSpeechError: null,
+    isAvailable: async () => {
+      try {
+        return RNVoice ? Boolean(await RNVoice.isAvailable()) : false;
+      } catch {
+        return false;
+      }
+    },
     start: (locale: string) => RNVoice.start(locale),
     stop: () => RNVoice.stop(),
     cancel: () => RNVoice.cancel(),
@@ -56,7 +64,21 @@ const createAndroidVoice = (): VoiceInterface => {
 
 const createIOSVoice = (): VoiceInterface => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require('@react-native-voice/voice').default as VoiceInterface;
+  const native = require('@react-native-voice/voice').default;
+  return new Proxy(native, {
+    get(target, prop, receiver) {
+      if (prop === 'isAvailable') {
+        return async () => {
+          try {
+            return Boolean(await target.isAvailable());
+          } catch {
+            return false;
+          }
+        };
+      }
+      return Reflect.get(target, prop, receiver);
+    },
+  }) as VoiceInterface;
 };
 
 export const PlatformVoice: VoiceInterface =

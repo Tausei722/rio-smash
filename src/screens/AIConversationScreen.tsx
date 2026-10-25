@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Icon } from '../components/Icon';
 // import Tts from 'react-native-tts';
 const Tts = {
   speak: (_text: string) => {},
@@ -221,7 +222,11 @@ export function AIConversationScreen({ onBack }: Props) {
 
     return (
       <View style={[styles.messageRow, isAI ? styles.messageRowAI : styles.messageRowUser]}>
-        {isAI && <Text style={styles.avatar}>🤖</Text>}
+        {isAI && (
+          <View style={styles.avatar}>
+            <Icon name="ai" size={26} color="#0e7490" accessibilityLabel="AI" />
+          </View>
+        )}
         <View style={[styles.bubble, isAI ? styles.bubbleAI : styles.bubbleUser]}>
           <Text style={[styles.bubbleText, isAI ? styles.bubbleTextAI : styles.bubbleTextUser]}>
             {item.content}
@@ -231,8 +236,9 @@ export function AIConversationScreen({ onBack }: Props) {
               style={[styles.playBtn, isPlaying && styles.playBtnActive]}
               onPress={() => speakText(item.id, item.content)}
             >
+              <Icon name={isPlaying ? 'sound' : 'play'} size="sm" color="#0284c7" />
               <Text style={styles.playBtnText}>
-                {isPlaying ? '🔊 再生中' : '▶ 再生'}
+                {isPlaying ? '再生中' : '再生'}
               </Text>
             </TouchableOpacity>
           )}
@@ -245,11 +251,15 @@ export function AIConversationScreen({ onBack }: Props) {
     <SafeAreaView style={styles.screen}>
       {/* ヘッダー */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backBtn}>
-          <Text style={styles.backText}>← 戻る</Text>
+        <TouchableOpacity onPress={onBack} style={[styles.backBtn, styles.backRow]}>
+          <Icon name="back" size="sm" color="#ffffff" />
+          <Text style={styles.backText}>戻る</Text>
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>🤖 AI英語練習</Text>
+          <View style={styles.headerTitleRow}>
+            <Icon name="ai" size="md" color="#ffffff" />
+            <Text style={styles.headerTitle}>AI英語練習</Text>
+          </View>
           <Text style={styles.headerSub}>日常英会話モード</Text>
         </View>
         <View style={{ width: 60 }} />
@@ -310,7 +320,7 @@ export function AIConversationScreen({ onBack }: Props) {
             style={[styles.micBtn, isRecording && styles.micBtnActive]}
             onPress={handleMicPress}
           >
-            <Text style={styles.micBtnText}>{isRecording ? '⏹' : '🎤'}</Text>
+            <Icon name={isRecording ? 'stop' : 'mic'} size="md" color="#0e7490" accessibilityLabel={isRecording ? '停止' : '録音'} />
           </TouchableOpacity>
 
           <TextInput
@@ -327,7 +337,7 @@ export function AIConversationScreen({ onBack }: Props) {
             onPress={() => sendMessage(inputText)}
             disabled={!inputText.trim() || isLoading}
           >
-            <Text style={styles.sendBtnText}>→</Text>
+            <Icon name="send" size="md" color="#ffffff" accessibilityLabel="送信" />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -351,7 +361,9 @@ const styles = StyleSheet.create({
   backBtn: { padding: 4 },
   backText: { color: '#ffffff', fontSize: 15 },
   headerCenter: { alignItems: 'center' },
+  headerTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   headerTitle: { color: '#ffffff', fontSize: 16, fontWeight: 'bold' },
+  backRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   headerSub: { color: '#a5f3fc', fontSize: 11, marginTop: 1 },
   chatArea: {
     flex: 1,
@@ -406,6 +418,8 @@ const styles = StyleSheet.create({
   playBtn: {
     marginTop: 8,
     flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     alignSelf: 'flex-start',
     backgroundColor: '#e0f2fe',
     paddingHorizontal: 10,
