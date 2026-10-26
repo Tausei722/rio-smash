@@ -15,8 +15,7 @@ jobs:
         run: |
           curl -sf -o /dev/null -w 'status=%{http_code}\n' \
             -H "apikey: ${EIGOTAISEN_ANON_KEY}" \
-            -H "Authorization: Bearer ${EIGOTAISEN_ANON_KEY}" \
-            "https://xilrpvnierjjuouduqsg.supabase.co/rest/v1/words?select=id&limit=1"
+            "https://xilrpvnierjjuouduqsg.supabase.co/auth/v1/health"
         env:
           EIGOTAISEN_ANON_KEY: ${{ secrets.EIGOTAISEN_ANON_KEY }}
 
@@ -24,7 +23,6 @@ jobs:
         run: |
           curl -sf -o /dev/null -w 'status=%{http_code}\n' \
             -H "apikey: ${TAUSEI722_PUBLISHABLE_KEY}" \
-            -H "Authorization: Bearer ${TAUSEI722_PUBLISHABLE_KEY}" \
-            "https://ehqhipghekqkrhfromef.supabase.co/rest/v1/profiles?select=id&limit=1"
+            "https://ehqhipghekqkrhfromef.supabase.co/auth/v1/health"
         env:
           TAUSEI722_PUBLISHABLE_KEY: ${{ secrets.TAUSEI722_PUBLISHABLE_KEY }}
